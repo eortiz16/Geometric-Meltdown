@@ -15,17 +15,14 @@ Ball::Ball()
 
 	outline.radius = body.radius + 4;
 	eye.radius = (body.radius / 10) + 1;
-	shadow.radius = body.radius - body.radius / 4;
+	reflection.radius = body.radius - body.radius / 4;
 
-	//Default Position
-	body.center.x = 0;
-	body.center.y = (GLfloat)game.win.height/2;
 	outline.center.x = body.center.x;
 	outline.center.y = body.center.y;
 	
 	//shadow.center.x = body.center.x;
-	shadow.center.x = scale_position(body.radius, body.center.x);
-	shadow.center.y = body.center.y + sqrt(body.radius);
+	reflection.center.x = scale_position(body.radius, body.center.x);
+	reflection.center.y = body.center.y + sqrt(body.radius);
 	
 	//Color Assignment
 	outline.color.r = 0;
@@ -36,9 +33,9 @@ Ball::Ball()
 	body.color.g = 35;
 	body.color.b = 160;
 
-	shadow.color.r = 100;
-	shadow.color.g = 50;
-	shadow.color.b = 175;
+	reflection.color.r = 100;
+	reflection.color.g = 50;
+	reflection.color.b = 175;
 
 	eye.color.r = 0;
 	eye.color.g = 0;
@@ -50,24 +47,26 @@ Ball::Ball()
 
 void Ball::render()
 {
-	//Player Outline
 	outline.render_circle();
-
-	//Player Body
 	body.render_circle();
-	
-	//Player Shadow
-	shadow.center.x = scale_position(body.radius, body.center.x);
-	shadow.render_circle();
 
-	//Player Eye
+	//Adjust Shadow
+	reflection.center.x = scale_position(body.radius, body.center.x);
+	reflection.render_circle();
+
 	eye.center.y = body.center.y + body.radius/2;
-	if (direction == LEFT)
-		eye.center.x = body.center.x - body.radius/2;
-	else
-		eye.center.x = body.center.x + body.radius/2;
-
+	(direction == LEFT) ?
+		eye.center.x = body.center.x - body.radius/2 :
+		eye.center.x = body.center.x + body.radius/2 ;
 	eye.render_circle();
+}
+
+void Ball::update_position()
+{
+	reflection.center.x = scale_position(body.radius, body.center.x);
+	reflection.center.y = body.center.y + sqrt(body.radius);
+	outline.center.x = body.center.x;
+	outline.center.y = body.center.y;
 }
 
 //Take the width resolution and scale the entire thing down to a factor
@@ -114,10 +113,6 @@ Boxy::Boxy()
 	JUMP_MAX = 2;
 	jumpCount = 0;
 
-	//Default Position
-	body.center.x = 300;
-	body.center.y = (GLfloat)game.win.height;
-
 	//Default Player Dimensions
 	body.width = 100;
 	body.height = body.width;
@@ -130,20 +125,20 @@ Boxy::Boxy()
 	eye.height = eye.width;
 	eye.radius = eye.width;
 
-	shadow.width = body.width/1.5f;
-	shadow.height = shadow.width;
-	shadow.radius = shadow.width / 2;
-	shadow.center.x = scale_position(body.radius, body.center.x);
-	shadow.center.y = body.center.y + sqrt(body.radius)*2;
+	reflection.width = body.width/1.5f;
+	reflection.height = reflection.width;
+	reflection.radius = reflection.width / 2;
+	reflection.center.x = scale_position(body.radius, body.center.x);
+	reflection.center.y = body.center.y + sqrt(body.radius)*2;
 
 	//Color Assignment
 	body.color.r = 85;
 	body.color.g = 35;
 	body.color.b = 160;
 
-	shadow.color.r = 100;
-	shadow.color.g = 50;
-	shadow.color.b = 175;
+	reflection.color.r = 100;
+	reflection.color.g = 50;
+	reflection.color.b = 175;
 
 	eye.color.r = 0;
 	eye.color.g = 0;
@@ -155,23 +150,25 @@ Boxy::Boxy()
 
 void Boxy::render()
 {
-	//Player Body
 	body.render_quad();
 
-	//Player Shadow
-	shadow.center.x = scale_position(body.radius, body.center.x);
-	shadow.render_quad();
+	//Adjust Shadow
+	reflection.center.x = scale_position(body.radius, body.center.x);
+	reflection.render_quad();
 
-	//Player Eye
 	eye.center.y = body.center.y + body.radius / 2;
-	if (direction == LEFT)
-		eye.center.x = body.center.x - body.radius / 2;
-	else
-		eye.center.x = body.center.x + body.radius / 2;
-
+	(direction == LEFT) ?
+		eye.center.x = body.center.x - body.radius / 2 :
+		eye.center.x = body.center.x + body.radius / 2 ;
 	eye.render_circle();
 
-	//Player Stroke	
 	for (int i = 0; i < MAX_STROKE; i++)
 		body.stroke[i].render_line();
+}
+
+void Boxy::update_position()
+{
+	reflection.center.x = scale_position(body.radius, body.center.x);
+	reflection.center.y = body.center.y + sqrt(body.radius) * 2;
+	body.stroke_assignment();
 }

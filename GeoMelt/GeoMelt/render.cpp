@@ -30,6 +30,14 @@ void Shape::render_quad()
 	glEnd();
 }
 
+Line::Line()
+{
+	width = 2.0;
+	color.r = 0;
+	color.g = 0;
+	color.b = 0;
+}
+
 void Line::render_line()
 {
 	glLineWidth(width);
@@ -75,12 +83,4 @@ void Shape::stroke_assignment()
 	stroke[3].from.y = center.y - height / 2;
 	stroke[3].to.x = center.x - width / 2;
 	stroke[3].to.y = center.y - height / 2;
-
-	for (int i = 0; i < MAX_STROKE; i++)
-	{
-		stroke[i].width = 2.0;
-		stroke[i].color.r = 0;
-		stroke[i].color.g = 0;
-		stroke[i].color.b = 0;
-	}
 }

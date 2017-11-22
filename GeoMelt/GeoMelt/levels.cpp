@@ -8,7 +8,7 @@ Field_Level::Field_Level()
 	srand((unsigned int)time(NULL));
 	
 	//Assigning Window Dimensions
-	game.game_inita();
+	game.game_inita(); // MOve this to appropriate spot
 	w = (GLfloat)game.win.width;
 	h = (GLfloat)game.win.height;
 
@@ -64,15 +64,22 @@ Field_Level::Field_Level()
 
 	//Cloud Initialization
 	int dir = rand() % 2;
-
 	for (int i = 0; i < MAX_CLOUD; i++)
 	{
-		//Evenly Divisible by 2? Set Wind Direction for all Clouds
-		(dir == 0) ? clouds[i].direction = RIGHT : clouds[i].direction = LEFT;
+		//Set Wind Direction for All Clouds
+		(dir == 0) ? 
+			clouds[i].direction = RIGHT : 
+			clouds[i].direction = LEFT ;
 		
 		//Assign Uniform Cloud Groups
 		clouds[i].set_cloud_group();
 	}
+
+	//Player Position
+	player1.body.center.x = 300;
+	player1.body.center.y = (GLfloat)game.win.height;
+	player2.body.center.x = 0;
+	player2.body.center.y = (GLfloat)game.win.height / 2;
 }
 
 void Field_Level::field_handler()
@@ -80,7 +87,9 @@ void Field_Level::field_handler()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	cloud_handler();
 	render();
-	player.render();
+	player1.update_position();
+	player1.render();
+	player2.update_position();
 	player2.render();
 }
 
@@ -166,7 +175,6 @@ void Cloud::physics()
 Night_Level::Night_Level()
 {
 	//Assigning Window Dimensions
-	game.game_inita();
 	w = (GLfloat)game.win.width;
 	h = (GLfloat)game.win.height;
 
@@ -195,13 +203,6 @@ Night_Level::Night_Level()
 	moon.center.x = w;
 	moon.center.y = h;
 	moon.radius = h/2;
-	
-	/*LOOK BELOW*/
-	/*
-	//Randomizing Stars Offset
-	for (int i = 0; i<MAX_STAR; i++) 
-		starOffset[i] = rnd();
-	*/
 
 	//Second Star Refactoring
 	for (int i = 0; i < MAX_STAR; i++)
@@ -213,7 +214,6 @@ Night_Level::Night_Level()
 		stars[i].body.color.b = 255;
 		stars[i].compute_coordinates(i);
 	}
-	/*LOOK ABOVE*/
 
 	//Floor Center
 	platform[0].body.center.x = w / 2;
@@ -228,29 +228,41 @@ Night_Level::Night_Level()
 	platform[0].body.color.g = 160;
 	platform[0].body.color.b = 0;
 
+	//Assign Floor Outline Attributes
+	platform[0].body.stroke_assignment();
+
 	//Platform Attributes
 	for (int i = 1; i < MAX_PLATFORM; i++) {
 		if (i % 2 == 0) {
-			platform[i].body.center.x = w/2;
-			platform[i].body.center.y = h-h/2+(h/6);
+			platform[i].body.center.x = w / 2;
+			platform[i].body.center.y = h - h / 2 + h / 6;
 		}
 		else {
-			platform[i].body.center.x = w/6 +((w - w/6) *((GLfloat)i - 1)) / 2.5f;
-			platform[i].body.center.y = h-h/2;
+			platform[i].body.center.x = w / 6 + ((w - w / 6) *
+				((GLfloat)i - 1)) / 2.5f;
+			platform[i].body.center.y = h - h / 2;
 		}
 		platform[i].body.width = 250;
 		platform[i].body.height = 50;
+		platform[i].body.color.r = 99;
+		platform[i].body.color.g = 160;
+		platform[i].body.color.b = 0;
 	}
 
-	//Assign Floor Outline Attributes
-	platform[0].body.stroke_assignment();
+	//Player Position
+	player1.body.center.x = 300;
+	player1.body.center.y = (GLfloat)game.win.height;
+	player2.body.center.x = 0;
+	player2.body.center.y = (GLfloat)game.win.height / 2;
 }
 
 void Night_Level::night_handler()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	render();
+	player1.update_position();
 	player1.render();
+	player2.update_position();
 	player2.render();
 }
 

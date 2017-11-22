@@ -6,9 +6,17 @@ Game game;
 
 Game::Game()
 {	
-	cout << "Resolution: " << win.width << "x" << win.height << endl;
+	game_details();
 	game_initb();
 	render = FIELD;
+}
+
+void Game::game_details()
+{
+	cout << "Monitor Resolution: " << game.monitor.width << "x"
+		<< game.monitor.height << endl;
+	cout << "Window Resolution: " << game.win.width << "x"
+		<< game.win.height << endl;
 }
 
 void Game::game_inita()
@@ -134,14 +142,14 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 		case GLFW_KEY_LEFT:
 			if (action == GLFW_PRESS)
 			{
-				game.level1.player.direction = LEFT;
+				game.level1.player1.direction = LEFT;
 				game.level1.player2.direction = RIGHT;
 			}
 			break;
 		case GLFW_KEY_RIGHT:
 			if (action == GLFW_PRESS)
 			{
-				game.level1.player.direction = RIGHT;
+				game.level1.player1.direction = RIGHT;
 				game.level1.player2.direction = LEFT;
 			}
 			break;

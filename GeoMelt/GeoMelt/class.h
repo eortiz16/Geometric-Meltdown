@@ -42,6 +42,7 @@ public:
 	Vec from, to;
 	Color color;
 	void render_line();
+	Line();
 };
 class Shape {
 public:
@@ -80,7 +81,7 @@ public:
 class Player {
 public:
 	Shape body;
-	Shape shadow;
+	Shape reflection;
 	Shape eye;
 	int JUMP_MAX;
 	int jumpCount;
@@ -90,11 +91,13 @@ class Ball: public Player {
 public:
 	Shape outline;
 	void render();
+	void update_position();
 	Ball();
 };
 class Boxy : public Player {
 public:
 	void render();
+	void update_position();
 	Boxy();
 };
 class Platform {
@@ -139,7 +142,7 @@ public:
 	void field_handler();
 	Shape sun;
 	Cloud clouds[MAX_CLOUD];
-	Ball player;
+	Ball player1;
 	Boxy player2;
 	Field_Level();
 };
@@ -188,6 +191,7 @@ public:
 	void load_images();
 	void game_inita();
 	void game_initb();
+	void game_details();
 	Colors palette;
 	Resolution monitor;
 	Resolution win;
