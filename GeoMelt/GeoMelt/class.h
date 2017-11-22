@@ -164,14 +164,21 @@ public:
 };
 class Image {
 public:
-	Shape box;
-	Ppmimage *img;
-	GLuint sil;
-	GLuint texture;
-	GLuint w, h;
-	GLfloat ratio;
 	char* filename;
-	void texture_map();
+
+	GLfloat w, h;
+	GLfloat ratio;
+	Shape box;
+
+	//======
+	ILuint imageID;
+	GLuint textureID;
+	ILboolean success;
+	ILenum error;
+	ILinfo ImageInfo;
+	void loadImg();
+	//======
+
 	void render();
 };
 class SelectImage : public Image {
@@ -193,6 +200,7 @@ public:
 	Image level1;
 	Image level2;
 	void set_attributes();
+	void set_attributesb();
 };
 class Resolution {
 public:

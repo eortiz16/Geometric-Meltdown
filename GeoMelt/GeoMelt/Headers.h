@@ -1,5 +1,8 @@
 #pragma once
 #include <GLFW/glfw3.h>
+#include <IL/il.h>
+#include <IL/ilu.h>
+#include <IL/ilut.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -12,3 +15,4 @@
 #include <string>
 #include <iostream>
 using namespace std;
+

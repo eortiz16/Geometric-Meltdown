@@ -6,10 +6,15 @@ Game game;
 
 Game::Game()
 {	
-	icons.set_attributes();
+	ilutRenderer(ILUT_OPENGL);
+	ilInit();
+	iluInit();
+	ilutInit();
+	ilutRenderer(ILUT_OPENGL);
+	icons.set_attributesb();
 	mainMenu.build_main_menu();
 	game_initb();
-	render = FIELD;
+	render = MAIN;
 	game_details();
 }
 
@@ -72,19 +77,18 @@ int main(void)
 	srand((unsigned int)time(0));
 
 	//Whlie Window is Open
+	glfwGetWindowSize(game.window, &game.win.width, &game.win.height);
+	glfwGetFramebufferSize(game.window, &game.win.width, &game.win.height);
+	glViewport(0, 0, game.win.width, game.win.height);
+	glMatrixMode(GL_PROJECTION); glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW); glLoadIdentity();
+	glClearColor(0, 0, 0, 0);
+	glOrtho(-game.win.width / 2, 1.5 * game.win.width,
+		-game.win.height / 2, 1.5 * game.win.height, -1, 1);
+
 	while (!glfwWindowShouldClose(game.window))
 	{
-		glfwGetWindowSize(game.window, &game.win.width, &game.win.height);
-		glfwGetFramebufferSize(game.window, &game.win.width, &game.win.height);
-		glViewport(0, 0, game.win.width, game.win.height);
-		glMatrixMode(GL_PROJECTION); glLoadIdentity();
-		glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-		glClearColor(0,0,0,0);
-		glOrtho(-game.win.width / 2, 1.5 * game.win.width,
-			-game.win.height / 2, 1.5 * game.win.height, -1, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		//Render Current State
 		switch (game.render)
 		{
 			case MAIN:
@@ -160,11 +164,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	}
 }
 
-void ImageSet::set_attributes()
+void ImageSet::set_attributesb()
 {
-	cout << "***Loading Assets***" << endl;
-
-	title.filename = "./resources/ppm/title.ppm";
+	title.filename = "./resources/jpg/title.jpg";
 	pill.filename = "./resources/ppm/pill.ppm";
 	play.filename = "./resources/ppm/play_u.ppm";
 	play.img_s.filename = "./resources/ppm/play_s.ppm";
@@ -179,50 +181,73 @@ void ImageSet::set_attributes()
 	level1.filename = "./resources/ppm/level1.ppm";
 	level2.filename = "./resources/ppm/level2.ppm";
 
-	title.texture_map();
-	pill.texture_map();
-	play.texture_map();
-	play.img_s.texture_map();
-	options.texture_map();
-	options.img_s.texture_map();
-	exit.texture_map();
-	exit.img_s.texture_map();
-	resume.texture_map();
-	resume.img_s.texture_map();
-	quit.texture_map();
-	quit.img_s.texture_map();
-	level1.texture_map();
-	level2.texture_map();
+	title.loadImg();
+	pill.loadImg();
+	play.loadImg();
+	play.img_s.loadImg();
+	options.loadImg();
+	options.img_s.loadImg();
+	exit.loadImg();
+	exit.img_s.loadImg();
+	resume.loadImg();
+	resume.img_s.loadImg();
+	quit.loadImg();
+	quit.img_s.loadImg();
+	level1.loadImg();
+	level2.loadImg();
 }
 
-void Image::texture_map()
+void Image::loadImg()
 {
-	//Load Images
-	img = ppm6GetImage(filename);
+	ilGenImages(1, &imageID);
+	ilBindImage(imageID);
+	success = ilLoadImage(filename);
 
-	//Aspect Ratio
-	w = img->width;
-	h = img->height;
+	if (success)
+	{
+		iluGetImageInfo(&ImageInfo);
+		if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
+		{
+			iluFlipImage();
+		}
 
-	ratio = (GLfloat)img->width / (GLfloat)img->height;
+		success = ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
+		if (!success)
+		{
+			error = ilGetError();
+			std::cout << "Image conversion failed - IL reports error: " << error << " - " << iluErrorString(error) << std::endl;
+		}
 
-	//Texture
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, img->width, img->height, 0, GL_RGB, 
-		GL_UNSIGNED_BYTE, img->data);
-	
-	//Silhouette
-	glBindTexture(GL_TEXTURE_2D, sil);
-	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	
-	unsigned char *sData = buildAlphaData(img);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img->width, img->height, 0, 
-		GL_RGBA, GL_UNSIGNED_BYTE, sData);
-	free(sData);
+		glGenTextures(1, &textureID);
+		
+		glBindTexture(GL_TEXTURE_2D, textureID);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		
+		glTexImage2D(GL_TEXTURE_2D, 				// Type of texture
+			0,				// Pyramid level (for mip-mapping) - 0 is the top level
+			ilGetInteger(IL_IMAGE_FORMAT),	// Internal pixel format to use. Can be a generic type like GL_RGB or GL_RGBA, or a sized type
+			ilGetInteger(IL_IMAGE_WIDTH),	// Image width
+			ilGetInteger(IL_IMAGE_HEIGHT),	// Image height
+			0,				// Border width in pixels (can either be 1 or 0)
+			ilGetInteger(IL_IMAGE_FORMAT),	// Format of image pixel data
+			GL_UNSIGNED_BYTE,		// Image data type
+			ilGetData());
+		w = (GLfloat)ilGetInteger(IL_IMAGE_WIDTH);
+		h = (GLfloat)ilGetInteger(IL_IMAGE_HEIGHT);
+	}
+	else
+	{
+		error = ilGetError();
+		std::cout << "Image load failed - IL reports error: " << error << " - " << iluErrorString(error) << std::endl;
+		exit(-1);
+	}
+
+	ilDeleteImages(1, &imageID); // Because we have already copied image data into texture data we can release memory used by image.
+
+	std::cout << "Texture creation successful." << std::endl;
 }

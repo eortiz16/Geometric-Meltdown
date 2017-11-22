@@ -4,11 +4,11 @@ extern Game game;
 
 void MainMenu::build_main_menu()
 {
-	game.icons.title.box.center.x = game.win.width / 2.0;
-	game.icons.title.box.center.y = game.win.height / 2.0;
+	game.icons.title.box.center.x = game.win.width / 2.0f;
+	game.icons.title.box.center.y = game.win.height / 2.0f;
 
-	game.icons.pill.box.center.x = game.win.width / 2.0;
-	game.icons.pill.box.center.y = game.win.height / 4.0;
+	game.icons.pill.box.center.x = game.win.width / 2.0f;
+	game.icons.pill.box.center.y = game.win.height / 4.0f;
 
 	game.icons.title.box.width = game.icons.title.w;
 	game.icons.title.box.height = game.icons.title.h;
@@ -27,25 +27,24 @@ void MainMenu::handler()
 
 void Image::render()
 {
-	cout << filename << " dimensions: " << w << "x" << h << endl;
-	float A = box.center.x - box.width / 2;
-	float B = box.center.y - box.height / 2;
-	float C = box.center.y + box.height / 2;
-	float D = box.center.x + box.width / 2;
+	GLfloat A = box.center.x - box.width / 2;
+	GLfloat B = box.center.y - box.height / 2;
+	GLfloat C = box.center.y + box.height / 2;
+	GLfloat D = box.center.x + box.width / 2;
 
-
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glEnable(GL_ALPHA_TEST);
 	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND); 
-
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glColor4ub(255, 255, 255, 40);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255, 255);
 	glBegin(GL_QUADS);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(A, B);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(A, C);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(D, C);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(D, B);
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(A, B);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(A, C);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(D, C);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(D, B);
 	glEnd();
-
+	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_BLEND);
 }

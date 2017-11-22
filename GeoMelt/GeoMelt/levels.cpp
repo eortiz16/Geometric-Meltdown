@@ -92,6 +92,8 @@ void Field_Level::handler()
 	player1.render();
 	player2.update_position();
 	player2.render();
+	game.icons.title.render();
+	game.icons.pill.render();
 }
 
 void Field_Level::render()
