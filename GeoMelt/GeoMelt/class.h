@@ -112,13 +112,9 @@ public:
 };
 class MainMenu : public Menu {
 public:
-	Shape title;
-	Shape play;
-	Shape options;
-	Shape quit;
 	void handler();
 	void render();
-	MainMenu();
+	void build_main_menu();
 };
 class PauseMenu : public Menu {
 public:
@@ -168,31 +164,35 @@ public:
 };
 class Image {
 public:
+	Shape box;
 	Ppmimage *img;
 	GLuint sil;
 	GLuint texture;
+	GLuint w, h;
 	GLfloat ratio;
+	char* filename;
 	void texture_map();
+	void render();
+};
+class SelectImage : public Image {
+public:
+	//_s flag designates selected icon
+	bool selected;
+	Image img_s;
 };
 class ImageSet {
 public:
-	//_u flag designates unselected icon
-	//_s flag designates selected icon
+	//absence of _s flag designates unselected icon
 	Image title;
 	Image pill;
-	Image play_u;
-	Image play_s;
-	Image options_u;
-	Image options_s;
-	Image exit_u;
-	Image exit_s;
-	Image resume_u;
-	Image resume_s;
-	Image quit_u;
-	Image quit_s;
+	SelectImage play;
+	SelectImage options;
+	SelectImage exit;
+	SelectImage resume;
+	SelectImage quit;
 	Image level1;
 	Image level2;
-	ImageSet();
+	void set_attributes();
 };
 class Resolution {
 public:

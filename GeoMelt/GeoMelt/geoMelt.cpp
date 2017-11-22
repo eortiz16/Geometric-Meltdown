@@ -1,13 +1,16 @@
 #include "Headers.h"
 #include "medMelt.h"
+#include <string>
 
 Game game;
 
 Game::Game()
 {	
-	game_details();
+	icons.set_attributes();
+	mainMenu.build_main_menu();
 	game_initb();
 	render = FIELD;
+	game_details();
 }
 
 void Game::game_details()
@@ -77,8 +80,6 @@ int main(void)
 		glMatrixMode(GL_PROJECTION); glLoadIdentity();
 		glMatrixMode(GL_MODELVIEW); glLoadIdentity();
 		glClearColor(0,0,0,0);
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
 		glOrtho(-game.win.width / 2, 1.5 * game.win.width,
 			-game.win.height / 2, 1.5 * game.win.height, -1, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -159,67 +160,69 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	}
 }
 
-ImageSet::ImageSet()
+void ImageSet::set_attributes()
 {
-	//Load Images
-	title.img = ppm6GetImage("./resources/ppm/title.ppm");
-	pill.img = ppm6GetImage("./resources/ppm/pill.ppm");
-	play_u.img = ppm6GetImage("./resources/ppm/play_u.ppm");
-	play_s.img = ppm6GetImage("./resources/ppm/play_s.ppm");
-	options_u.img = ppm6GetImage("./resources/ppm/options_u.ppm");
-	options_s.img = ppm6GetImage("./resources/ppm/options_s.ppm");
-	exit_u.img = ppm6GetImage("./resources/ppm/exit_u.ppm");
-	exit_s.img = ppm6GetImage("./resources/ppm/exit_s.ppm");
-	resume_u.img = ppm6GetImage("./resources/ppm/resume_u.ppm");
-	resume_s.img = ppm6GetImage("./resources/ppm/resume_s.ppm");
-	quit_u.img = ppm6GetImage("./resources/ppm/quit_u.ppm");
-	quit_s.img = ppm6GetImage("./resources/ppm/quit_s.ppm");
-	level1.img = ppm6GetImage("./resources/ppm/level1.ppm");
-	level2.img = ppm6GetImage("./resources/ppm/level2.ppm");
+	cout << "***Loading Assets***" << endl;
 
-	//Texture
-	glGenTextures(1, &title.texture);
-	glGenTextures(1, &pill.texture);
-	glGenTextures(1, &play_u.texture);
-	glGenTextures(1, &play_s.texture);
-	glGenTextures(1, &options_u.texture);
-	glGenTextures(1, &options_s.texture);
-	glGenTextures(1, &exit_u.texture);
-	glGenTextures(1, &exit_s.texture);
-	glGenTextures(1, &resume_u.texture);
-	glGenTextures(1, &resume_s.texture);
-	glGenTextures(1, &quit_u.texture);
-	glGenTextures(1, &quit_s.texture);
-	glGenTextures(1, &level1.texture);
-	glGenTextures(1, &level2.texture);
+	title.filename = "./resources/ppm/title.ppm";
+	pill.filename = "./resources/ppm/pill.ppm";
+	play.filename = "./resources/ppm/play_u.ppm";
+	play.img_s.filename = "./resources/ppm/play_s.ppm";
+	options.filename = "./resources/ppm/options_u.ppm";
+	options.img_s.filename = "./resources/ppm/options_s.ppm";
+	exit.filename = "./resources/ppm/exit_u.ppm";
+	exit.img_s.filename = "./resources/ppm/exit_s.ppm";
+	resume.filename = "./resources/ppm/resume_u.ppm";
+	resume.img_s.filename = "./resources/ppm/resume_s.ppm";
+	quit.filename = "./resources/ppm/quit_u.ppm";
+	quit.img_s.filename = "./resources/ppm/quit_s.ppm";
+	level1.filename = "./resources/ppm/level1.ppm";
+	level2.filename = "./resources/ppm/level2.ppm";
 
 	title.texture_map();
-	play_u.texture_map();
-	play_s.texture_map();
-	options_u.texture_map();
-	options_s.texture_map();
-	exit_u.texture_map();
-	exit_s.texture_map();
-	resume_u.texture_map();
-	resume_s.texture_map();
-	quit_u.texture_map();
-	quit_s.texture_map();
+	pill.texture_map();
+	play.texture_map();
+	play.img_s.texture_map();
+	options.texture_map();
+	options.img_s.texture_map();
+	exit.texture_map();
+	exit.img_s.texture_map();
+	resume.texture_map();
+	resume.img_s.texture_map();
+	quit.texture_map();
+	quit.img_s.texture_map();
 	level1.texture_map();
 	level2.texture_map();
 }
 
 void Image::texture_map()
 {
+	//Load Images
+	img = ppm6GetImage(filename);
+
 	//Aspect Ratio
+	w = img->width;
+	h = img->height;
+
 	ratio = (GLfloat)img->width / (GLfloat)img->height;
-	
-	//Texture Map for Each Image
+
+	//Texture
+	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
+	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-	unsigned char *data = buildAlphaData(img);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img->width, img->height, 0, GL_RGBA,
-		GL_UNSIGNED_BYTE, data);
-	free(data);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, img->width, img->height, 0, GL_RGB, 
+		GL_UNSIGNED_BYTE, img->data);
+	
+	//Silhouette
+	glBindTexture(GL_TEXTURE_2D, sil);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	
+	unsigned char *sData = buildAlphaData(img);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img->width, img->height, 0, 
+		GL_RGBA, GL_UNSIGNED_BYTE, sData);
+	free(sData);
 }

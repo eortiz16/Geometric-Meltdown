@@ -99,6 +99,7 @@ void Ball::render()
 		eye.center.x = body.center.x - body.radius/2 :
 		eye.center.x = body.center.x + body.radius/2 ;
 	eye.render_circle();
+	
 }
 
 void Ball::update_position()
