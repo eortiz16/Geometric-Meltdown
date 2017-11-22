@@ -65,6 +65,7 @@ public:
 	void render();
 	void physics();
 	void set_cloud_group();
+	void handler();
 };
 class Star {
 public:
@@ -86,6 +87,7 @@ public:
 	int JUMP_MAX;
 	int jumpCount;
 	Direction direction;
+	void update_reflection_x();
 };
 class Ball: public Player {
 public:
@@ -108,13 +110,21 @@ class Menu {
 public:
 	Shape selector;
 };
+class MainMenu : public Menu {
+public:
+	Shape title;
+	Shape play;
+	Shape options;
+	Shape quit;
+	void handler();
+	void render();
+	MainMenu();
+};
 class PauseMenu : public Menu {
 public:
-	Shape selection;
 };
 class LevelMenu : public Menu {
 public:
-	Shape selection;
 };
 class CharacterSelect {
 public:
@@ -136,10 +146,8 @@ public:
 class Game;
 class Field_Level : public Level {
 public:
-	GLfloat w, h;
 	void render();
-	void cloud_handler();
-	void field_handler();
+	void handler();
 	Shape sun;
 	Cloud clouds[MAX_CLOUD];
 	Ball player1;
@@ -153,33 +161,38 @@ public:
 	Star stars[MAX_STAR];
 	Shape moon;
 	void render();
-	void night_handler();
+	void handler();
 	Ball player1;
 	Boxy player2;
 	Night_Level();
 };
 class Image {
 public:
-	Ppmimage *icon;
+	Ppmimage *img;
 	GLuint sil;
 	GLuint texture;
+	GLfloat ratio;
+	void texture_map();
 };
 class ImageSet {
 public:
-	Image gameTitle;
-	Image pillIcon;
-	Image playIcon;
-	Image playSelected;
-	Image optionsIcon;
-	Image optionsSelected;
-	Image exitIcon;
-	Image exitSelected;
-	Image resumeIcon;
-	Image resumeSelected;
-	Image quitIcon;
-	Image quitSelected;
-	Image fieldLevelIcon;
-	Image starLevelIcon;
+	//_u flag designates unselected icon
+	//_s flag designates selected icon
+	Image title;
+	Image pill;
+	Image play_u;
+	Image play_s;
+	Image options_u;
+	Image options_s;
+	Image exit_u;
+	Image exit_s;
+	Image resume_u;
+	Image resume_s;
+	Image quit_u;
+	Image quit_s;
+	Image level1;
+	Image level2;
+	ImageSet();
 };
 class Resolution {
 public:
@@ -188,10 +201,10 @@ public:
 };
 class Game {
 public:
-	void load_images();
 	void game_inita();
 	void game_initb();
 	void game_details();
+	MainMenu mainMenu;
 	Colors palette;
 	Resolution monitor;
 	Resolution win;

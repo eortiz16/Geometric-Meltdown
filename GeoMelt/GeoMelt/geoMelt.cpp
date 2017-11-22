@@ -1,7 +1,6 @@
 #include "Headers.h"
 #include "medMelt.h"
 
-const GLFWvidmode * scrn;
 Game game;
 
 Game::Game()
@@ -21,6 +20,7 @@ void Game::game_details()
 
 void Game::game_inita()
 {
+	const GLFWvidmode * scrn;
 	//Error Handling - If GLFW Libraries Not Present
 	glfwSetErrorCallback(error_callback);
 	if (!glfwInit())
@@ -71,7 +71,6 @@ int main(void)
 	//Whlie Window is Open
 	while (!glfwWindowShouldClose(game.window))
 	{
-		scrn = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		glfwGetWindowSize(game.window, &game.win.width, &game.win.height);
 		glfwGetFramebufferSize(game.window, &game.win.width, &game.win.height);
 		glViewport(0, 0, game.win.width, game.win.height);
@@ -88,14 +87,16 @@ int main(void)
 		switch (game.render)
 		{
 			case MAIN:
+				game.mainMenu.handler();
+				break;
 			case PAUSE:
 			case LEVELSEL:
 			case CHARSEL:
 			case FIELD:
-				game.level1.field_handler();
+				game.level1.handler();
 				break;
 			case NIGHT:
-				game.level2.night_handler();
+				game.level2.handler();
 				break;
 			default:
 				break;
@@ -158,51 +159,67 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	}
 }
 
-void Game::load_images()
+ImageSet::ImageSet()
 {
-	//Extract Files
-
-	system("dir");
-	//====LOAD IMAGES========
-	game.icons.gameTitle.icon = ppm6GetImage("./resources/ppm/title.ppm");
-	game.icons.pillIcon.icon = ppm6GetImage("./resource/ppm/pill.ppm");
+	//Load Images
+	title.img = ppm6GetImage("./resources/ppm/title.ppm");
+	pill.img = ppm6GetImage("./resources/ppm/pill.ppm");
+	play_u.img = ppm6GetImage("./resources/ppm/play_u.ppm");
+	play_s.img = ppm6GetImage("./resources/ppm/play_s.ppm");
+	options_u.img = ppm6GetImage("./resources/ppm/options_u.ppm");
+	options_s.img = ppm6GetImage("./resources/ppm/options_s.ppm");
+	exit_u.img = ppm6GetImage("./resources/ppm/exit_u.ppm");
+	exit_s.img = ppm6GetImage("./resources/ppm/exit_s.ppm");
+	resume_u.img = ppm6GetImage("./resources/ppm/resume_u.ppm");
+	resume_s.img = ppm6GetImage("./resources/ppm/resume_s.ppm");
+	quit_u.img = ppm6GetImage("./resources/ppm/quit_u.ppm");
+	quit_s.img = ppm6GetImage("./resources/ppm/quit_s.ppm");
+	level1.img = ppm6GetImage("./resources/ppm/level1.ppm");
+	level2.img = ppm6GetImage("./resources/ppm/level2.ppm");
 
 	//Texture
-	glGenTextures(1, &game.icons.gameTitle.texture);
-	glGenTextures(1, &game.icons.pillIcon.texture);
+	glGenTextures(1, &title.texture);
+	glGenTextures(1, &pill.texture);
+	glGenTextures(1, &play_u.texture);
+	glGenTextures(1, &play_s.texture);
+	glGenTextures(1, &options_u.texture);
+	glGenTextures(1, &options_s.texture);
+	glGenTextures(1, &exit_u.texture);
+	glGenTextures(1, &exit_s.texture);
+	glGenTextures(1, &resume_u.texture);
+	glGenTextures(1, &resume_s.texture);
+	glGenTextures(1, &quit_u.texture);
+	glGenTextures(1, &quit_s.texture);
+	glGenTextures(1, &level1.texture);
+	glGenTextures(1, &level2.texture);
 
-	//Title==================================================================
-	int w = game.icons.gameTitle.icon->width;
-	int h = game.icons.gameTitle.icon->height;
+	title.texture_map();
+	play_u.texture_map();
+	play_s.texture_map();
+	options_u.texture_map();
+	options_s.texture_map();
+	exit_u.texture_map();
+	exit_s.texture_map();
+	resume_u.texture_map();
+	resume_s.texture_map();
+	quit_u.texture_map();
+	quit_s.texture_map();
+	level1.texture_map();
+	level2.texture_map();
+}
 
-	glBindTexture(GL_TEXTURE_2D, game.icons.gameTitle.texture);
-
+void Image::texture_map()
+{
+	//Aspect Ratio
+	ratio = (GLfloat)img->width / (GLfloat)img->height;
+	
+	//Texture Map for Each Image
+	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE,
-		game.icons.gameTitle.icon->data);
-	//silhouette
-	glBindTexture(GL_TEXTURE_2D, game.icons.gameTitle.sil);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-	unsigned char *silData = buildAlphaData(game.icons.gameTitle.icon);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
-		GL_UNSIGNED_BYTE, silData);
-	free(silData);
-
-	//Pill Icon==============================================================
-	glBindTexture(GL_TEXTURE_2D, game.icons.pillIcon.texture);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-	w = game.icons.pillIcon.icon->width;
-	h = game.icons.pillIcon.icon->height;
-
-	unsigned char *pilData = buildAlphaData(game.icons.pillIcon.icon);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
-		GL_UNSIGNED_BYTE, pilData);
-	free(pilData);
+	unsigned char *data = buildAlphaData(img);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img->width, img->height, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, data);
+	free(data);
 }

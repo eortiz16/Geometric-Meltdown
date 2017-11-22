@@ -9,14 +9,14 @@ Field_Level::Field_Level()
 	
 	//Assigning Window Dimensions
 	game.game_inita(); // MOve this to appropriate spot
-	w = (GLfloat)game.win.width;
-	h = (GLfloat)game.win.height;
+	GLfloat w = (GLfloat)game.win.width;
+	GLfloat h = (GLfloat)game.win.height;
 
 	//Background Color Assignment
-	background.body.center.x = w/2;
-	background.body.center.y = h/2;
-	background.body.width = 2*w;
-	background.body.height = 2*h;
+	background.body.center.x = w / 2;
+	background.body.center.y = h / 2;
+	background.body.width = 2 * w;
+	background.body.height = 2 * h;
 
 	for (int i = 0; i < 4; i++)
 		if (i != 1 && i != 2) {
@@ -30,7 +30,7 @@ Field_Level::Field_Level()
 		}
 
 	//Sun Attributes
-	sun.radius = (GLfloat)(h/1.1);
+	sun.radius = (GLfloat)(h / 1.1);
 	sun.color.r = 255;
 	sun.color.g = 255;
 	sun.color.b = 100;
@@ -38,11 +38,11 @@ Field_Level::Field_Level()
 	sun.center.y = (GLfloat)(1.5 * h);
 
 	//Floor Center
-	platform[0].body.center.x = (GLfloat)w / 2; 
+	platform[0].body.center.x = (GLfloat) (w / 2); 
 
 	//Floor Dimensions
-	platform[0].body.width = 3 * (GLfloat)w / 4;
-	platform[0].body.height = (GLfloat)h / 20;
+	platform[0].body.width = 3 * (GLfloat) (w / 4);
+	platform[0].body.height = (GLfloat) h / 20;
 	platform[0].body.center.y = platform[0].body.height / 2 + 150;
 
 	//Assign Color to Floor
@@ -82,10 +82,11 @@ Field_Level::Field_Level()
 	player2.body.center.y = (GLfloat)game.win.height / 2;
 }
 
-void Field_Level::field_handler()
+void Field_Level::handler()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	cloud_handler();
+	for (int i = 0; i < MAX_CLOUD; i++)
+		clouds[i].handler();
 	render();
 	player1.update_position();
 	player1.render();
@@ -105,26 +106,24 @@ void Field_Level::render()
 		platform[0].body.stroke[i].render_line();
 }
 
-void Field_Level::cloud_handler()
+void Cloud::handler()
 {
 	GLfloat arg1;
 	GLfloat arg2;
 
-	for (int i = 0; i < MAX_CLOUD; i++)
-	{
-		//Use Data from Center Cloud
-		arg1 = clouds[i].body[1].center.x + (clouds[i].body[1].radius * 3);
-		arg2 = clouds[i].body[1].center.x - (clouds[i].body[1].radius * 3);
+	//Use Data from Center Cloud
+	arg1 = body[1].center.x + (body[1].radius * 3);
+	arg2 = body[1].center.x - (body[1].radius * 3);
 
-		//Reset if Last Cloud Offscreen
-		if (arg1 < -game.win.width / 2 && clouds[i].direction == LEFT)
-			clouds[i].set_cloud_group();
-		else if (arg2 > 1.5 *game.win.width && clouds[i].direction == RIGHT)
-			clouds[i].set_cloud_group();
+	//Reset if Last Cloud Offscreen
+	if (arg1 < -game.win.width / 2 && direction == LEFT)
+		set_cloud_group();
+	else if (arg2 > 1.5 *game.win.width && direction == RIGHT)
+		set_cloud_group();
 
-		//Conduct Cloud Physics
-		clouds[i].physics();
-	}
+	//Conduct Cloud Physics
+	physics();
+
 }
 
 void Cloud::set_cloud_group()
@@ -256,7 +255,7 @@ Night_Level::Night_Level()
 	player2.body.center.y = (GLfloat)game.win.height / 2;
 }
 
-void Night_Level::night_handler()
+void Night_Level::handler()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	render();

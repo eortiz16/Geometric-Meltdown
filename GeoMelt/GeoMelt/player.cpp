@@ -1,6 +1,46 @@
 #include "Headers.h"
 #include "player.h"
+
 extern Game game;
+
+void Player::update_reflection_x()
+{
+	//Takes the width resolution and scales down to a factor
+	//controls reflection of character
+
+	GLfloat OldMax, OldMin, OldValue;
+	GLfloat NewMax, NewMin, offset;
+
+	//if character is in the middle of the level
+	if (body.center.x == (GLfloat)game.win.width / 2)
+		reflection.center.x = (GLfloat)game.win.width / 2;
+	else if (body.center.x < game.win.width / 2)
+	{
+		OldValue = body.center.x;
+		OldMin = 0;
+		OldMax = (GLfloat)game.win.width / 2;
+		NewMin = 0;
+		NewMax = sqrt(body.radius - 10);
+		offset = (OldValue - OldMin) * (NewMax - NewMin);
+		offset /= (OldMax - OldMin);
+		offset += NewMin;
+		offset -= sqrt(body.radius - 10);
+		offset = abs(offset);
+		reflection.center.x = body.center.x + offset;
+	}
+	else
+	{
+		OldValue = body.center.x;
+		OldMin = (GLfloat)game.win.width / 2;
+		OldMax = (GLfloat)game.win.width;
+		NewMin = 0;
+		NewMax = sqrt(body.center.x);
+		offset = (OldValue - OldMin) * (NewMax - NewMin);
+		offset /= OldMax - OldMin;
+		offset += NewMin;
+		reflection.center.x = body.center.x - offset;
+	}
+}
 
 Ball::Ball()
 {
@@ -21,7 +61,7 @@ Ball::Ball()
 	outline.center.y = body.center.y;
 	
 	//shadow.center.x = body.center.x;
-	reflection.center.x = scale_position(body.radius, body.center.x);
+	update_reflection_x();
 	reflection.center.y = body.center.y + sqrt(body.radius);
 	
 	//Color Assignment
@@ -51,7 +91,7 @@ void Ball::render()
 	body.render_circle();
 
 	//Adjust Shadow
-	reflection.center.x = scale_position(body.radius, body.center.x);
+	update_reflection_x();
 	reflection.render_circle();
 
 	eye.center.y = body.center.y + body.radius/2;
@@ -63,48 +103,10 @@ void Ball::render()
 
 void Ball::update_position()
 {
-	reflection.center.x = scale_position(body.radius, body.center.x);
+	update_reflection_x();
 	reflection.center.y = body.center.y + sqrt(body.radius);
 	outline.center.x = body.center.x;
 	outline.center.y = body.center.y;
-}
-
-//Take the width resolution and scale the entire thing down to a factor
-//controls shading of character
-GLfloat scale_position(GLfloat objRadius, GLfloat objCoorX)
-{
-	GLfloat OldMax, OldMin, OldValue;
-	GLfloat NewMax, NewMin, offset;
-
-	//if character is in the middle of the level
-	if (objCoorX == (GLfloat)game.win.width / 2)
-		return (GLfloat)game.win.width / 2;
-	else if (objCoorX < game.win.width / 2)
-	{
-		OldValue = objCoorX;
-		OldMin = 0;
-		OldMax = (GLfloat)game.win.width / 2;
-		NewMin = 0;
-		NewMax = sqrt(objRadius - 10);
-		offset = (OldValue - OldMin) * (NewMax - NewMin);
-		offset /= (OldMax - OldMin);
-		offset += NewMin;
-		offset -= sqrt(objRadius - 10);
-		offset = abs(offset);
-		return objCoorX + offset;
-	}
-	else 
-	{
-		OldValue = objCoorX;
-		OldMin = (GLfloat)game.win.width / 2;
-		OldMax = (GLfloat)game.win.width;
-		NewMin = 0;
-		NewMax = sqrt(objRadius);
-		offset = (OldValue - OldMin) * (NewMax - NewMin);
-		offset /= OldMax - OldMin;
-		offset += NewMin;
-		return objCoorX - offset;
-	}
 }
 
 Boxy::Boxy()
@@ -128,7 +130,7 @@ Boxy::Boxy()
 	reflection.width = body.width/1.5f;
 	reflection.height = reflection.width;
 	reflection.radius = reflection.width / 2;
-	reflection.center.x = scale_position(body.radius, body.center.x);
+	update_reflection_x();
 	reflection.center.y = body.center.y + sqrt(body.radius)*2;
 
 	//Color Assignment
@@ -153,7 +155,7 @@ void Boxy::render()
 	body.render_quad();
 
 	//Adjust Shadow
-	reflection.center.x = scale_position(body.radius, body.center.x);
+	update_reflection_x();
 	reflection.render_quad();
 
 	eye.center.y = body.center.y + body.radius / 2;
@@ -168,7 +170,7 @@ void Boxy::render()
 
 void Boxy::update_position()
 {
-	reflection.center.x = scale_position(body.radius, body.center.x);
+	update_reflection_x();
 	reflection.center.y = body.center.y + sqrt(body.radius) * 2;
 	body.stroke_assignment();
 }
