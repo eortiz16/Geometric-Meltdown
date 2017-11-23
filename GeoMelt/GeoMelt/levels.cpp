@@ -1,4 +1,4 @@
-#include "Headers.h"
+#include "headers.h"
 #include "levels.h"
 
 extern Game game;
@@ -8,7 +8,6 @@ Field_Level::Field_Level()
 	srand((unsigned int)time(NULL));
 	
 	//Assigning Window Dimensions
-	game.game_inita(); // MOve this to appropriate spot
 	GLfloat w = (GLfloat)game.win.width;
 	GLfloat h = (GLfloat)game.win.height;
 
@@ -92,8 +91,6 @@ void Field_Level::handler()
 	player1.render();
 	player2.update_position();
 	player2.render();
-	game.icons.title.render();
-	game.icons.pill.render();
 }
 
 void Field_Level::render()
@@ -176,8 +173,8 @@ void Cloud::physics()
 Night_Level::Night_Level()
 {
 	//Assigning Window Dimensions
-	w = (GLfloat)game.win.width;
-	h = (GLfloat)game.win.height;
+	GLfloat w = (GLfloat)game.win.width;
+	GLfloat h = (GLfloat)game.win.height;
 
 	//Background Attributes
 	background.body.center.x = w / 2;
@@ -205,7 +202,7 @@ Night_Level::Night_Level()
 	moon.center.y = h;
 	moon.radius = h/2;
 
-	//Second Star Refactoring
+	//Star Attributes
 	for (int i = 0; i < MAX_STAR; i++)
 	{
 		stars[i].offset = rnd();
@@ -270,7 +267,6 @@ void Night_Level::handler()
 void Night_Level::render()
 {
 	background.render();
-	//render_stars(starOffset, w, h);
 	for (int i = 0; i < MAX_STAR; i++)
 	{
 		stars[i].change_color();
@@ -313,5 +309,239 @@ void Star::change_color()
 		body.color.r = rand() % (255 - 0);
 		body.color.g = 215;
 		body.color.b = 255;
+	}
+}
+
+Time_Level::Time_Level()
+{
+	srand((unsigned int)time(NULL));
+
+	//Assigning Window Dimensions
+	GLfloat w = (GLfloat)game.win.width;
+	GLfloat h = (GLfloat)game.win.height;
+
+	//Background Attribute Assignment
+	time_of_day = DAY;
+	background.body.center.x = w / 2;
+	background.body.center.y = h / 2;
+	background.body.width = 2 * w;
+	background.body.height = 2 * h;
+
+	change = false;
+	for (int i = 0; i < 4; i++)
+	{
+		background.transition_done[i] = false;
+		if (i != 1 && i != 2) {
+			background.color[i].r = palette.day[i].r;
+			background.color[i].g = palette.day[i].g;
+			background.color[i].b = palette.day[i].b;
+		}
+		else 
+		{
+			background.color[i].r = palette.day[i].r;
+			background.color[i].g = palette.day[i].g;
+			background.color[i].b = palette.day[i].b;
+		}
+	}
+
+		//Sun Attributes
+		sun.radius = (GLfloat)(h / 1.1);
+		sun.color.r = 255;
+		sun.color.g = 255;
+		sun.color.b = 100;
+		sun.center.x = (GLfloat)(1.5 * w);
+		sun.center.y = (GLfloat)(1.5 * h);
+
+		//Moon Attributes
+		moon.color.r = 225;
+		moon.color.g = 225;
+		moon.color.b = 214;
+		moon.center.x = w;
+		moon.center.y = h;
+		moon.radius = h / 2;
+
+		//Star Attributes
+		for (int i = 0; i < MAX_STAR; i++)
+		{
+			stars[i].offset = rnd();
+			stars[i].body.radius = 3;
+			stars[i].body.color.r = 255;
+			stars[i].body.color.g = 255;
+			stars[i].body.color.b = 255;
+			stars[i].compute_coordinates(i);
+		}
+
+		//Floor Center
+		platform[0].body.center.x = (GLfloat)(w / 2);
+
+		//Floor Dimensions
+		platform[0].body.width = 3 * (GLfloat)(w / 4);
+		platform[0].body.height = (GLfloat)h / 20;
+		platform[0].body.center.y = platform[0].body.height / 2 + 150;
+
+		//Assign Color to Floor
+		platform[0].body.color.r = 99;
+		platform[0].body.color.g = 160;
+		platform[0].body.color.b = 0;
+
+		//Assign Floor Outline Attributes
+		for (int i = 0; i < MAX_STROKE; i++)
+		{
+			platform[0].body.stroke[i].width = 2.0;
+			platform[0].body.stroke[i].color.r = 255;
+			platform[0].body.stroke[i].color.g = 255;
+			platform[0].body.stroke[i].color.b = 255;
+		}
+
+		//Floor Stroke Assignment
+		platform[0].body.stroke_assignment();
+
+		//Cloud Initialization
+		int dir = rand() % 2;
+		for (int i = 0; i < MAX_CLOUD; i++)
+		{
+			//Set Wind Direction for All Clouds
+			(dir == 0) ?
+				clouds[i].direction = RIGHT :
+				clouds[i].direction = LEFT;
+
+			//Assign Uniform Cloud Groups
+			clouds[i].set_cloud_group();
+		}
+
+		//Player Position
+		player1.body.center.x = 300;
+		player1.body.center.y = (GLfloat)game.win.height;
+		player2.body.center.x = 0;
+		player2.body.center.y = (GLfloat)game.win.height / 2;
+}
+
+void Time_Level::handler()
+{
+	if (change == true)
+		switch (time_of_day)
+		{
+		case DAY:
+			transition_to(palette.overcast);
+			break;
+		case OVERCA:
+			transition_to(palette.night);
+			break;
+		case NITE:
+			transition_to(palette.dark_night);
+			break;
+		case DNITE:
+			transition_to(palette.day);
+			break;
+		}
+
+	render();
+	for (int i = 0; i < MAX_CLOUD; i++)
+		clouds[i].handler();
+	player1.update_position();
+	player1.render();
+	player2.update_position();
+	player2.render();
+}
+
+void Time_Level::render()
+{
+	background.render();
+	if (time_of_day == DAY)
+		sun.render_circle();
+	else if (time_of_day != DAY && time_of_day != OVERCA)
+	{
+		for (int i = 0; i < MAX_STAR; i++)
+		{
+			stars[i].change_color();
+			stars[i].body.render_circle();
+		}
+		moon.render_circle();
+	}
+	for (int i = 0; i < MAX_CLOUD; i++)
+		clouds[i].render();
+	platform[0].body.render_quad();
+	for (int i = 0; i < MAX_STROKE; i++)
+		platform[0].body.stroke[i].render_line();
+}
+
+//changes color of background by factor of 1 each frame
+void Time_Level::transition_to(Color *clr)
+{
+	//Adjust Color of Corners
+	for (int i = 0; i < 4; i++)
+	{
+		//Update RED
+		if (background.color[i].r < clr[i].r)
+			background.color[i].r++;
+		else if (background.color[i].r > clr[i].r)
+			background.color[i].r--;
+
+		//Update GREEN
+		if (background.color[i].g < clr[i].g)
+			background.color[i].g++;
+		else if (background.color[i].g > clr[i].g)
+			background.color[i].g--;
+
+		//Update BLUE
+		if (background.color[i].b < clr[i].b)
+			background.color[i].b++; 
+		else if (background.color[i].b > clr[i].b)
+			background.color[i].b--;
+
+		//If all corners are done updating
+		if (background.color[i].r == clr[i].r 
+			&& background.color[i].g == clr[i].g
+			&& background.color[i].b == clr[i].b)
+			background.transition_done[i] = true;
+	}
+
+	//If all done
+	if (background.transition_done[0] == true && background.transition_done[1] == true
+		&& background.transition_done[2] == true && background.transition_done[3] == true) 
+	{
+		cout << "\nTRANSITION DONE\n";
+		for (int i = 0; i < CORNERS; i++)
+			background.transition_done[i] = false;
+		
+		change = false;
+		time_of_day++;
+	}
+}
+
+Palette_BG::Palette_BG()
+{
+	for (int i = 0; i < CORNERS; i++)
+	{
+		//BOTTOM
+		if (i != 1 && i != 2) {
+			day[i].r = 0;
+			day[i].g = 155;
+			day[i].b = 255;
+			night[i].r = 70;
+			night[i].g = 50;
+			night[i].b = 120;
+			dark_night[i].r = 10;
+			dark_night[i].g = 15;
+			dark_night[i].b = 60;
+			overcast[i].r = 175;
+			overcast[i].g = 175;
+			overcast[i].b = 175;
+		}
+		else //TOP
+		{
+			day[i].r = 0;
+			day[i].g = 60;
+			day[i].b = 255;
+			night[i].r = 0;
+			night[i].g = 25;
+			night[i].b = 120;
+			dark_night[i].r = 10;
+			dark_night[i].g = 10;
+			dark_night[i].b = 10;
+			overcast[i].r = 215;
+			overcast[i].g = 215;
+			overcast[i].b = 215;
+		}
 	}
 }

@@ -1,20 +1,25 @@
-#include "Headers.h"
-#include "medMelt.h"
-#include <string>
+#include "headers.h"
+#include "geoMelt.h"
 
 Game game;
 
 Game::Game()
 {	
+	/*
+	//DevIL Init
 	ilutRenderer(ILUT_OPENGL);
 	ilInit();
 	iluInit();
 	ilutInit();
 	ilutRenderer(ILUT_OPENGL);
-	icons.set_attributesb();
+
+	//picons.set_attributes();
+	//icons.set_attributes();
+	//sicons.set_attributes();
 	mainMenu.build_main_menu();
+	*/
 	game_initb();
-	render = MAIN;
+	render = FIELD;
 	game_details();
 }
 
@@ -24,6 +29,11 @@ void Game::game_details()
 		<< game.monitor.height << endl;
 	cout << "Window Resolution: " << game.win.width << "x"
 		<< game.win.height << endl;
+}
+
+Initialize::Initialize()
+{
+	game.game_inita();
 }
 
 void Game::game_inita()
@@ -62,7 +72,6 @@ void Game::game_initb()
 	//Error Handling - If Window is Not Created
 	if (!window)
 	{
-		game.~Game();
 		glfwTerminate(); //Destroys all Remaining Windows and Cursors
 		exit(EXIT_FAILURE);
 	}
@@ -75,19 +84,19 @@ int main(void)
 {
 	//Seed Random Number Generation
 	srand((unsigned int)time(0));
-
+	
 	//Whlie Window is Open
-	glfwGetWindowSize(game.window, &game.win.width, &game.win.height);
-	glfwGetFramebufferSize(game.window, &game.win.width, &game.win.height);
-	glViewport(0, 0, game.win.width, game.win.height);
-	glMatrixMode(GL_PROJECTION); glLoadIdentity();
-	glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-	glClearColor(0, 0, 0, 0);
-	glOrtho(-game.win.width / 2, 1.5 * game.win.width,
-		-game.win.height / 2, 1.5 * game.win.height, -1, 1);
-
 	while (!glfwWindowShouldClose(game.window))
 	{
+		glfwGetWindowSize(game.window, &game.win.width, &game.win.height);
+		glfwGetFramebufferSize(game.window, &game.win.width, &game.win.height);
+		glViewport(0, 0, game.win.width, game.win.height);
+		glMatrixMode(GL_PROJECTION); glLoadIdentity();
+		glMatrixMode(GL_MODELVIEW); glLoadIdentity();
+		glEnable(GL_TEXTURE_2D);
+		glOrtho(-game.win.width / 2, 1.5 * game.win.width,
+			-game.win.height / 2, 1.5 * game.win.height, -1, 1);
+		glClearColor(0, 0, 0, 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		switch (game.render)
 		{
@@ -102,6 +111,9 @@ int main(void)
 				break;
 			case NIGHT:
 				game.level2.handler();
+				break;
+			case TIME:
+				game.level3.handler();
 				break;
 			default:
 				break;
@@ -136,15 +148,27 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 				//Return Key changes Level
 				switch (game.render)
 				{
-				case NIGHT:
-					game.render = FIELD;
-					break;
 				case FIELD:
 					game.render = NIGHT;
+					break;
+				case NIGHT:
+					game.render = TIME;
+					break;
+				case TIME:
+					game.render = MAIN;
+					break;
+				case MAIN:
+					game.render = FIELD;
 					break;
 				}
 			}
 			break;
+		case GLFW_KEY_SPACE:
+			if (action == GLFW_PRESS)
+			{
+				if (game.render == TIME)
+					game.level3.change = true;
+			}
 		case GLFW_KEY_LEFT:
 			if (action == GLFW_PRESS)
 			{
@@ -164,90 +188,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	}
 }
 
-void ImageSet::set_attributesb()
+void debug()
 {
-	title.filename = "./resources/jpg/title.jpg";
-	pill.filename = "./resources/ppm/pill.ppm";
-	play.filename = "./resources/ppm/play_u.ppm";
-	play.img_s.filename = "./resources/ppm/play_s.ppm";
-	options.filename = "./resources/ppm/options_u.ppm";
-	options.img_s.filename = "./resources/ppm/options_s.ppm";
-	exit.filename = "./resources/ppm/exit_u.ppm";
-	exit.img_s.filename = "./resources/ppm/exit_s.ppm";
-	resume.filename = "./resources/ppm/resume_u.ppm";
-	resume.img_s.filename = "./resources/ppm/resume_s.ppm";
-	quit.filename = "./resources/ppm/quit_u.ppm";
-	quit.img_s.filename = "./resources/ppm/quit_s.ppm";
-	level1.filename = "./resources/ppm/level1.ppm";
-	level2.filename = "./resources/ppm/level2.ppm";
-
-	title.loadImg();
-	pill.loadImg();
-	play.loadImg();
-	play.img_s.loadImg();
-	options.loadImg();
-	options.img_s.loadImg();
-	exit.loadImg();
-	exit.img_s.loadImg();
-	resume.loadImg();
-	resume.img_s.loadImg();
-	quit.loadImg();
-	quit.img_s.loadImg();
-	level1.loadImg();
-	level2.loadImg();
-}
-
-void Image::loadImg()
-{
-	ilGenImages(1, &imageID);
-	ilBindImage(imageID);
-	success = ilLoadImage(filename);
-
-	if (success)
+	char choice = 'n';
+	while (choice == 'n')
 	{
-		iluGetImageInfo(&ImageInfo);
-		if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
-		{
-			iluFlipImage();
-		}
-
-		success = ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
-		if (!success)
-		{
-			error = ilGetError();
-			std::cout << "Image conversion failed - IL reports error: " << error << " - " << iluErrorString(error) << std::endl;
-		}
-
-		glGenTextures(1, &textureID);
-		
-		glBindTexture(GL_TEXTURE_2D, textureID);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		
-		glTexImage2D(GL_TEXTURE_2D, 				// Type of texture
-			0,				// Pyramid level (for mip-mapping) - 0 is the top level
-			ilGetInteger(IL_IMAGE_FORMAT),	// Internal pixel format to use. Can be a generic type like GL_RGB or GL_RGBA, or a sized type
-			ilGetInteger(IL_IMAGE_WIDTH),	// Image width
-			ilGetInteger(IL_IMAGE_HEIGHT),	// Image height
-			0,				// Border width in pixels (can either be 1 or 0)
-			ilGetInteger(IL_IMAGE_FORMAT),	// Format of image pixel data
-			GL_UNSIGNED_BYTE,		// Image data type
-			ilGetData());
-		w = (GLfloat)ilGetInteger(IL_IMAGE_WIDTH);
-		h = (GLfloat)ilGetInteger(IL_IMAGE_HEIGHT);
+		cout << "Continue? " << endl;
+		cin >> choice;
 	}
-	else
-	{
-		error = ilGetError();
-		std::cout << "Image load failed - IL reports error: " << error << " - " << iluErrorString(error) << std::endl;
-		exit(-1);
-	}
-
-	ilDeleteImages(1, &imageID); // Because we have already copied image data into texture data we can release memory used by image.
-
-	std::cout << "Texture creation successful." << std::endl;
 }

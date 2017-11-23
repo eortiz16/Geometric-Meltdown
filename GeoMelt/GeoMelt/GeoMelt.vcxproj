@@ -70,8 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\GLFW\include;C:\DevIL\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\GLFW\lib;C:\DevIL\lib\x86\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\OPENGL\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\OPENGL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -80,7 +80,8 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;DevIL.lib;ILU.lib;ILUT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;DevIL.lib;ILU.lib;ILUT.lib;SOIL.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -123,12 +124,13 @@
     <ClCompile Include="ppm.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="Menus.cpp" />
+    <ClCompile Include="images.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="class.h" />
     <ClInclude Include="Headers.h" />
     <ClInclude Include="levels.h" />
-    <ClInclude Include="medMelt.h" />
+    <ClInclude Include="geoMelt.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="ppm.h" />
     <ClInclude Include="render.h" />

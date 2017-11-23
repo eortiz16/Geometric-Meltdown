@@ -1,6 +1,13 @@
-#include "Headers.h"
+#include "headers.h"
 #include "ppm.h"
 #pragma once
+/*
+#define GL_TEXTURE29 0x84DD
+#define GL_TEXTURE30 0x84DE
+#define GL_TEXTURE31 0x84DF
+#define GL_ACTIVE_TEXTURE 0x84E0
+*/
+#define TRANSITION_RATE 1
 #define MAX_PLAYER 4
 #define MAX_PLATFORM 4
 #define MAX_STAR 40 
@@ -10,27 +17,26 @@
 #define CLOUD_GROUP 3
 #define CLOUD_START 50
 #define CLOUD_RANGE 200
+#define CORNERS 4
 #define rnd() (float)rand() / (float)RAND_MAX
 #define M_PI 3.14159265358979323846
 #define TRI_NUM 50
 #define	HDX 1920
 #define HDY 1080
-enum State {MAIN, PAUSE, LEVELSEL, CHARSEL, FIELD, NIGHT, DISCO, POLLUTION};
+enum State {MAIN, PAUSE, LEVELSEL, CHARSEL, FIELD, NIGHT, TIME, DISCO, POLLUTION};
 enum Direction {LEFT, RIGHT};
+enum TOD { DAY, OVERCA, NITE, DNITE };
+
+inline TOD operator++(TOD &eDOW, int)
+{
+	const int i = static_cast<int>(eDOW);
+	eDOW = static_cast<TOD>((i + 1) % 4);
+	return (TOD)0;
+}
+
 class Color {
 public:
 	int r, g, b;
-};
-class Colors {
-public: 
-	Color Pink;
-	Color red;
-	Color green;
-	Color blue;
-	Color darkRed;
-	Color darkGreen;
-	Color darkBlue;
-	Color Purple;
 };
 class Vec {
 public:
@@ -126,59 +132,87 @@ class CharacterSelect {
 public:
 	Shape selection[MAX_PLAYER];
 };
+class Palette_Character {
+public:
+	Color Pink;
+	Color red;
+	Color green;
+	Color blue;
+	Color darkRed;
+	Color darkGreen;
+	Color darkBlue;
+	Color Purple;
+};
+class Palette_BG {
+public:
+	Color day[CORNERS];
+	Color night[CORNERS];
+	Color dark_night[CORNERS];
+	Color overcast[CORNERS];
+	Palette_BG();
+};
 class Background {
 public:
 	Shape body;
 	Color color[4];
+	bool transition_done[4];
 	void render();
 };
 class Level {
 public:
+	Background background;
+	Palette_BG palette;
 	Player player[MAX_PLAYER];
 	Platform platform[MAX_PLATFORM];
-	Background background;
-	Level() {}
 };
 class Game;
 class Field_Level : public Level {
 public:
-	void render();
-	void handler();
 	Shape sun;
 	Cloud clouds[MAX_CLOUD];
 	Ball player1;
 	Boxy player2;
+	void render();
+	void handler();
 	Field_Level();
 };
 class Night_Level : public Level {
 public:
-	GLfloat w, h;
-	GLfloat starOffset[MAX_STAR];
 	Star stars[MAX_STAR];
 	Shape moon;
-	void render();
-	void handler();
 	Ball player1;
 	Boxy player2;
+	void render();
+	void handler();
 	Night_Level();
+};
+class Time_Level : public Level {
+public:
+	bool change;
+	TOD time_of_day;
+	Shape sun;
+	Shape moon;
+	Star stars[MAX_STAR]; //change opacity during day
+	Cloud clouds[MAX_CLOUD];
+	Ball player1;
+	Boxy player2;
+	void render();
+	void handler();
+	void transition_to(Color *clr);
+	Time_Level();
 };
 class Image {
 public:
 	char* filename;
-
 	GLfloat w, h;
 	GLfloat ratio;
 	Shape box;
-
-	//======
 	ILuint imageID;
 	GLuint textureID;
 	ILboolean success;
 	ILenum error;
 	ILinfo ImageInfo;
 	void loadImg();
-	//======
-
 	void render();
 };
 class SelectImage : public Image {
@@ -200,26 +234,94 @@ public:
 	Image level1;
 	Image level2;
 	void set_attributes();
-	void set_attributesb();
 };
 class Resolution {
 public:
 	int width, height;
 	GLfloat ratio;
 };
+class Initialize {
+public:
+	Initialize();
+};
+class pImage {
+public:
+	Shape box;
+	Ppmimage *img;
+	GLuint sil;
+	GLuint texture;
+	GLuint w, h;
+	GLfloat ratio;
+	char* filename;
+	void texture_map();
+	void render();
+	~pImage();
+};
+class pSelectImage : public pImage {
+public:
+	//_s flag designates selected icon
+	pImage selected;
+};
+class pImageSet {
+public:
+	//absence of _s flag designates unselected icon
+	pImage title;
+	pImage pill;
+	pSelectImage play;
+	pSelectImage options;
+	pSelectImage exit;
+	pSelectImage resume;
+	pSelectImage quit;
+	pImage level1;
+	pImage level2;
+	void set_attributes();
+};
+class sImage {
+public:
+	Shape box;
+	char *filename;
+	GLint w, h;
+	GLuint texture;
+	void texture_map();
+	void render();
+};
+class sSelectImage {
+public:
+	//_s flag designates selected icon
+	sImage unselected;
+	sImage selected;
+};
+class sImageSet {
+public:
+	//absence of _s flag designates unselected icon
+	sImage title;
+	sImage pill;
+	sSelectImage play;
+	sSelectImage options;
+	sSelectImage exit;
+	sSelectImage resume;
+	sSelectImage quit;
+	sImage level1;
+	sImage level2;
+	void set_attributes();
+};
 class Game {
 public:
 	void game_inita();
 	void game_initb();
 	void game_details();
+	Initialize init;
 	MainMenu mainMenu;
-	Colors palette;
+	Palette_Character palette;
 	Resolution monitor;
 	Resolution win;
 	State render;
 	GLFWwindow *window;
 	ImageSet icons;
+	pImageSet picons;
+	sImageSet sicons;
 	Field_Level level1;
 	Night_Level level2;
+	Time_Level level3;
 	Game();
 };
