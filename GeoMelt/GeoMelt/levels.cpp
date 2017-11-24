@@ -468,31 +468,34 @@ void Time_Level::render()
 //changes color of background by factor of 1 each frame
 void Time_Level::transition_to(Color *clr)
 {
+	//Transition from bg to clr
+	Color *bg;
+
 	//Adjust Color of Corners
 	for (int i = 0; i < 4; i++)
 	{
+		bg = &background.color[i];
+
 		//Update RED
-		if (background.color[i].r < clr[i].r)
-			background.color[i].r++;
-		else if (background.color[i].r > clr[i].r)
-			background.color[i].r--;
+		if (bg->r < clr[i].r)
+			bg->r += TRANSITION_RATE_TOD;
+		else if (bg->r > clr[i].r)
+			bg->r -= TRANSITION_RATE_TOD;
 
 		//Update GREEN
-		if (background.color[i].g < clr[i].g)
-			background.color[i].g++;
-		else if (background.color[i].g > clr[i].g)
-			background.color[i].g--;
+		if (bg->g < clr[i].g)
+			bg->g += TRANSITION_RATE_TOD;
+		else if (bg->g > clr[i].g)
+			bg->g -= TRANSITION_RATE_TOD;
 
 		//Update BLUE
-		if (background.color[i].b < clr[i].b)
-			background.color[i].b++; 
-		else if (background.color[i].b > clr[i].b)
-			background.color[i].b--;
+		if (bg->b < clr[i].b)
+			bg->b += TRANSITION_RATE_TOD;
+		else if (bg->b > clr[i].b)
+			bg->b -= TRANSITION_RATE_TOD;
 
 		//If all corners are done updating
-		if (background.color[i].r == clr[i].r 
-			&& background.color[i].g == clr[i].g
-			&& background.color[i].b == clr[i].b)
+		if (bg->r == clr[i].r && bg->g == clr[i].g && bg->b == clr[i].b)
 			background.transition_done[i] = true;
 	}
 

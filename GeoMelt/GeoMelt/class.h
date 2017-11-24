@@ -7,7 +7,7 @@
 #define GL_TEXTURE31 0x84DF
 #define GL_ACTIVE_TEXTURE 0x84E0
 */
-#define TRANSITION_RATE 1
+#define TRANSITION_RATE_TOD 0.25
 #define MAX_PLAYER 4
 #define MAX_PLATFORM 4
 #define MAX_STAR 40 
@@ -36,7 +36,7 @@ inline TOD operator++(TOD &eDOW, int)
 
 class Color {
 public:
-	int r, g, b;
+	float r, g, b;
 };
 class Vec {
 public:
