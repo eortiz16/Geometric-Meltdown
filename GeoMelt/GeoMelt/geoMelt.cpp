@@ -18,34 +18,35 @@ Game::Game()
 	//sicons.set_attributes();
 	mainMenu.build_main_menu();
 	*/
-	game_initb();
+
+	//Render FIELD as Default 
 	render = FIELD;
+	level1.build_level();
+	level2.build_level();
+	level3.build_level();
+
+	//Display Resolution
 	game_details();
 }
 
 void Game::game_details()
 {
-	cout << "Monitor Resolution: " << game.monitor.width << "x"
-		<< game.monitor.height << endl;
-	cout << "Window Resolution: " << game.win.width << "x"
-		<< game.win.height << endl;
+	cout << "Monitor Resolution: " << monitor.width << "x" << monitor.height << endl;
+	cout << "Window Resolution: " << win.width << "x" << win.height << endl;
 }
 
 Initialize::Initialize()
 {
-	game.game_inita();
+	game.game_init();
 }
 
-void Game::game_inita()
+void Game::game_init()
 {
 	const GLFWvidmode * scrn;
 	//Error Handling - If GLFW Libraries Not Present
 	glfwSetErrorCallback(error_callback);
 	if (!glfwInit())
-	{
-		game.~Game();
 		exit(EXIT_FAILURE);
-	}
 
 	//Create GLFW Window
 	scrn = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -63,10 +64,7 @@ void Game::game_inita()
 		win.height = HDY;
 		win.ratio = (GLfloat)win.width / (GLfloat)win.height;
 	}
-}
-
-void Game::game_initb()
-{
+	
 	window = glfwCreateWindow(win.width, win.height, "Geometric Meltdown", NULL, NULL);
 
 	//Error Handling - If Window is Not Created

@@ -1,12 +1,8 @@
 #include "headers.h"
 #include "ppm.h"
 #pragma once
-/*
-#define GL_TEXTURE29 0x84DD
-#define GL_TEXTURE30 0x84DE
-#define GL_TEXTURE31 0x84DF
-#define GL_ACTIVE_TEXTURE 0x84E0
-*/
+
+#define TOD_CARDINAL 6 //update with cardinality of TOD
 #define TRANSITION_RATE_TOD 0.25
 #define MAX_PLAYER 4
 #define MAX_PLATFORM 4
@@ -23,14 +19,15 @@
 #define TRI_NUM 50
 #define	HDX 1920
 #define HDY 1080
+
 enum State {MAIN, PAUSE, LEVELSEL, CHARSEL, FIELD, NIGHT, TIME, DISCO, POLLUTION};
 enum Direction {LEFT, RIGHT};
-enum TOD { DAY, OVERCA, NITE, DNITE };
+enum TOD { DAY, AFTERNOON, EVENING, NITE, DNITE, MORNING };
 
 inline TOD operator++(TOD &eDOW, int)
 {
 	const int i = static_cast<int>(eDOW);
-	eDOW = static_cast<TOD>((i + 1) % 4);
+	eDOW = static_cast<TOD>((i + 1) % TOD_CARDINAL);
 	return (TOD)0;
 }
 
@@ -146,8 +143,11 @@ public:
 class Palette_BG {
 public:
 	Color day[CORNERS];
+	Color afternoon[CORNERS];
+	Color evening[CORNERS];
 	Color night[CORNERS];
 	Color dark_night[CORNERS];
+	Color morning[CORNERS];
 	Color overcast[CORNERS];
 	Palette_BG();
 };
@@ -174,7 +174,7 @@ public:
 	Boxy player2;
 	void render();
 	void handler();
-	Field_Level();
+	void build_level();
 };
 class Night_Level : public Level {
 public:
@@ -184,7 +184,7 @@ public:
 	Boxy player2;
 	void render();
 	void handler();
-	Night_Level();
+	void build_level();
 };
 class Time_Level : public Level {
 public:
@@ -199,7 +199,7 @@ public:
 	void render();
 	void handler();
 	void transition_to(Color *clr);
-	Time_Level();
+	void build_level();
 };
 class Image {
 public:
@@ -307,8 +307,7 @@ public:
 };
 class Game {
 public:
-	void game_inita();
-	void game_initb();
+	void game_init();
 	void game_details();
 	Initialize init;
 	MainMenu mainMenu;
