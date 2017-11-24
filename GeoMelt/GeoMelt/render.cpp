@@ -5,7 +5,7 @@ void Shape::render_circle()
 {
 	GLfloat arg1, arg2;
 
-	glColor3ub(color.r, color.g, color.b);
+	glColor3ub((GLubyte)color.r, (GLubyte)color.g, (GLubyte)color.b);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBegin(GL_TRIANGLE_FAN);
@@ -21,7 +21,7 @@ void Shape::render_circle()
 
 void Shape::render_quad()
 {
-	glColor3ub(color.r, color.g, color.b);
+	glColor3ub((GLubyte)color.r, (GLubyte)color.g, (GLubyte)color.b);
 	glBegin(GL_QUADS);
 	glVertex2f(center.x - width / 2, center.y - height / 2);
 	glVertex2f(center.x - width / 2, center.y + height / 2);
@@ -41,7 +41,7 @@ Line::Line()
 void Line::render_line()
 {
 	glLineWidth(width);
-	glColor3i(color.r, color.g, color.b);
+	glColor3i((GLubyte)color.r, (GLubyte)color.g, (GLubyte)color.b);
 	glBegin(GL_LINES);
 	glVertex2f(from.x, from.y);
 	glVertex2f(to.x, to.y);
@@ -50,16 +50,18 @@ void Line::render_line()
 
 void Background::render()
 {
-	glColor3ub(color[0].r, color[0].g, color[0].b);
+	glEnable(GL_BLEND);
+	glColor3ub((GLubyte)color[0].r, (GLubyte)color[0].g, (GLubyte)color[0].b);
 	glBegin(GL_QUADS);
 	glVertex2f(body.center.x - body.width / 2, body.center.y - body.height / 2);
-	glColor3ub(color[1].r, color[1].g, color[1].b);
+	glColor3ub((GLubyte)color[1].r, (GLubyte)color[1].g, (GLubyte)color[1].b);
 	glVertex2f(body.center.x - body.width / 2, body.center.y + body.height / 2);
-	glColor3ub(color[2].r, color[2].g, color[2].b);
+	glColor3ub((GLubyte)color[2].r, (GLubyte)color[2].g, (GLubyte)color[2].b);
 	glVertex2f(body.center.x + body.width / 2, body.center.y + body.height / 2);
-	glColor3ub(color[3].r, color[3].g, color[3].b);
+	glColor3ub((GLubyte)color[3].r, (GLubyte)color[3].g, (GLubyte)color[3].b);
 	glVertex2f(body.center.x + body.width / 2, body.center.y - body.height / 2);
 	glEnd();
+	glDisable(GL_BLEND);
 }
 
 void Shape::stroke_assignment()

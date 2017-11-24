@@ -3,7 +3,7 @@
 
 extern Game game;
 
-Field_Level::Field_Level()
+void Field_Level::build_level()
 {
 	srand((unsigned int)time(NULL));
 	
@@ -127,7 +127,7 @@ void Cloud::handler()
 
 void Cloud::set_cloud_group()
 {
-	int clr = rand() % 55 + 200;
+	float clr = (float)(rand() % 55 + 200);
 	GLfloat size = (GLfloat)(rand() % CLOUD_RANGE) + CLOUD_START;
 	GLfloat level = (GLfloat)(rand() % (2 * game.win.height) + (-game.win.height / 2));
 
@@ -170,7 +170,7 @@ void Cloud::physics()
 			body[i].center.x += speed;
 }
 
-Night_Level::Night_Level()
+void Night_Level::build_level()
 {
 	//Assigning Window Dimensions
 	GLfloat w = (GLfloat)game.win.width;
@@ -301,18 +301,18 @@ void Star::change_color()
 	if (rand() % 2 == 0) 
 	{ 
 		body.color.r = 255; 
-		body.color.g = rand() % (255 - 0);
+		body.color.g = (float) (rand() % (255 - 0));
 		body.color.b = 215;
 	}
 	else 
 	{ 
-		body.color.r = rand() % (255 - 0);
+		body.color.r = (float)(rand() % (255 - 0));
 		body.color.g = 215;
 		body.color.b = 255;
 	}
 }
 
-Time_Level::Time_Level()
+void Time_Level::build_level()
 {
 	srand((unsigned int)time(NULL));
 
@@ -422,15 +422,21 @@ void Time_Level::handler()
 		switch (time_of_day)
 		{
 		case DAY:
-			transition_to(palette.overcast);
+			transition_to(palette.afternoon);
 			break;
-		case OVERCA:
+		case AFTERNOON:
+			transition_to(palette.evening);
+			break;
+		case EVENING:
 			transition_to(palette.night);
 			break;
 		case NITE:
 			transition_to(palette.dark_night);
 			break;
 		case DNITE:
+			transition_to(palette.morning);
+			break;
+		case MORNING:
 			transition_to(palette.day);
 			break;
 		}
@@ -447,9 +453,9 @@ void Time_Level::handler()
 void Time_Level::render()
 {
 	background.render();
-	if (time_of_day == DAY)
+	if (time_of_day == DAY || time_of_day == AFTERNOON)
 		sun.render_circle();
-	else if (time_of_day != DAY && time_of_day != OVERCA)
+	else if (time_of_day != DAY && time_of_day != AFTERNOON)
 	{
 		for (int i = 0; i < MAX_STAR; i++)
 		{
@@ -514,6 +520,8 @@ void Time_Level::transition_to(Color *clr)
 
 Palette_BG::Palette_BG()
 {
+	enum TOD { DAY, AFTERNOON, EVENING, NITE, DNITE, MORNING };
+
 	for (int i = 0; i < CORNERS; i++)
 	{
 		//BOTTOM
@@ -521,12 +529,27 @@ Palette_BG::Palette_BG()
 			day[i].r = 0;
 			day[i].g = 155;
 			day[i].b = 255;
+
+			afternoon[i].r = 20;
+			afternoon[i].g = 135;
+			afternoon[i].b = 255;
+
+			evening[i].r = 100;
+			evening[i].g = 65;
+			evening[i].b = 255;
+
 			night[i].r = 70;
 			night[i].g = 50;
 			night[i].b = 120;
+
 			dark_night[i].r = 10;
 			dark_night[i].g = 15;
 			dark_night[i].b = 60;
+
+			morning[i].r = 100;
+			morning[i].g = 75;
+			morning[i].b = 202;
+
 			overcast[i].r = 175;
 			overcast[i].g = 175;
 			overcast[i].b = 175;
@@ -536,12 +559,27 @@ Palette_BG::Palette_BG()
 			day[i].r = 0;
 			day[i].g = 60;
 			day[i].b = 255;
-			night[i].r = 0;
+
+			afternoon[i].r = 50;
+			afternoon[i].g = 125;
+			afternoon[i].b = 255;
+
+			evening[i].r = 0;
+			evening[i].g = 50;
+			evening[i].b = 175;
+
+			night[i].r = 25;
 			night[i].g = 25;
-			night[i].b = 120;
+			night[i].b = 75;
+
 			dark_night[i].r = 10;
 			dark_night[i].g = 10;
-			dark_night[i].b = 10;
+			dark_night[i].b = 20;
+
+			morning[i].r = 10;
+			morning[i].g = 10;
+			morning[i].b = 50;
+
 			overcast[i].r = 215;
 			overcast[i].g = 215;
 			overcast[i].b = 215;
