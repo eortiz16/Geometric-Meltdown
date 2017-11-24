@@ -12,13 +12,13 @@ void Player::update_reflection_x()
 	GLfloat NewMax, NewMin, offset;
 
 	//if character is in the middle of the level
-	if (body.center.x == (GLfloat)game.win.width / 2)
-		reflection.center.x = (GLfloat)game.win.width / 2;
-	else if (body.center.x < game.win.width / 2)
+	if (body.center.x == (GLfloat)game.window.width / 2)
+		reflection.center.x = (GLfloat)game.window.width / 2;
+	else if (body.center.x < game.window.width / 2)
 	{
 		OldValue = body.center.x;
 		OldMin = 0;
-		OldMax = (GLfloat)game.win.width / 2;
+		OldMax = (GLfloat)game.window.width / 2;
 		NewMin = 0;
 		NewMax = sqrt(body.radius - 10);
 		offset = (OldValue - OldMin) * (NewMax - NewMin);
@@ -31,8 +31,8 @@ void Player::update_reflection_x()
 	else
 	{
 		OldValue = body.center.x;
-		OldMin = (GLfloat)game.win.width / 2;
-		OldMax = (GLfloat)game.win.width;
+		OldMin = (GLfloat)game.window.width / 2;
+		OldMax = (GLfloat)game.window.width;
 		NewMin = 0;
 		NewMax = sqrt(body.center.x);
 		offset = (OldValue - OldMin) * (NewMax - NewMin);

@@ -8,8 +8,8 @@ void Field_Level::build_level()
 	srand((unsigned int)time(NULL));
 	
 	//Assigning Window Dimensions
-	GLfloat w = (GLfloat)game.win.width;
-	GLfloat h = (GLfloat)game.win.height;
+	GLfloat w = (GLfloat)game.window.width;
+	GLfloat h = (GLfloat)game.window.height;
 
 	//Background Color Assignment
 	background.body.center.x = w / 2;
@@ -76,9 +76,9 @@ void Field_Level::build_level()
 
 	//Player Position
 	player1.body.center.x = 300;
-	player1.body.center.y = (GLfloat)game.win.height;
+	player1.body.center.y = (GLfloat)game.window.height;
 	player2.body.center.x = 0;
-	player2.body.center.y = (GLfloat)game.win.height / 2;
+	player2.body.center.y = (GLfloat)game.window.height / 2;
 }
 
 void Field_Level::handler()
@@ -115,9 +115,9 @@ void Cloud::handler()
 	arg2 = body[1].center.x - (body[1].radius * 3);
 
 	//Reset if Last Cloud Offscreen
-	if (arg1 < -game.win.width / 2 && direction == LEFT)
+	if (arg1 < -game.window.width / 2 && direction == LEFT)
 		set_cloud_group();
-	else if (arg2 > 1.5 *game.win.width && direction == RIGHT)
+	else if (arg2 > 1.5 *game.window.width && direction == RIGHT)
 		set_cloud_group();
 
 	//Conduct Cloud Physics
@@ -129,7 +129,7 @@ void Cloud::set_cloud_group()
 {
 	float clr = (float)(rand() % 55 + 200);
 	GLfloat size = (GLfloat)(rand() % CLOUD_RANGE) + CLOUD_START;
-	GLfloat level = (GLfloat)(rand() % (2 * game.win.height) + (-game.win.height / 2));
+	GLfloat level = (GLfloat)(rand() % (2 * game.window.height) + (-game.window.height / 2));
 
 	//For All Shapes Assign Color, Size, Y Coordinate
 	for (int i = 0; i < CLOUD_GROUP; i++)
@@ -142,9 +142,9 @@ void Cloud::set_cloud_group()
 	}
 
 	if (direction == LEFT) //Starting on Right
-		body[1].center.x = (GLfloat)((game.win.width * 1.5) + body[0].radius);
+		body[1].center.x = (GLfloat)((game.window.width * 1.5) + body[0].radius);
 	else //Starting on Left
-		body[1].center.x = (-game.win.width/2) - body[0].radius;
+		body[1].center.x = (-game.window.width/2) - body[0].radius;
 
 	body[0].center.x = body[1].center.x - body[1].radius;
 	body[2].center.x = body[1].center.x + body[1].radius;
@@ -173,8 +173,8 @@ void Cloud::physics()
 void Night_Level::build_level()
 {
 	//Assigning Window Dimensions
-	GLfloat w = (GLfloat)game.win.width;
-	GLfloat h = (GLfloat)game.win.height;
+	GLfloat w = (GLfloat)game.window.width;
+	GLfloat h = (GLfloat)game.window.height;
 
 	//Background Attributes
 	background.body.center.x = w / 2;
@@ -249,9 +249,9 @@ void Night_Level::build_level()
 
 	//Player Position
 	player1.body.center.x = 300;
-	player1.body.center.y = (GLfloat)game.win.height;
+	player1.body.center.y = (GLfloat)game.window.height;
 	player2.body.center.x = 0;
-	player2.body.center.y = (GLfloat)game.win.height / 2;
+	player2.body.center.y = (GLfloat)game.window.height / 2;
 }
 
 void Night_Level::handler()
@@ -280,8 +280,8 @@ void Night_Level::render()
 
 void Star::compute_coordinates(int count)
 {
-	int w = 2 * game.win.width;
-	int h = 2 * game.win.height;
+	int w = 2 * game.window.width;
+	int h = 2 * game.window.height;
 	int r1 = rand() % 400 - 200;
 	int r2 = rand() % 400 - 200;
 	float horizonalPartition = (float)w / 8;
@@ -317,8 +317,8 @@ void Time_Level::build_level()
 	srand((unsigned int)time(NULL));
 
 	//Assigning Window Dimensions
-	GLfloat w = (GLfloat)game.win.width;
-	GLfloat h = (GLfloat)game.win.height;
+	GLfloat w = (GLfloat)game.window.width;
+	GLfloat h = (GLfloat)game.window.height;
 
 	//Background Attribute Assignment
 	time_of_day = DAY;
@@ -411,9 +411,9 @@ void Time_Level::build_level()
 
 		//Player Position
 		player1.body.center.x = 300;
-		player1.body.center.y = (GLfloat)game.win.height;
+		player1.body.center.y = (GLfloat)game.window.height;
 		player2.body.center.x = 0;
-		player2.body.center.y = (GLfloat)game.win.height / 2;
+		player2.body.center.y = (GLfloat)game.window.height / 2;
 }
 
 void Time_Level::handler()

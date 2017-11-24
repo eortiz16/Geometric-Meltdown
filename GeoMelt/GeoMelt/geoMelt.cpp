@@ -5,67 +5,68 @@ Game game;
 
 Game::Game()
 {	
-	/*
+	
 	//DevIL Init
-	ilutRenderer(ILUT_OPENGL);
-	ilInit();
-	iluInit();
-	ilutInit();
-	ilutRenderer(ILUT_OPENGL);
+	//ilutRenderer(ILUT_OPENGL);
+	//ilInit();
+	//iluInit();
+	//ilutInit();
+	//ilutRenderer(ILUT_OPENGL);
 
 	//picons.set_attributes();
 	//icons.set_attributes();
 	//sicons.set_attributes();
-	mainMenu.build_main_menu();
-	*/
+	//mainMenu.build_main_menu();
+	
 
-	//Render FIELD as Default 
+	window.width = HDX;
+	window.height = HDY;
 	render = FIELD;
 	level1.build_level();
 	level2.build_level();
 	level3.build_level();
-
-	//Display Resolution
-	game_details();
 }
 
-void Game::game_details()
+void Game::display_details()
 {
-	cout << "Monitor Resolution: " << monitor.width << "x" << monitor.height << endl;
-	cout << "Window Resolution: " << win.width << "x" << win.height << endl;
+	cout << "Monitor Resolution:	" << monitor->width << "x" << monitor->height << endl;
+	cout << "Window Resolution:	" << window.width << "x" << window.height << endl;
 }
 
-Initialize::Initialize()
+void Game::set_resolution()
 {
-	game.game_init();
+	if (monitor->width < HDX || monitor->width < HDY)
+	{
+		window.width = monitor->width;
+		window.height = monitor->width;
+		window.ratio = (GLfloat)window.width / (GLfloat)window.height;
+	}
+	else
+	{
+		window.width = HDX;
+		window.height = HDY;
+		window.ratio = (GLfloat)HDY / (GLfloat)HDX;
+	}
 }
 
-void Game::game_init()
+int main(void)
 {
-	const GLFWvidmode * scrn;
+	//Seed Random Number Generation
+	srand((unsigned int)time(0));
+
+	GLFWwindow *window;
+
 	//Error Handling - If GLFW Libraries Not Present
 	glfwSetErrorCallback(error_callback);
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
 
+	game.monitor = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	game.set_resolution();
+	game.display_details();
+
 	//Create GLFW Window
-	scrn = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	monitor.width = scrn->width;
-	monitor.height = scrn->height;
-	if (scrn->width < HDX || scrn->width < HDY)
-	{
-		win.width = scrn->width;
-		win.height = scrn->width;
-		win.ratio = (GLfloat)win.width / (GLfloat)win.height;
-	}
-	else
-	{
-		win.width = HDX;
-		win.height = HDY;
-		win.ratio = (GLfloat)win.width / (GLfloat)win.height;
-	}
-	
-	window = glfwCreateWindow(win.width, win.height, "Geometric Meltdown", NULL, NULL);
+	window = glfwCreateWindow(game.window.width, game.window.height, "Geometric Meltdown", NULL, NULL);
 
 	//Error Handling - If Window is Not Created
 	if (!window)
@@ -74,26 +75,20 @@ void Game::game_init()
 		exit(EXIT_FAILURE);
 	}
 
-	glfwMakeContextCurrent(game.window);
-	glfwSetKeyCallback(game.window, key_callback);
-}
-
-int main(void)
-{
-	//Seed Random Number Generation
-	srand((unsigned int)time(0));
+	glfwMakeContextCurrent(window);
+	glfwSetKeyCallback(window, key_callback);
 	
 	//Whlie Window is Open
-	while (!glfwWindowShouldClose(game.window))
+	while (!glfwWindowShouldClose(window))
 	{
-		glfwGetWindowSize(game.window, &game.win.width, &game.win.height);
-		glfwGetFramebufferSize(game.window, &game.win.width, &game.win.height);
-		glViewport(0, 0, game.win.width, game.win.height);
+		glfwGetWindowSize(window, &game.window.width, &game.window.height);
+		glfwGetFramebufferSize(window, &game.window.width, &game.window.height);
+		glViewport(0, 0, game.window.width, game.window.height);
 		glMatrixMode(GL_PROJECTION); glLoadIdentity();
 		glMatrixMode(GL_MODELVIEW); glLoadIdentity();
 		glEnable(GL_TEXTURE_2D);
-		glOrtho(-game.win.width / 2, 1.5 * game.win.width,
-			-game.win.height / 2, 1.5 * game.win.height, -1, 1);
+		glOrtho(-game.window.width / 2, 1.5 * game.window.width,
+			-game.window.height / 2, 1.5 * game.window.height, -1, 1);
 		glClearColor(0, 0, 0, 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		switch (game.render)
@@ -117,11 +112,11 @@ int main(void)
 				break;
 		}
 
-		glfwSwapBuffers(game.window);
+		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 	//Termination Procedure
-	glfwDestroyWindow(game.window);
+	glfwDestroyWindow(window);
 	glfwTerminate();
 	exit(EXIT_SUCCESS);
 	return 0;
@@ -183,15 +178,5 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 			break;
 		default: 
 			break;
-	}
-}
-
-void debug()
-{
-	char choice = 'n';
-	while (choice == 'n')
-	{
-		cout << "Continue? " << endl;
-		cin >> choice;
 	}
 }

@@ -116,7 +116,7 @@ public:
 class MainMenu : public Menu {
 public:
 	void handler();
-	void render();
+	//void render();
 	void build_main_menu();
 };
 class PauseMenu : public Menu {
@@ -240,10 +240,6 @@ public:
 	int width, height;
 	GLfloat ratio;
 };
-class Initialize {
-public:
-	Initialize();
-};
 class pImage {
 public:
 	Shape box;
@@ -287,13 +283,11 @@ public:
 };
 class sSelectImage {
 public:
-	//_s flag designates selected icon
 	sImage unselected;
 	sImage selected;
 };
 class sImageSet {
 public:
-	//absence of _s flag designates unselected icon
 	sImage title;
 	sImage pill;
 	sSelectImage play;
@@ -307,15 +301,13 @@ public:
 };
 class Game {
 public:
-	void game_init();
-	void game_details();
-	Initialize init;
+	void display_details();
+	void set_resolution();
+	const GLFWvidmode *monitor;
+	Resolution window;
 	MainMenu mainMenu;
 	Palette_Character palette;
-	Resolution monitor;
-	Resolution win;
 	State render;
-	GLFWwindow *window;
 	ImageSet icons;
 	pImageSet picons;
 	sImageSet sicons;
