@@ -17,7 +17,6 @@ Game::Game()
 	//icons.set_attributes();
 	//sicons.set_attributes();
 	//mainMenu.build_main_menu();
-	
 
 	window.width = HDX;
 	window.height = HDY;
@@ -77,19 +76,25 @@ int main(void)
 
 	glfwMakeContextCurrent(window);
 	glfwSetKeyCallback(window, key_callback);
+
 	
 	//Whlie Window is Open
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwGetWindowSize(window, &game.window.width, &game.window.height);
 		glfwGetFramebufferSize(window, &game.window.width, &game.window.height);
+		glShadeModel(GL_SMOOTH);
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CCW);
+		glClearColor(0, 0, 0, 0);
 		glViewport(0, 0, game.window.width, game.window.height);
 		glMatrixMode(GL_PROJECTION); glLoadIdentity();
 		glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-		glEnable(GL_TEXTURE_2D);
-		glOrtho(-game.window.width / 2, 1.5 * game.window.width,
-			-game.window.height / 2, 1.5 * game.window.height, -1, 1);
-		glClearColor(0, 0, 0, 0);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+		glDisable(GL_TEXTURE_2D);
+		glOrtho(-game.window.width, game.window.width,
+			-game.window.height, game.window.height, -1, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 		switch (game.render)
 		{
@@ -160,7 +165,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 			if (action == GLFW_PRESS)
 			{
 				if (game.render == TIME)
-					game.level3.change = true;
+					game.level3.transition = true;
 			}
 		case GLFW_KEY_LEFT:
 			if (action == GLFW_PRESS)

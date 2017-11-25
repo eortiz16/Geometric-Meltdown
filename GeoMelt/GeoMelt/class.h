@@ -15,6 +15,7 @@
 #define CLOUD_RANGE 200
 #define CORNERS 4
 #define rnd() (float)rand() / (float)RAND_MAX
+#define sm_rnd() (rand() - 0.5) / 255
 #define M_PI 3.14159265358979323846
 #define TRI_NUM 50
 #define	HDX 1920
@@ -33,7 +34,7 @@ inline TOD operator++(TOD &eDOW, int)
 
 class Color {
 public:
-	float r, g, b;
+	float r, g, b, alpha;
 };
 class Vec {
 public:
@@ -164,6 +165,7 @@ public:
 	Palette_BG palette;
 	Player player[MAX_PLAYER];
 	Platform platform[MAX_PLATFORM];
+	int alpha;
 };
 class Game;
 class Field_Level : public Level {
@@ -188,8 +190,8 @@ public:
 };
 class Time_Level : public Level {
 public:
-	bool change;
 	TOD time_of_day;
+	bool transition;
 	Shape sun;
 	Shape moon;
 	Star stars[MAX_STAR]; //change opacity during day

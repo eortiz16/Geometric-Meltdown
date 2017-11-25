@@ -50,18 +50,16 @@ void Line::render_line()
 
 void Background::render()
 {
-	glEnable(GL_BLEND);
-	glColor3ub((GLubyte)color[0].r, (GLubyte)color[0].g, (GLubyte)color[0].b);
 	glBegin(GL_QUADS);
+	glColor4ub((GLubyte)color[0].r, (GLubyte)color[0].g, (GLubyte)color[0].b, 255);
 	glVertex2f(body.center.x - body.width / 2, body.center.y - body.height / 2);
-	glColor3ub((GLubyte)color[1].r, (GLubyte)color[1].g, (GLubyte)color[1].b);
+	glColor4ub((GLubyte)color[1].r, (GLubyte)color[1].g, (GLubyte)color[1].b, 255);
 	glVertex2f(body.center.x - body.width / 2, body.center.y + body.height / 2);
-	glColor3ub((GLubyte)color[2].r, (GLubyte)color[2].g, (GLubyte)color[2].b);
+	glColor4ub((GLubyte)color[2].r, (GLubyte)color[2].g, (GLubyte)color[2].b, 255);
 	glVertex2f(body.center.x + body.width / 2, body.center.y + body.height / 2);
-	glColor3ub((GLubyte)color[3].r, (GLubyte)color[3].g, (GLubyte)color[3].b);
+	glColor4ub((GLubyte)color[3].r, (GLubyte)color[3].g, (GLubyte)color[3].b, 255);
 	glVertex2f(body.center.x + body.width / 2, body.center.y - body.height / 2);
-	glEnd();
-	glDisable(GL_BLEND);
+	glEnd();	
 }
 
 void Shape::stroke_assignment()
