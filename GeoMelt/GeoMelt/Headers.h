@@ -1,4 +1,5 @@
 #pragma once
+#include <SOIL/SOIL.h>
 #include <GL\glew.h>
 #include <GL\gl.h>
 #include <windows.h>
@@ -6,7 +7,6 @@
 #include <IL/il.h>
 #include <IL/ilu.h>
 #include <IL/ilut.h>
-#include <SOIL/SOIL.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

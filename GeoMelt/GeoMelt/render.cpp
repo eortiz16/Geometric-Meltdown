@@ -1,6 +1,8 @@
 #include "headers.h"
 #include "render.h"
 
+extern GLFWwindow *window;
+
 void Shape::render_circle()
 {
 	GLfloat arg1, arg2;
@@ -60,6 +62,7 @@ void Background::render()
 	glColor4ub((GLubyte)color[3].r, (GLubyte)color[3].g, (GLubyte)color[3].b, 255);
 	glVertex2f(body.center.x + body.width / 2, body.center.y - body.height / 2);
 	glEnd();	
+	glfwPollEvents();
 }
 
 void Shape::stroke_assignment()
@@ -83,4 +86,30 @@ void Shape::stroke_assignment()
 	stroke[3].from.y = center.y - height / 2;
 	stroke[3].to.x = center.x - width / 2;
 	stroke[3].to.y = center.y - height / 2;
+}
+
+void Game::render_triangle()
+{
+	float ratio;
+	int width, height;
+	glfwGetFramebufferSize(::window, &width, &height);
+	ratio = width / (float)height;
+	glViewport(0, 0, width, height);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glRotatef((float)glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
+	glBegin(GL_TRIANGLES);
+	glColor3f(1.f, 0.f, 0.f);
+	glVertex3f(-0.6f, -0.4f, 0.f);
+	glColor3f(0.f, 1.f, 0.f);
+	glVertex3f(0.6f, -0.4f, 0.f);
+	glColor3f(0.f, 0.f, 1.f);
+	glVertex3f(0.f, 0.6f, 0.f);
+	glEnd();
+	//glfwSwapBuffers(::window); //global
+	glfwPollEvents();
 }

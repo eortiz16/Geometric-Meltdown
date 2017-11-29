@@ -203,6 +203,7 @@ public:
 	void transition_to(Color *clr);
 	void build_level();
 };
+//
 class Image {
 public:
 	char* filename;
@@ -214,14 +215,15 @@ public:
 	ILboolean success;
 	ILenum error;
 	ILinfo ImageInfo;
-	void loadImg();
+	void texture_map();
 	void render();
 };
 class SelectImage : public Image {
 public:
 	//_s flag designates selected icon
-	bool selected;
-	Image img_s;
+	bool chosen;
+	Image selected;
+	Image unselected;
 };
 class ImageSet {
 public:
@@ -242,6 +244,7 @@ public:
 	int width, height;
 	GLfloat ratio;
 };
+//
 class pImage {
 public:
 	Shape box;
@@ -274,6 +277,7 @@ public:
 	pImage level2;
 	void set_attributes();
 };
+//
 class sImage {
 public:
 	Shape box;
@@ -301,6 +305,7 @@ public:
 	sImage level2;
 	void set_attributes();
 };
+//
 class Game {
 public:
 	void display_details();
@@ -316,5 +321,6 @@ public:
 	Field_Level level1;
 	Night_Level level2;
 	Time_Level level3;
+	void render_triangle();
 	Game();
 };

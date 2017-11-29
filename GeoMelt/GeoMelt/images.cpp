@@ -5,36 +5,36 @@ void ImageSet::set_attributes()
 {
 	title.filename = "./resources/jpg/title.jpg";
 	pill.filename = "./resources/jpg/pill.jpg";
-	play.filename = "./resources/jpg/play_u.jpg";
-	play.img_s.filename = "./resources/jpg/play_s.jpg";
-	options.filename = "./resources/jpg/options_u.jpg";
-	options.img_s.filename = "./resources/jpg/options_s.jpg";
-	exit.filename = "./resources/jpg/exit_u.jpg";
-	exit.img_s.filename = "./resources/jpg/exit_s.jpg";
-	resume.filename = "./resources/jpg/resume_u.jpg";
-	resume.img_s.filename = "./resources/jpg/resume_s.jpg";
-	quit.filename = "./resources/jpg/quit_u.jpg";
-	quit.img_s.filename = "./resources/jpg/quit_s.jpg";
+	play.unselected.filename = "./resources/jpg/play_u.jpg";
+	play.selected.filename = "./resources/jpg/play_s.jpg";
+	options.unselected.filename = "./resources/jpg/options_u.jpg";
+	options.selected.filename = "./resources/jpg/options_s.jpg";
+	exit.unselected.filename = "./resources/jpg/exit_u.jpg";
+	exit.selected.filename = "./resources/jpg/exit_s.jpg";
+	resume.unselected.filename = "./resources/jpg/resume_u.jpg";
+	resume.selected.filename = "./resources/jpg/resume_s.jpg";
+	quit.unselected.filename = "./resources/jpg/quit_u.jpg";
+	quit.selected.filename = "./resources/jpg/quit_s.jpg";
 	level1.filename = "./resources/jpg/level1.jpg";
 	level2.filename = "./resources/jpg/level2.jpg";
 
-	title.loadImg();
-	pill.loadImg();
-	play.loadImg();
-	play.img_s.loadImg();
-	options.loadImg();
-	options.img_s.loadImg();
-	exit.loadImg();
-	exit.img_s.loadImg();
-	resume.loadImg();
-	resume.img_s.loadImg();
-	quit.loadImg();
-	quit.img_s.loadImg();
-	level1.loadImg();
-	level2.loadImg();
+	title.texture_map();
+	pill.texture_map();
+	play.unselected.texture_map();
+	play.selected.texture_map();
+	options.unselected.texture_map();
+	options.selected.texture_map();
+	exit.unselected.texture_map();
+	exit.selected.texture_map();
+	resume.unselected.texture_map();
+	resume.selected.texture_map();
+	quit.unselected.texture_map();
+	quit.unselected.texture_map();
+	level1.texture_map();
+	level2.texture_map();
 }
 
-void Image::loadImg()
+void Image::texture_map()
 {
 	ilGenImages(1, &imageID);
 	ilBindImage(imageID);
@@ -201,24 +201,11 @@ void sImageSet::set_attributes()
 
 void sImage::texture_map()
 {
-	glGenTextures(1, &texture);
-
-	//glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, this->texture);
-
-	unsigned char * img = SOIL_load_image(this->filename, &this->w, &this->h, NULL, 0);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->w, this->h, 0, GL_RGB, GL_UNSIGNED_BYTE, img);
-	SOIL_free_image_data(img);
-
-	cout << this->filename << " Attributes" << endl;
-	cout << "width:		" << this->w << endl;
-	cout << "height:		" << this->h << endl;
-	cout << "Texture:	" << this->texture << endl;
-
+	//texture = SOIL_load_OGL_texture(filename, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
+	if (texture == 0) { "ERROR"; };
+	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
 //Render==========================================================================
@@ -229,6 +216,7 @@ void Image::render()
 	GLfloat C = this->box.center.y + this->box.height / 2;
 	GLfloat D = this->box.center.x + this->box.width / 2;
 
+	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, this->textureID);
 	glColor4ub(255, 255, 255, 255);
 	glBegin(GL_QUADS);
@@ -237,7 +225,7 @@ void Image::render()
 	glTexCoord2f(1.0f, 0.0f); glVertex2f(D, C);
 	glTexCoord2f(1.0f, 1.0f); glVertex2f(D, B);
 	glEnd();
-
+	glDisable(GL_TEXTURE_2D);
 }
 
 void pImage::render()
@@ -247,6 +235,7 @@ void pImage::render()
 	GLfloat C = this->box.center.y + this->box.height / 2;
 	GLfloat D = this->box.center.x + this->box.width / 2;
 
+	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, this->texture);
 	glColor4ub(255, 255, 255, 255);
 	glBegin(GL_QUADS);
@@ -255,6 +244,7 @@ void pImage::render()
 	glTexCoord2f(1.0f, 0.0f); glVertex2f(D, C);
 	glTexCoord2f(1.0f, 1.0f); glVertex2f(D, B);
 	glEnd();
+	glDisable(GL_TEXTURE_2D);
 }
 
 void sImage::render()
@@ -264,6 +254,7 @@ void sImage::render()
 	GLfloat C = this->box.center.y + this->box.height / 2;
 	GLfloat D = this->box.center.x + this->box.width / 2;
 
+	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, this->texture);
 	glColor4ub(255, 255, 255, 255);
 	glBegin(GL_QUADS);
@@ -272,4 +263,5 @@ void sImage::render()
 	glTexCoord2f(1.0f, 0.0f); glVertex2f(D, C);
 	glTexCoord2f(1.0f, 1.0f); glVertex2f(D, B);
 	glEnd();
+	glDisable(GL_TEXTURE_2D);
 }

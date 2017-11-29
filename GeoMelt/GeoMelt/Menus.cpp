@@ -5,8 +5,8 @@ extern Game game;
 void MainMenu::build_main_menu()
 {
 	//DevIL below
-	game.icons.title.box.center.x = game.window.width;
-	game.icons.title.box.center.y = game.window.height;
+	game.icons.title.box.center.x = (GLfloat)game.window.width;
+	game.icons.title.box.center.y = (GLfloat)game.window.height;
 
 	game.icons.pill.box.center.x = -game.window.width/1.5f;
 	game.icons.pill.box.center.y = -game.window.height/1.5f;

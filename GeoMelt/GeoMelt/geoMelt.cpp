@@ -2,21 +2,22 @@
 #include "geoMelt.h"
 
 Game game;
+GLFWwindow *window;
 
 Game::Game()
 {	
 	
 	//DevIL Init
-	//ilutRenderer(ILUT_OPENGL);
-	//ilInit();
-	//iluInit();
-	//ilutInit();
-	//ilutRenderer(ILUT_OPENGL);
+	ilutRenderer(ILUT_OPENGL);
+	ilInit();
+	iluInit();
+	ilutInit();
+	ilutRenderer(ILUT_OPENGL);
 
 	//picons.set_attributes();
 	//icons.set_attributes();
-	//sicons.set_attributes();
-	//mainMenu.build_main_menu();
+	sicons.set_attributes();
+	mainMenu.build_main_menu();
 
 	window.width = HDX;
 	window.height = HDY;
@@ -53,7 +54,7 @@ int main(void)
 	//Seed Random Number Generation
 	srand((unsigned int)time(0));
 
-	GLFWwindow *window;
+	//GLFWwindow *window;
 
 	//Error Handling - If GLFW Libraries Not Present
 	glfwSetErrorCallback(error_callback);
