@@ -155,7 +155,7 @@ void Boxy::render()
 {
 	body.render_quad();
 
-	//Adjust Shadow
+	//Adjust Reflection
 	update_reflection_x();
 	reflection.render_quad();
 
