@@ -47,6 +47,8 @@ Ball::Ball()
 	//Default Character Values
 	JUMP_MAX = 4;
 	jumpCount = 0;
+	velocity.x = 0.0;
+	velocity.y = 0.0;
 	
 	//Default Player Dimensions
 	body.width = 100;
@@ -99,15 +101,26 @@ void Ball::render()
 		eye.center.x = body.center.x - body.radius/2 :
 		eye.center.x = body.center.x + body.radius/2 ;
 	eye.render_circle();
-	
 }
 
 void Ball::update_position()
 {
+	physics();
 	update_reflection_x();
 	reflection.center.y = body.center.y + sqrt(body.radius);
 	outline.center.x = body.center.x;
 	outline.center.y = body.center.y;
+}
+
+void Ball::physics()
+{
+	velocity.y -= 3*GRAVITY/4;
+	body.center.y += velocity.y;
+}
+
+void Ball::jump()
+{
+	(velocity.y < 0.0f) ? velocity.y *= -4 : velocity.y *= 2;
 }
 
 Boxy::Boxy()
@@ -115,6 +128,8 @@ Boxy::Boxy()
 	//Default Character Values
 	JUMP_MAX = 2;
 	jumpCount = 0;
+	velocity.x = 0.0;
+	velocity.y = 0.0;
 
 	//Default Player Dimensions
 	body.width = 100;
@@ -171,7 +186,22 @@ void Boxy::render()
 
 void Boxy::update_position()
 {
+	physics();
 	update_reflection_x();
 	reflection.center.y = body.center.y + sqrt(body.radius) * 2;
 	body.stroke_assignment();
+}
+
+void Boxy::physics()
+{
+	velocity.y -= GRAVITY;
+	body.center.y += velocity.y;
+}
+
+void Boxy::jump()
+{
+	if (velocity.y < 0.0f)
+		velocity.y *= -1;
+	else
+		velocity.y *= 1.1f;
 }

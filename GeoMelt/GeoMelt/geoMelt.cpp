@@ -6,17 +6,16 @@ GLFWwindow *window;
 
 Game::Game()
 {	
-	
 	//DevIL Init
-	ilutRenderer(ILUT_OPENGL);
-	ilInit();
-	iluInit();
-	ilutInit();
-	ilutRenderer(ILUT_OPENGL);
+	//ilutRenderer(ILUT_OPENGL);
+	//ilInit();
+	//iluInit();
+	//ilutInit();
+	//ilutRenderer(ILUT_OPENGL);
 
 	//picons.set_attributes();
 	//icons.set_attributes();
-	sicons.set_attributes();
+	//sicons.set_attributes();
 	mainMenu.build_main_menu();
 
 	window.width = HDX;
@@ -180,6 +179,13 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 			{
 				game.level1.player1.direction = RIGHT;
 				game.level1.player2.direction = LEFT;
+			}
+			break;
+		case GLFW_KEY_DELETE:
+			if (action == GLFW_PRESS)
+			{
+				game.level1.player1.jump();
+				game.level1.player2.jump();
 			}
 			break;
 		default: 
