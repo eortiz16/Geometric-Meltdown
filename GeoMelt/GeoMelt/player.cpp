@@ -49,11 +49,18 @@ Ball::Ball()
 	jumpCount = 0;
 	velocity.x = 0.0;
 	velocity.y = 0.0;
+	on_ground = false;
 	
 	//Default Player Dimensions
 	body.width = 100;
 	body.height = body.width;
 	body.radius = body.width/2;
+
+	//Player Boundaries
+	body.top_bnd = body.center.y + body.radius;
+	body.bottom_bnd = body.center.y - body.radius;
+	body.left_bnd = body.center.x - body.radius;
+	body.right_bnd = body.center.x + body.radius;
 
 	outline.radius = body.radius + 4;
 	eye.radius = (body.radius / 10) + 1;
@@ -103,24 +110,51 @@ void Ball::render()
 	eye.render_circle();
 }
 
-void Ball::update_position()
+void Ball::update_position(Level lvl)
 {
-	physics();
+	physics(lvl);
 	update_reflection_x();
 	reflection.center.y = body.center.y + sqrt(body.radius);
 	outline.center.x = body.center.x;
 	outline.center.y = body.center.y;
+
+	//Player Boundaries
+	body.top_bnd = body.center.y + body.radius;
+	body.bottom_bnd = body.center.y - body.radius;
+	body.left_bnd = body.center.x - body.radius;
+	body.right_bnd = body.center.x + body.radius;
 }
 
-void Ball::physics()
+void Ball::physics(Level lvl)
 {
-	velocity.y -= 3*GRAVITY/4;
+	//This character is less affected by gravity
+	velocity.y -= 3.0f * GLfloat(GRAVITY) / 4.0f;
 	body.center.y += velocity.y;
+
+	//for (int i = 0; i < MAX_PLATFORM; i++)
+	int i = 0;
+	if (body.bottom_bnd <= lvl.platform[i].body.top_bnd
+		&& body.bottom_bnd > lvl.platform[i].body.bottom_bnd
+		&& body.center.x >= lvl.platform[i].body.left_bnd
+		&& body.center.x <= lvl.platform[i].body.right_bnd
+		&& velocity.y < 0.0)
+	{
+		on_ground = true;
+		jumpCount = 0;
+		velocity.y *= -0.25f;
+		body.center.y = lvl.platform[i].body.top_bnd + body.height / 2;	
+	}
 }
 
 void Ball::jump()
 {
-	(velocity.y < 0.0f) ? velocity.y *= -4 : velocity.y *= 2;
+	//Check if jumpcount is less than jumpmax
+	if (jumpCount < JUMP_MAX)
+	{
+		//Reset Velocity
+		velocity.y = 7.0f;
+		jumpCount++;
+	}
 }
 
 Boxy::Boxy()
@@ -130,11 +164,18 @@ Boxy::Boxy()
 	jumpCount = 0;
 	velocity.x = 0.0;
 	velocity.y = 0.0;
+	on_ground = false;
 
 	//Default Player Dimensions
 	body.width = 100;
 	body.height = body.width;
 	body.radius = body.width / 2;
+
+	//Player Boundaries
+	body.top_bnd = body.center.y + body.height / 2;
+	body.bottom_bnd = body.center.y - body.height / 2;
+	body.left_bnd = body.center.x - body.height / 2;
+	body.right_bnd = body.center.x + body.height / 2;
 
 	//Stroke Assignment
 	body.stroke_assignment();
@@ -184,24 +225,47 @@ void Boxy::render()
 		body.stroke[i].render_line();
 }
 
-void Boxy::update_position()
+void Boxy::update_position(Level lvl)
 {
-	physics();
+	physics(lvl);
 	update_reflection_x();
 	reflection.center.y = body.center.y + sqrt(body.radius) * 2;
 	body.stroke_assignment();
+
+	//Player Boundaries
+	body.top_bnd = body.center.y + body.height / 2;
+	body.bottom_bnd = body.center.y - body.height / 2;
+	body.left_bnd = body.center.x - body.height / 2;
+	body.right_bnd = body.center.x + body.height / 2;
 }
 
-void Boxy::physics()
+void Boxy::physics(Level lvl)
 {
-	velocity.y -= GRAVITY;
+	velocity.y -= GLfloat(GRAVITY);
 	body.center.y += velocity.y;
+
+	//for (int i = 0; i < MAX_PLATFORM; i++)
+	int i = 0;
+	if (body.bottom_bnd <= lvl.platform[i].body.top_bnd 
+		&& body.bottom_bnd >= lvl.platform[i].body.bottom_bnd
+		&& body.center.x >= lvl.platform[i].body.left_bnd
+		&& body.center.x <= lvl.platform[i].body.right_bnd 
+		&& velocity.y < 0.0)
+	{
+		on_ground = true;
+		jumpCount = 0;
+		velocity.y *= -0.25f;
+		body.center.y = lvl.platform[i].body.top_bnd + body.height / 2;
+	}
 }
 
 void Boxy::jump()
 {
-	if (velocity.y < 0.0f)
-		velocity.y *= -1;
-	else
-		velocity.y *= 1.1f;
+	//Check if jumpcount is less than jumpmax
+	if (jumpCount < JUMP_MAX)
+	{
+		//Reset Velocity
+		velocity.y = 7.0f;
+		jumpCount++;
+	}
 }

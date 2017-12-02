@@ -140,7 +140,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 			if (action == GLFW_PRESS) 
 				glfwSetWindowShouldClose(window, GL_TRUE);
 			break;
-		case GLFW_KEY_ENTER:
+		case GLFW_KEY_PAGE_UP:
 			if (action == GLFW_PRESS)
 			{
 				//Return Key changes Level
@@ -161,7 +161,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 				}
 			}
 			break;
-		case GLFW_KEY_SPACE:
+		case GLFW_KEY_DELETE:
 			if (action == GLFW_PRESS)
 			{
 				if (game.render == TIME)
@@ -181,7 +181,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 				game.level1.player2.direction = LEFT;
 			}
 			break;
-		case GLFW_KEY_DELETE:
+		case GLFW_KEY_SPACE:
 			if (action == GLFW_PRESS)
 			{
 				game.level1.player1.jump();

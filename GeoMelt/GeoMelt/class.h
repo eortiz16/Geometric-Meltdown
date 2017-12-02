@@ -52,6 +52,10 @@ class Shape {
 public:
 	GLfloat width, height;
 	GLfloat radius;
+	GLfloat top_bnd;
+	GLfloat bottom_bnd;
+	GLfloat left_bnd;
+	GLfloat right_bnd;
 	Vec center;
 	Line stroke[MAX_STROKE];
 	void stroke_assignment();
@@ -81,8 +85,10 @@ public:
 	Shape s;
 	Vec velocity;
 };
+class Level;
 class Player {
 public:
+	bool on_ground;
 	Vec	velocity;
 	Shape body;
 	Shape reflection;
@@ -91,7 +97,7 @@ public:
 	int jumpCount;
 	Direction direction;
 	virtual void render(void) = 0;
-	virtual void physics(void) = 0;
+	virtual void physics(Level lvl) = 0;
 	virtual void jump(void) = 0;
 	void update_reflection_x();
 };
@@ -99,16 +105,16 @@ class Ball: public Player {
 public:
 	Shape outline;
 	void render();
-	void update_position();
-	void physics();
+	void update_position(Level lvl);
+	void physics(Level lvl);
 	void jump();
 	Ball();
 };
 class Boxy : public Player {
 public:
 	void render();
-	void update_position();
-	void physics();
+	void update_position(Level lvl);
+	void physics(Level lvl);
 	void jump();
 	Boxy();
 };
@@ -169,11 +175,9 @@ class Level {
 public:
 	Background background;
 	Palette_BG palette;
-//	Player player[MAX_PLAYER];
 	Platform platform[MAX_PLATFORM];
-	int alpha;
+	//friend class Player;
 };
-class Game;
 class Field_Level : public Level {
 public:
 	Shape sun;
@@ -206,6 +210,7 @@ public:
 	Boxy player2;
 	void render();
 	void handler();
+	void transition_handler();
 	void transition_to(Color *clr);
 	void build_level();
 };

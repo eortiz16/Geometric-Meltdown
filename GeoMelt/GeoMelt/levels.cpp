@@ -44,6 +44,12 @@ void Field_Level::build_level()
 	platform[0].body.height = h / 20.0f;
 	platform[0].body.center.y = -h / 3.0f;
 
+	//Floor Boundaries - For Physics
+	platform[0].body.top_bnd = platform[0].body.center.y + platform[0].body.height / 2;
+	platform[0].body.bottom_bnd = platform[0].body.center.y - platform[0].body.height / 2;
+	platform[0].body.left_bnd = platform[0].body.center.x - platform[0].body.width / 2;
+	platform[0].body.right_bnd = platform[0].body.center.x + platform[0].body.width / 2;
+
 	//Assign Color to Floor
 	platform[0].body.color.r = 99;
 	platform[0].body.color.g = 160;
@@ -87,9 +93,9 @@ void Field_Level::handler()
 	for (int i = 0; i < MAX_CLOUD; i++)
 		clouds[i].handler();
 	render();
-	player1.update_position();
+	player1.update_position(game.level1);
 	player1.render();
-	player2.update_position();
+	player2.update_position(game.level1);
 	player2.render();
 }
 
@@ -220,6 +226,12 @@ void Night_Level::build_level()
 	platform[0].body.height = h / 20;
 	platform[0].body.center.y = -h / 3.0f;
 
+	//Floor Boundaries - For Physics
+	platform[0].body.top_bnd = platform[0].body.center.y + platform[0].body.height / 2;
+	platform[0].body.bottom_bnd = platform[0].body.center.y - platform[0].body.height / 2;
+	platform[0].body.left_bnd = platform[0].body.center.x - platform[0].body.width / 2;
+	platform[0].body.right_bnd = platform[0].body.center.x + platform[0].body.width / 2;
+
 	//Assign Color to Floor
 	platform[0].body.color.r = 99;
 	platform[0].body.color.g = 160;
@@ -257,9 +269,9 @@ void Night_Level::handler()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	render();
-	player1.update_position();
+	player1.update_position(game.level2);
 	player1.render();
-	player2.update_position();
+	player2.update_position(game.level2);
 	player2.render();
 }
 
@@ -329,6 +341,7 @@ void Time_Level::build_level()
 
 	transition = false;
 
+	//Initialize Background
 	for (int i = 0; i < 4; i++)
 	{
 		background.transition_done[i] = false;
@@ -345,79 +358,83 @@ void Time_Level::build_level()
 		}
 	}
 
-		//Sun Attributes
-		sun.radius = h;
-		sun.color.r = 255;
-		sun.color.g = 255;
-		sun.color.b = 100;
-		sun.center.x = w;
-		sun.center.y = h;
+	//Sun Attributes
+	sun.radius = h;
+	sun.color.r = 255;
+	sun.color.g = 255;
+	sun.color.b = 100;
+	sun.center.x = w;
+	sun.center.y = h;
 
-		//Moon Attributes
-		moon.color.r = 225;
-		moon.color.g = 225;
-		moon.color.b = 214;
-		moon.center.x = w / 2;
-		moon.center.y = h / 2;
-		moon.radius = h / 2;
+	//Moon Attributes
+	moon.color.r = 225;
+	moon.color.g = 225;
+	moon.color.b = 214;
+	moon.center.x = w / 2;
+	moon.center.y = h / 2;
+	moon.radius = h / 2;
 
-		//Star Attributes
-		for (int i = 0; i < MAX_STAR; i++)
-		{
-			stars[i].offset = rnd();
-			stars[i].body.radius = 3;
-			stars[i].body.color.r = 255;
-			stars[i].body.color.g = 255;
-			stars[i].body.color.b = 255;
-			stars[i].compute_coordinates(i);
-		}
+	//Star Attributes
+	for (int i = 0; i < MAX_STAR; i++)
+	{
+		stars[i].offset = rnd();
+		stars[i].body.radius = 3;
+		stars[i].body.color.r = 255;
+		stars[i].body.color.g = 255;
+		stars[i].body.color.b = 255;
+		stars[i].compute_coordinates(i);
+	}
 
-		//Floor Center
-		platform[0].body.center.x = 0;
+	//Floor Dimensions
+	platform[0].body.width = 5 * w / 6;
+	platform[0].body.height = h / 20;
+	platform[0].body.center.x = 0;
+	platform[0].body.center.y = -h / 3;
 
-		//Floor Dimensions
-		platform[0].body.width = 5 * w / 6;
-		platform[0].body.height = h / 20;
-		platform[0].body.center.y = -h / 3;
+	//Floor Boundaries - For Physics
+	platform[0].body.top_bnd = platform[0].body.center.y + platform[0].body.height / 2;
+	platform[0].body.bottom_bnd = platform[0].body.center.y - platform[0].body.height / 2;
+	platform[0].body.left_bnd = platform[0].body.center.x - platform[0].body.width / 2;
+	platform[0].body.right_bnd = platform[0].body.center.x + platform[0].body.width / 2;
 
-		//Assign Color to Floor
-		platform[0].body.color.r = 99;
-		platform[0].body.color.g = 160;
-		platform[0].body.color.b = 0;
+	//Assign Color to Floor
+	platform[0].body.color.r = 99;
+	platform[0].body.color.g = 160;
+	platform[0].body.color.b = 0;
 
-		//Assign Floor Outline Attributes
-		for (int i = 0; i < MAX_STROKE; i++)
-		{
-			platform[0].body.stroke[i].width = 2.0;
-			platform[0].body.stroke[i].color.r = 255;
-			platform[0].body.stroke[i].color.g = 255;
-			platform[0].body.stroke[i].color.b = 255;
-		}
+	//Assign Floor Outline Attributes
+	for (int i = 0; i < MAX_STROKE; i++)
+	{
+		platform[0].body.stroke[i].width = 2.0;
+		platform[0].body.stroke[i].color.r = 255;
+		platform[0].body.stroke[i].color.g = 255;
+		platform[0].body.stroke[i].color.b = 255;
+	}
 
-		//Floor Stroke Assignment
-		platform[0].body.stroke_assignment();
+	//Floor Stroke Assignment
+	platform[0].body.stroke_assignment();
 
-		//Cloud Initialization
-		int dir = rand() % 2;
-		for (int i = 0; i < MAX_CLOUD; i++)
-		{
-			//Set Wind Direction for All Clouds
-			(dir == 0) ?
-				clouds[i].direction = RIGHT :
-				clouds[i].direction = LEFT;
+	//Cloud Initialization
+	int dir = rand() % 2;
+	for (int i = 0; i < MAX_CLOUD; i++)
+	{
+		//Set Wind Direction for All Clouds
+		(dir == 0) ?
+			clouds[i].direction = RIGHT :
+			clouds[i].direction = LEFT;
 
-			//Assign Uniform Cloud Groups
-			clouds[i].set_cloud_group();
-		}
+		//Assign Uniform Cloud Groups
+		clouds[i].set_cloud_group();
+	}
 
-		//Player Position
-		player1.body.center.x = 300;
-		player1.body.center.y = h;
-		player2.body.center.x = 0;
-		player2.body.center.y = h / 2;
+	//Player Position
+	player1.body.center.x = 300;
+	player1.body.center.y = h;
+	player2.body.center.x = 0;
+	player2.body.center.y = h / 2;
 }
 
-void Time_Level::handler()
+void Time_Level::transition_handler()
 {
 	if (transition == true)
 		switch (time_of_day)
@@ -441,14 +458,20 @@ void Time_Level::handler()
 			transition_to(palette.day);
 			break;
 		}
+}
+
+void Time_Level::handler()
+{
+	transition_handler();
+
+	for (int i = 0; i < MAX_CLOUD; i++)
+		clouds[i].handler(); //Cloud Physics
 
 	render();
-	for (int i = 0; i < MAX_CLOUD; i++)
-		clouds[i].handler();
 
-	player1.update_position();
+	player1.update_position(game.level3);
 	player1.render();
-	player2.update_position();
+	player2.update_position(game.level3);
 	player2.render();
 }
 
@@ -507,11 +530,10 @@ void Time_Level::transition_to(Color *clr)
 			background.transition_done[i] = true;
 	}
 
-	//If all done
 	if (background.transition_done[0] == true && background.transition_done[1] == true
 		&& background.transition_done[2] == true && background.transition_done[3] == true) 
 	{
-		cout << "\nTRANSITION DONE\n";
+		//Transition is Done, Reset Attributes
 		for (int i = 0; i < CORNERS; i++)
 			background.transition_done[i] = false;
 		
