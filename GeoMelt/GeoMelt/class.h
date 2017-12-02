@@ -2,6 +2,7 @@
 #include "ppm.h"
 #pragma once
 
+#define GRAVITY 0.1
 #define TOD_CARDINAL 6 //update with cardinality of TOD
 #define TRANSITION_RATE_TOD 0.25
 #define MAX_PLAYER 4
@@ -25,11 +26,10 @@ enum State {MAIN, PAUSE, LEVELSEL, CHARSEL, FIELD, NIGHT, TIME, DISCO, POLLUTION
 enum Direction {LEFT, RIGHT};
 enum TOD { DAY, AFTERNOON, EVENING, NITE, DNITE, MORNING };
 
-inline TOD operator++(TOD &eDOW, int)
+inline void operator++(TOD &ti, int)
 {
-	const int i = static_cast<int>(eDOW);
-	eDOW = static_cast<TOD>((i + 1) % TOD_CARDINAL);
-	return (TOD)0;
+	const int i = static_cast<int>(ti);
+	ti = static_cast<TOD>((i + 1) % TOD_CARDINAL);
 }
 
 class Color {
@@ -61,8 +61,6 @@ public:
 };
 class Cloud {
 public:
-	//if small go slow
-	//if big go faster
 	Shape body[3];
 	Direction direction;
 	int speed;
@@ -85,12 +83,16 @@ public:
 };
 class Player {
 public:
+	Vec	velocity;
 	Shape body;
 	Shape reflection;
 	Shape eye;
 	int JUMP_MAX;
 	int jumpCount;
 	Direction direction;
+	virtual void render(void) = 0;
+	virtual void physics(void) = 0;
+	virtual void jump(void) = 0;
 	void update_reflection_x();
 };
 class Ball: public Player {
@@ -98,12 +100,16 @@ public:
 	Shape outline;
 	void render();
 	void update_position();
+	void physics();
+	void jump();
 	Ball();
 };
 class Boxy : public Player {
 public:
 	void render();
 	void update_position();
+	void physics();
+	void jump();
 	Boxy();
 };
 class Platform {
@@ -163,7 +169,7 @@ class Level {
 public:
 	Background background;
 	Palette_BG palette;
-	Player player[MAX_PLAYER];
+//	Player player[MAX_PLAYER];
 	Platform platform[MAX_PLATFORM];
 	int alpha;
 };
