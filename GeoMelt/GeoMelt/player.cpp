@@ -9,37 +9,28 @@ void Player::update_reflection_x()
 	//controls reflection of character
 
 	GLfloat OldMax, OldMin, OldValue;
-	GLfloat NewMax, NewMin, offset;
+	GLfloat NewMax, NewMin;
+	GLfloat offset = 0.0f;
 
 	//if character is in the middle of the level
-	if (body.center.x == (GLfloat)game.window.width / 2)
-		reflection.center.x = (GLfloat)game.window.width / 2;
-	else if (body.center.x < game.window.width / 2)
+	if (body.center.x == 0.0f)
+		reflection.center.x = 0.0f;
+	else 
 	{
 		OldValue = body.center.x;
 		OldMin = 0;
-		OldMax = (GLfloat)game.window.width / 2;
+		OldMax = (GLfloat)HDY;
 		NewMin = 0;
 		NewMax = sqrt(body.radius - 10);
 		offset = (OldValue - OldMin) * (NewMax - NewMin);
 		offset /= (OldMax - OldMin);
 		offset += NewMin;
-		offset -= sqrt(body.radius - 10);
-		offset = abs(offset);
-		reflection.center.x = body.center.x + offset;
 	}
-	else
-	{
-		OldValue = body.center.x;
-		OldMin = (GLfloat)game.window.width / 2;
-		OldMax = (GLfloat)game.window.width;
-		NewMin = 0;
-		NewMax = sqrt(body.center.x);
-		offset = (OldValue - OldMin) * (NewMax - NewMin);
-		offset /= OldMax - OldMin;
-		offset += NewMin;
-		reflection.center.x = body.center.x - offset;
-	}
+
+	if (body.center.x > 0.0f)
+		offset *= -1;
+
+	reflection.center.x = body.center.x + offset;
 }
 
 Ball::Ball()
@@ -130,6 +121,7 @@ void Ball::physics(Level lvl)
 	//This character is less affected by gravity
 	velocity.y -= 3.0f * GLfloat(GRAVITY) / 4.0f;
 	body.center.y += velocity.y;
+	body.center.x += velocity.x;
 
 	//for (int i = 0; i < MAX_PLATFORM; i++)
 	int i = 0;
@@ -142,19 +134,51 @@ void Ball::physics(Level lvl)
 		on_ground = true;
 		jumpCount = 0;
 		velocity.y *= -0.25f;
-		body.center.y = lvl.platform[i].body.top_bnd + body.height / 2;	
+		body.center.y = lvl.platform[i].body.top_bnd + body.height / 2;
+	}
+	else
+		on_ground = false;
+
+	//affect horizontal momentum with friction
+	if (velocity.x < 0.0 && on_ground)
+	{
+		velocity.x += (GLfloat)FRICTION;
+		if (velocity.x > 0.0)
+			velocity.x = 0.0;
+	}
+	else if (velocity.x > 0.0 && on_ground)
+	{
+		velocity.x -= (GLfloat)FRICTION;
+		if (velocity.x < 0.0)
+			velocity.x = 0.0;
 	}
 }
 
 void Ball::jump()
 {
-	//Check if jumpcount is less than jumpmax
+	on_ground = false;
 	if (jumpCount < JUMP_MAX)
 	{
-		//Reset Velocity
+		exhale(); //Change character's size
 		velocity.y = 7.0f;
 		jumpCount++;
 	}
+}
+
+void Ball::exhale()
+{
+
+}
+
+void Ball::move()
+{
+	if (direction == LEFT) 
+		velocity.x = -5.0f;
+	else // RIGHT
+		velocity.x = 5.0f;
+
+	if (on_ground)
+		velocity.y = 1.25f;
 }
 
 Boxy::Boxy()
@@ -243,6 +267,7 @@ void Boxy::physics(Level lvl)
 {
 	velocity.y -= GLfloat(GRAVITY);
 	body.center.y += velocity.y;
+	body.center.x += velocity.x;
 
 	//for (int i = 0; i < MAX_PLATFORM; i++)
 	int i = 0;
@@ -257,15 +282,42 @@ void Boxy::physics(Level lvl)
 		velocity.y *= -0.25f;
 		body.center.y = lvl.platform[i].body.top_bnd + body.height / 2;
 	}
+	else
+		on_ground = false;
+
+	//affect horizontal momentum with friction
+	if (velocity.x < 0.0 && on_ground)
+	{
+		velocity.x += (GLfloat)FRICTION;
+		if (velocity.x > 0.0)
+			velocity.x = 0.0;
+	}
+	else if (velocity.x > 0.0 && on_ground)
+	{
+		velocity.x -= (GLfloat)FRICTION;
+		if (velocity.x < 0.0)
+			velocity.x = 0.0;
+	}
 }
 
 void Boxy::jump()
 {
+	on_ground = false;
 	//Check if jumpcount is less than jumpmax
 	if (jumpCount < JUMP_MAX)
 	{
-		//Reset Velocity
 		velocity.y = 7.0f;
 		jumpCount++;
 	}
+}
+
+void Boxy::move()
+{
+	if (direction == LEFT)
+		velocity.x = -6.0f;
+	else // RIGHT
+		velocity.x = 6.0f;
+
+	if (on_ground)
+		velocity.y = 1.25f;
 }

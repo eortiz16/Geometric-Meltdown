@@ -171,14 +171,18 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 			if (action == GLFW_PRESS)
 			{
 				game.level1.player1.direction = LEFT;
-				game.level1.player2.direction = RIGHT;
+				game.level1.player2.direction = LEFT;
+				game.level1.player1.move();
+				game.level1.player2.move();
 			}
 			break;
 		case GLFW_KEY_RIGHT:
 			if (action == GLFW_PRESS)
 			{
 				game.level1.player1.direction = RIGHT;
-				game.level1.player2.direction = LEFT;
+				game.level1.player2.direction = RIGHT;
+				game.level1.player1.move();
+				game.level1.player2.move();
 			}
 			break;
 		case GLFW_KEY_SPACE:

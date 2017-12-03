@@ -3,7 +3,8 @@
 #pragma once
 
 #define GRAVITY 0.1
-#define TOD_CARDINAL 6 //update with cardinality of TOD
+#define FRICTION 0.35
+#define TOD_CARDINALITY 6 
 #define TRANSITION_RATE_TOD 0.25
 #define MAX_PLAYER 4
 #define MAX_PLATFORM 4
@@ -29,7 +30,7 @@ enum TOD { DAY, AFTERNOON, EVENING, NITE, DNITE, MORNING };
 inline void operator++(TOD &ti, int)
 {
 	const int i = static_cast<int>(ti);
-	ti = static_cast<TOD>((i + 1) % TOD_CARDINAL);
+	ti = static_cast<TOD>((i + 1) % TOD_CARDINALITY);
 }
 
 class Color {
@@ -99,6 +100,7 @@ public:
 	virtual void render(void) = 0;
 	virtual void physics(Level lvl) = 0;
 	virtual void jump(void) = 0;
+	virtual void move(void) = 0;
 	void update_reflection_x();
 };
 class Ball: public Player {
@@ -107,7 +109,9 @@ public:
 	void render();
 	void update_position(Level lvl);
 	void physics(Level lvl);
+	void move();
 	void jump();
+	void exhale();
 	Ball();
 };
 class Boxy : public Player {
@@ -115,6 +119,7 @@ public:
 	void render();
 	void update_position(Level lvl);
 	void physics(Level lvl);
+	void move();
 	void jump();
 	Boxy();
 };

@@ -81,7 +81,7 @@ void Field_Level::build_level()
 	}
 
 	//Player Position
-	player1.body.center.x = 300;
+	player1.body.center.x = 0;
 	player1.body.center.y = (GLfloat)game.window.height;
 	player2.body.center.x = 0;
 	player2.body.center.y = (GLfloat)game.window.height / 2;
