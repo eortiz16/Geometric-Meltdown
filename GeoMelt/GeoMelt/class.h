@@ -90,7 +90,6 @@ public:
 class Level;
 class Player {
 public:
-	int id;
 	bool on_ground;
 	Vec	velocity;
 	Shape body;

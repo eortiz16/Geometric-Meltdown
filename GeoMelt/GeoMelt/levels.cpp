@@ -89,25 +89,21 @@ void Field_Level::build()
 	//Player Position
 	player[0] = new Ball;
 	player[0]->build();
-	player[0]->id = 0;
 	player[0]->body.center.x = -600;
 	player[0]->body.center.y = (GLfloat)game.window.height;
 
 	player[1] = new Boxy;
 	player[1]->build();
-	player[1]->id = 1;
 	player[1]->body.center.x = -500;
 	player[1]->body.center.y = (GLfloat)game.window.height / 2;
 
 	player[2] = new Ball;
 	player[2]->build();
-	player[2]->id = 2;
 	player[2]->body.center.x = 600;
 	player[2]->body.center.y = (GLfloat)game.window.height;
 
 	player[3] = new Boxy;
 	player[3]->build();
-	player[3]->id = 3;
 	player[3]->body.center.x = 500;
 	player[3]->body.center.y = (GLfloat)game.window.height / 2;
 }
@@ -280,25 +276,21 @@ void Night_Level::build()
 	//Player Position
 	player[0] = new Ball;
 	player[0]->build();
-	player[0]->id = 0;
 	player[0]->body.center.x = -600;
 	player[0]->body.center.y = (GLfloat)game.window.height;
 
 	player[1] = new Boxy;
 	player[1]->build();
-	player[1]->id = 1;
 	player[1]->body.center.x = 0;
 	player[1]->body.center.y = (GLfloat)game.window.height / 2;
 
 	player[2] = new Ball;
 	player[2]->build();
-	player[2]->id = 2;
 	player[2]->body.center.x = 600;
 	player[2]->body.center.y = (GLfloat)game.window.height;
 
 	player[3] = new Boxy;
 	player[3]->build();
-	player[3]->id = 3;
 	player[3]->body.center.x = 500;
 	player[3]->body.center.y = (GLfloat)game.window.height / 2;
 }
@@ -470,25 +462,22 @@ void Time_Level::build()
 	//Player Position
 	player[0] = new Ball;
 	player[0]->build();
-	player[0]->id = 0;
+
 	player[0]->body.center.x = -600;
 	player[0]->body.center.y = (GLfloat)game.window.height;
 
 	player[1] = new Boxy;
 	player[1]->build();
-	player[1]->id = 1;
 	player[1]->body.center.x = -500;
 	player[1]->body.center.y = (GLfloat)game.window.height / 2;
 
 	player[2] = new Ball;
 	player[2]->build();
-	player[2]->id = 2;
 	player[2]->body.center.x = 600;
 	player[2]->body.center.y = (GLfloat)game.window.height;
 
 	player[3] = new Boxy;
 	player[3]->build();
-	player[3]->id = 3;
 	player[3]->body.center.x = 500;
 	player[3]->body.center.y = (GLfloat)game.window.height / 2;
 }

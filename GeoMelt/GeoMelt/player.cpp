@@ -70,9 +70,6 @@ void Ball::build()
 	eye.color.g = 0;
 	eye.color.b = 0;
 
-	//Default ID
-	id = 0;
-
 	//Default Center
 	body.center.x = 0;
 	body.center.y = 0;
@@ -220,9 +217,6 @@ void Boxy::build()
 	eye.color.r = 0;
 	eye.color.g = 0;
 	eye.color.b = 0;
-
-	//Default ID
-	id = 0;
 
 	//Default Center
 	body.center.x = 0;
