@@ -60,6 +60,8 @@ public:
 	Vec center;
 	Line stroke[MAX_STROKE];
 	void stroke_assignment();
+	void boundary_assignment();
+
 	void render_quad();
 	void render_circle();
 	Color color;

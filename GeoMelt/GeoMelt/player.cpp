@@ -12,23 +12,15 @@ void Player::update_reflection_x()
 	GLfloat NewMax, NewMin;
 	GLfloat offset = 0.0f;
 
-	//if character is in the middle of the level
-	if (body.center.x == 0.0f)
-		reflection.center.x = 0.0f;
-	else 
-	{
-		OldValue = body.center.x;
-		OldMin = 0;
-		OldMax = (GLfloat)HDY;
-		NewMin = 0;
-		NewMax = sqrt(body.radius - 10);
-		offset = (OldValue - OldMin) * (NewMax - NewMin);
-		offset /= (OldMax - OldMin);
-		offset += NewMin;
-	}
-
-	if (body.center.x > 0.0f)
-		offset *= -1;
+	OldValue = body.center.x;
+	OldMin = 0;
+	OldMax = (GLfloat)HDY;
+	NewMin = 0;
+	NewMax = sqrt(body.radius - 10);
+	offset = (OldValue - OldMin) * (NewMax - NewMin);
+	offset /= (OldMax - OldMin);
+	offset += NewMin;
+	offset *= -1;
 
 	reflection.center.x = body.center.x + offset;
 }
@@ -48,10 +40,7 @@ Ball::Ball()
 	body.radius = body.width/2;
 
 	//Player Boundaries
-	body.top_bnd = body.center.y + body.radius;
-	body.bottom_bnd = body.center.y - body.radius;
-	body.left_bnd = body.center.x - body.radius;
-	body.right_bnd = body.center.x + body.radius;
+	body.boundary_assignment();
 
 	outline.radius = body.radius + 4;
 	eye.radius = (body.radius / 10) + 1;
@@ -110,10 +99,7 @@ void Ball::update_position(Level lvl)
 	outline.center.y = body.center.y;
 
 	//Player Boundaries
-	body.top_bnd = body.center.y + body.radius;
-	body.bottom_bnd = body.center.y - body.radius;
-	body.left_bnd = body.center.x - body.radius;
-	body.right_bnd = body.center.x + body.radius;
+	body.boundary_assignment();
 }
 
 void Ball::physics(Level lvl)
@@ -123,21 +109,25 @@ void Ball::physics(Level lvl)
 	body.center.y += velocity.y;
 	body.center.x += velocity.x;
 
-	//for (int i = 0; i < MAX_PLATFORM; i++)
-	int i = 0;
-	if (body.bottom_bnd <= lvl.platform[i].body.top_bnd
-		&& body.bottom_bnd > lvl.platform[i].body.bottom_bnd
-		&& body.center.x >= lvl.platform[i].body.left_bnd
-		&& body.center.x <= lvl.platform[i].body.right_bnd
-		&& velocity.y < 0.0)
+	for (int i = 0; i < MAX_PLATFORM; i++)
 	{
-		on_ground = true;
-		jumpCount = 0;
-		velocity.y *= -0.25f;
-		body.center.y = lvl.platform[i].body.top_bnd + body.height / 2;
+		if (body.bottom_bnd <= lvl.platform[i].body.top_bnd
+			&& body.bottom_bnd > lvl.platform[i].body.bottom_bnd
+			&& body.center.x >= lvl.platform[i].body.left_bnd
+			&& body.center.x <= lvl.platform[i].body.right_bnd
+			&& velocity.y <= 0.0)
+		{
+			on_ground = true;
+			jumpCount = 0;
+			velocity.y *= -0.25f;
+			body.center.y = lvl.platform[i].body.top_bnd + body.height / 2;
+		}
+		else
+			on_ground = false;
+
+		if (on_ground)
+			break;
 	}
-	else
-		on_ground = false;
 
 	//affect horizontal momentum with friction
 	if (velocity.x < 0.0 && on_ground)
@@ -172,11 +162,13 @@ void Ball::exhale()
 
 void Ball::move()
 {
+	//Horizontal
 	if (direction == LEFT) 
 		velocity.x = -5.0f;
 	else // RIGHT
 		velocity.x = 5.0f;
 
+	//Vertical
 	if (on_ground)
 		velocity.y = 1.25f;
 }
@@ -196,10 +188,7 @@ Boxy::Boxy()
 	body.radius = body.width / 2;
 
 	//Player Boundaries
-	body.top_bnd = body.center.y + body.height / 2;
-	body.bottom_bnd = body.center.y - body.height / 2;
-	body.left_bnd = body.center.x - body.height / 2;
-	body.right_bnd = body.center.x + body.height / 2;
+	body.boundary_assignment();
 
 	//Stroke Assignment
 	body.stroke_assignment();
@@ -253,14 +242,11 @@ void Boxy::update_position(Level lvl)
 {
 	physics(lvl);
 	update_reflection_x();
-	reflection.center.y = body.center.y + sqrt(body.radius) * 2;
+	reflection.center.y = body.center.y + sqrt(body.radius) * 1.5f;
 	body.stroke_assignment();
 
 	//Player Boundaries
-	body.top_bnd = body.center.y + body.height / 2;
-	body.bottom_bnd = body.center.y - body.height / 2;
-	body.left_bnd = body.center.x - body.height / 2;
-	body.right_bnd = body.center.x + body.height / 2;
+	body.boundary_assignment();
 }
 
 void Boxy::physics(Level lvl)
@@ -269,21 +255,25 @@ void Boxy::physics(Level lvl)
 	body.center.y += velocity.y;
 	body.center.x += velocity.x;
 
-	//for (int i = 0; i < MAX_PLATFORM; i++)
-	int i = 0;
-	if (body.bottom_bnd <= lvl.platform[i].body.top_bnd 
-		&& body.bottom_bnd >= lvl.platform[i].body.bottom_bnd
-		&& body.center.x >= lvl.platform[i].body.left_bnd
-		&& body.center.x <= lvl.platform[i].body.right_bnd 
-		&& velocity.y < 0.0)
+	for (int i = 0; i < MAX_PLATFORM; i++)
 	{
-		on_ground = true;
-		jumpCount = 0;
-		velocity.y *= -0.25f;
-		body.center.y = lvl.platform[i].body.top_bnd + body.height / 2;
+		if (body.bottom_bnd <= lvl.platform[i].body.top_bnd
+			&& body.bottom_bnd > lvl.platform[i].body.bottom_bnd
+			&& body.center.x >= lvl.platform[i].body.left_bnd
+			&& body.center.x <= lvl.platform[i].body.right_bnd
+			&& velocity.y <= 0.0)
+		{
+			on_ground = true;
+			jumpCount = 0;
+			velocity.y *= -0.25f;
+			body.center.y = lvl.platform[i].body.top_bnd + body.height / 2;
+		}
+		else
+			on_ground = false;
+
+		if (on_ground)
+			break;
 	}
-	else
-		on_ground = false;
 
 	//affect horizontal momentum with friction
 	if (velocity.x < 0.0 && on_ground)
@@ -313,11 +303,13 @@ void Boxy::jump()
 
 void Boxy::move()
 {
+	//Horizontal
 	if (direction == LEFT)
 		velocity.x = -6.0f;
 	else // RIGHT
 		velocity.x = 6.0f;
 
+	//Vertical
 	if (on_ground)
 		velocity.y = 1.25f;
 }

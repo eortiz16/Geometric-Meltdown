@@ -88,6 +88,14 @@ void Shape::stroke_assignment()
 	stroke[3].to.y = center.y - height / 2;
 }
 
+void Shape::boundary_assignment()
+{
+	top_bnd = center.y + height / 2;
+	bottom_bnd = center.y - height / 2;
+	left_bnd = center.x - width / 2;
+	right_bnd = center.x + width / 2;
+}
+
 void Game::render_triangle()
 {
 	float ratio;

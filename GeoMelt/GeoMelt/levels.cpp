@@ -218,44 +218,36 @@ void Night_Level::build_level()
 		stars[i].compute_coordinates(i);
 	}
 
-	//Floor Center
+	//Platform Horizontal Center
 	platform[0].body.center.x = 0;
+	platform[1].body.center.x = -750;
+	platform[2].body.center.x = 0;
+	platform[3].body.center.x = 750;
 
-	//Floor Dimensions
+	//Platform Dimensions
 	platform[0].body.width = 5 * w / 6;
 	platform[0].body.height = h / 20;
 	platform[0].body.center.y = -h / 3.0f;
 
-	//Floor Boundaries - For Physics
-	platform[0].body.top_bnd = platform[0].body.center.y + platform[0].body.height / 2;
-	platform[0].body.bottom_bnd = platform[0].body.center.y - platform[0].body.height / 2;
-	platform[0].body.left_bnd = platform[0].body.center.x - platform[0].body.width / 2;
-	platform[0].body.right_bnd = platform[0].body.center.x + platform[0].body.width / 2;
+	for (int i = 1; i < MAX_PLATFORM; i++)
+	{
+		platform[i].body.width = w / 4;
+		platform[i].body.height = h / 20;
+		platform[i].body.center.y = 0;
+	}
 
-	//Assign Color to Floor
-	platform[0].body.color.r = 99;
-	platform[0].body.color.g = 160;
-	platform[0].body.color.b = 0;
+	for (int i = 0; i < MAX_PLATFORM; i++)
+	{
+		//Floor Boundaries - For Physics
+		platform[i].body.boundary_assignment();
 
-	//Assign Floor Outline Attributes
-	platform[0].body.stroke_assignment();
-
-	//Platform Attributes
-	for (int i = 1; i < MAX_PLATFORM; i++) {
-		if (i % 2 == 0) {
-			platform[i].body.center.x = w / 2;
-			platform[i].body.center.y = h - h / 2 + h / 6;
-		}
-		else {
-			platform[i].body.center.x = w / 6 + ((w - w / 6) *
-				((GLfloat)i - 1)) / 2.5f;
-			platform[i].body.center.y = h - h / 2;
-		}
-		platform[i].body.width = 250;
-		platform[i].body.height = 50;
+		//Assign Color to Floor
 		platform[i].body.color.r = 99;
 		platform[i].body.color.g = 160;
 		platform[i].body.color.b = 0;
+		
+		//Assign Floor Outline Attributes
+		platform[i].body.stroke_assignment();
 	}
 
 	//Player Position
@@ -284,9 +276,12 @@ void Night_Level::render()
 		stars[i].body.render_circle();
 	}
 	moon.render_circle();
-	platform[0].body.render_quad();
-	for (int i = 0; i < MAX_STROKE; i++)
-		platform[0].body.stroke[i].render_line();
+	for (int i = 0; i < MAX_PLATFORM; i++)
+	{
+		platform[i].body.render_quad();
+		for (int j = 0; j < MAX_STROKE; j++)
+			platform[i].body.stroke[j].render_line();
+	}
 }
 
 void Star::compute_coordinates(int count)
@@ -392,10 +387,7 @@ void Time_Level::build_level()
 	platform[0].body.center.y = -h / 3;
 
 	//Floor Boundaries - For Physics
-	platform[0].body.top_bnd = platform[0].body.center.y + platform[0].body.height / 2;
-	platform[0].body.bottom_bnd = platform[0].body.center.y - platform[0].body.height / 2;
-	platform[0].body.left_bnd = platform[0].body.center.x - platform[0].body.width / 2;
-	platform[0].body.right_bnd = platform[0].body.center.x + platform[0].body.width / 2;
+	platform[0].body.boundary_assignment();
 
 	//Assign Color to Floor
 	platform[0].body.color.r = 99;
