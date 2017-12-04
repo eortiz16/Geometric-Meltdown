@@ -61,7 +61,6 @@ public:
 	Line stroke[MAX_STROKE];
 	void stroke_assignment();
 	void boundary_assignment();
-
 	void render_quad();
 	void render_circle();
 	Color color;
@@ -91,6 +90,7 @@ public:
 class Level;
 class Player {
 public:
+	int id;
 	bool on_ground;
 	Vec	velocity;
 	Shape body;
@@ -99,11 +99,14 @@ public:
 	int JUMP_MAX;
 	int jumpCount;
 	Direction direction;
+	void update_reflection_x();
 	virtual void render(void) = 0;
+	virtual void update_position(Level lvl) = 0;
 	virtual void physics(Level lvl) = 0;
 	virtual void jump(void) = 0;
 	virtual void move(void) = 0;
-	void update_reflection_x();
+	virtual void build(void) = 0;
+	virtual ~Player() { "PLAYERD"; }
 };
 class Ball: public Player {
 public:
@@ -114,7 +117,8 @@ public:
 	void move();
 	void jump();
 	void exhale();
-	Ball();
+	void build();
+	~Ball() { "BALLD"; }
 };
 class Boxy : public Player {
 public:
@@ -123,7 +127,8 @@ public:
 	void physics(Level lvl);
 	void move();
 	void jump();
-	Boxy();
+	void build();
+	~Boxy() { "BOXYD"; }
 };
 class Platform {
 public:
@@ -183,27 +188,28 @@ public:
 	Background background;
 	Palette_BG palette;
 	Platform platform[MAX_PLATFORM];
-	//friend class Player;
+	Player *player[MAX_PLAYER] = {NULL}; //Polymorphism
+	~Level();
 };
 class Field_Level : public Level {
 public:
 	Shape sun;
 	Cloud clouds[MAX_CLOUD];
-	Ball player1;
-	Boxy player2;
+	//Ball player1;
+	//Boxy player2;
 	void render();
 	void handler();
-	void build_level();
+	void build();
 };
 class Night_Level : public Level {
 public:
 	Star stars[MAX_STAR];
 	Shape moon;
-	Ball player1;
-	Boxy player2;
+	//Ball player1;
+	//Boxy player2;
 	void render();
 	void handler();
-	void build_level();
+	void build();
 };
 class Time_Level : public Level {
 public:
@@ -213,13 +219,13 @@ public:
 	Shape moon;
 	Star stars[MAX_STAR]; //change opacity during day
 	Cloud clouds[MAX_CLOUD];
-	Ball player1;
-	Boxy player2;
+	//Ball player1;
+	//Boxy player2;
 	void render();
 	void handler();
 	void transition_handler();
 	void transition_to(Color *clr);
-	void build_level();
+	void build();
 };
 //
 class Image {

@@ -3,7 +3,16 @@
 
 extern Game game;
 
-void Field_Level::build_level()
+Level::~Level()
+{
+	for (int i = 0; i < MAX_PLAYER; i++)
+	{
+		player[i] = NULL;
+		delete player[i];
+	}
+}
+
+void Field_Level::build()
 {
 	srand((unsigned int)time(NULL));
 	
@@ -45,10 +54,7 @@ void Field_Level::build_level()
 	platform[0].body.center.y = -h / 3.0f;
 
 	//Floor Boundaries - For Physics
-	platform[0].body.top_bnd = platform[0].body.center.y + platform[0].body.height / 2;
-	platform[0].body.bottom_bnd = platform[0].body.center.y - platform[0].body.height / 2;
-	platform[0].body.left_bnd = platform[0].body.center.x - platform[0].body.width / 2;
-	platform[0].body.right_bnd = platform[0].body.center.x + platform[0].body.width / 2;
+	platform[0].body.boundary_assignment();
 
 	//Assign Color to Floor
 	platform[0].body.color.r = 99;
@@ -81,10 +87,29 @@ void Field_Level::build_level()
 	}
 
 	//Player Position
-	player1.body.center.x = 0;
-	player1.body.center.y = (GLfloat)game.window.height;
-	player2.body.center.x = 0;
-	player2.body.center.y = (GLfloat)game.window.height / 2;
+	player[0] = new Ball;
+	player[0]->build();
+	player[0]->id = 0;
+	player[0]->body.center.x = -600;
+	player[0]->body.center.y = (GLfloat)game.window.height;
+
+	player[1] = new Boxy;
+	player[1]->build();
+	player[1]->id = 1;
+	player[1]->body.center.x = -500;
+	player[1]->body.center.y = (GLfloat)game.window.height / 2;
+
+	player[2] = new Ball;
+	player[2]->build();
+	player[2]->id = 2;
+	player[2]->body.center.x = 600;
+	player[2]->body.center.y = (GLfloat)game.window.height;
+
+	player[3] = new Boxy;
+	player[3]->build();
+	player[3]->id = 3;
+	player[3]->body.center.x = 500;
+	player[3]->body.center.y = (GLfloat)game.window.height / 2;
 }
 
 void Field_Level::handler()
@@ -93,10 +118,12 @@ void Field_Level::handler()
 	for (int i = 0; i < MAX_CLOUD; i++)
 		clouds[i].handler();
 	render();
-	player1.update_position(game.level1);
-	player1.render();
-	player2.update_position(game.level1);
-	player2.render();
+
+	for (int i = 0; i < MAX_PLAYER; i++)
+	{
+		player[i]->update_position(game.level1);
+		player[i]->render();
+	}
 }
 
 void Field_Level::render()
@@ -175,7 +202,7 @@ void Cloud::physics()
 			body[i].center.x += speed;
 }
 
-void Night_Level::build_level()
+void Night_Level::build()
 {
 	//Assigning Window Dimensions
 	GLfloat w = (GLfloat)game.window.width;
@@ -233,7 +260,7 @@ void Night_Level::build_level()
 	{
 		platform[i].body.width = w / 4;
 		platform[i].body.height = h / 20;
-		platform[i].body.center.y = 0;
+		platform[i].body.center.y = 100;
 	}
 
 	for (int i = 0; i < MAX_PLATFORM; i++)
@@ -251,20 +278,41 @@ void Night_Level::build_level()
 	}
 
 	//Player Position
-	player1.body.center.x = 300;
-	player1.body.center.y = (GLfloat)game.window.height;
-	player2.body.center.x = 0;
-	player2.body.center.y = (GLfloat)game.window.height / 2;
+	player[0] = new Ball;
+	player[0]->build();
+	player[0]->id = 0;
+	player[0]->body.center.x = -600;
+	player[0]->body.center.y = (GLfloat)game.window.height;
+
+	player[1] = new Boxy;
+	player[1]->build();
+	player[1]->id = 1;
+	player[1]->body.center.x = 0;
+	player[1]->body.center.y = (GLfloat)game.window.height / 2;
+
+	player[2] = new Ball;
+	player[2]->build();
+	player[2]->id = 2;
+	player[2]->body.center.x = 600;
+	player[2]->body.center.y = (GLfloat)game.window.height;
+
+	player[3] = new Boxy;
+	player[3]->build();
+	player[3]->id = 3;
+	player[3]->body.center.x = 500;
+	player[3]->body.center.y = (GLfloat)game.window.height / 2;
 }
 
 void Night_Level::handler()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	render();
-	player1.update_position(game.level2);
-	player1.render();
-	player2.update_position(game.level2);
-	player2.render();
+	
+	for (int i = 0; i < MAX_PLAYER; i++)
+	{
+		player[i]->update_position(game.level2);
+		player[i]->render();
+	}
 }
 
 void Night_Level::render()
@@ -319,7 +367,7 @@ void Star::change_color()
 	}
 }
 
-void Time_Level::build_level()
+void Time_Level::build()
 {
 	srand((unsigned int)time(NULL));
 
@@ -420,10 +468,29 @@ void Time_Level::build_level()
 	}
 
 	//Player Position
-	player1.body.center.x = 300;
-	player1.body.center.y = h;
-	player2.body.center.x = 0;
-	player2.body.center.y = h / 2;
+	player[0] = new Ball;
+	player[0]->build();
+	player[0]->id = 0;
+	player[0]->body.center.x = -600;
+	player[0]->body.center.y = (GLfloat)game.window.height;
+
+	player[1] = new Boxy;
+	player[1]->build();
+	player[1]->id = 1;
+	player[1]->body.center.x = -500;
+	player[1]->body.center.y = (GLfloat)game.window.height / 2;
+
+	player[2] = new Ball;
+	player[2]->build();
+	player[2]->id = 2;
+	player[2]->body.center.x = 600;
+	player[2]->body.center.y = (GLfloat)game.window.height;
+
+	player[3] = new Boxy;
+	player[3]->build();
+	player[3]->id = 3;
+	player[3]->body.center.x = 500;
+	player[3]->body.center.y = (GLfloat)game.window.height / 2;
 }
 
 void Time_Level::transition_handler()
@@ -461,10 +528,11 @@ void Time_Level::handler()
 
 	render();
 
-	player1.update_position(game.level3);
-	player1.render();
-	player2.update_position(game.level3);
-	player2.render();
+	for (int i = 0; i < MAX_PLAYER; i++)
+	{
+		player[i]->update_position(game.level1);
+		player[i]->render();
+	}
 }
 
 void Time_Level::render()

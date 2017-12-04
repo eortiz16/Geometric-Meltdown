@@ -53,6 +53,6 @@ void MainMenu::handler()
 	game.icons.pill.render();
 	game.sicons.title.render();
 	game.sicons.pill.render();
-	game.level1.player1.render();
+	game.level1.player[0]->render();
 }
 

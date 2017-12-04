@@ -25,7 +25,7 @@ void Player::update_reflection_x()
 	reflection.center.x = body.center.x + offset;
 }
 
-Ball::Ball()
+void Ball::build()
 {
 	//Default Character Values
 	JUMP_MAX = 4;
@@ -69,6 +69,13 @@ Ball::Ball()
 	eye.color.r = 0;
 	eye.color.g = 0;
 	eye.color.b = 0;
+
+	//Default ID
+	id = 0;
+
+	//Default Center
+	body.center.x = 0;
+	body.center.y = 0;
 
 	//Default Direction
 	direction = RIGHT;
@@ -121,12 +128,10 @@ void Ball::physics(Level lvl)
 			jumpCount = 0;
 			velocity.y *= -0.25f;
 			body.center.y = lvl.platform[i].body.top_bnd + body.height / 2;
+			break;
 		}
 		else
 			on_ground = false;
-
-		if (on_ground)
-			break;
 	}
 
 	//affect horizontal momentum with friction
@@ -173,7 +178,7 @@ void Ball::move()
 		velocity.y = 1.25f;
 }
 
-Boxy::Boxy()
+void Boxy::build()
 {
 	//Default Character Values
 	JUMP_MAX = 2;
@@ -216,6 +221,13 @@ Boxy::Boxy()
 	eye.color.g = 0;
 	eye.color.b = 0;
 
+	//Default ID
+	id = 0;
+
+	//Default Center
+	body.center.x = 0;
+	body.center.y = 0;
+
 	//Default Direction
 	direction = LEFT;
 }
@@ -257,22 +269,21 @@ void Boxy::physics(Level lvl)
 
 	for (int i = 0; i < MAX_PLATFORM; i++)
 	{
+		lvl.platform[i].body.boundary_assignment();
 		if (body.bottom_bnd <= lvl.platform[i].body.top_bnd
 			&& body.bottom_bnd > lvl.platform[i].body.bottom_bnd
-			&& body.center.x >= lvl.platform[i].body.left_bnd
-			&& body.center.x <= lvl.platform[i].body.right_bnd
+			&& body.right_bnd >= lvl.platform[i].body.left_bnd
+			&& body.left_bnd <= lvl.platform[i].body.right_bnd
 			&& velocity.y <= 0.0)
 		{
 			on_ground = true;
 			jumpCount = 0;
 			velocity.y *= -0.25f;
 			body.center.y = lvl.platform[i].body.top_bnd + body.height / 2;
+			break;
 		}
 		else
 			on_ground = false;
-
-		if (on_ground)
-			break;
 	}
 
 	//affect horizontal momentum with friction

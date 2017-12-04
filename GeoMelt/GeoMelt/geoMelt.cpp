@@ -21,9 +21,9 @@ Game::Game()
 	window.width = HDX;
 	window.height = HDY;
 	render = FIELD;
-	level1.build_level();
-	level2.build_level();
-	level3.build_level();
+	level1.build();
+	level2.build();
+	level3.build();
 }
 
 void Game::display_details()
@@ -167,29 +167,35 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 				if (game.render == TIME)
 					game.level3.transition = true;
 			}
+			break;
 		case GLFW_KEY_LEFT:
 			if (action == GLFW_PRESS)
 			{
-				game.level1.player1.direction = LEFT;
-				game.level1.player2.direction = LEFT;
-				game.level1.player1.move();
-				game.level1.player2.move();
+				for (int i = 0; i < MAX_PLAYER; i++)
+				{
+					game.level1.player[i]->direction = LEFT;
+					game.level1.player[i]->move();
+				}
+	
 			}
 			break;
 		case GLFW_KEY_RIGHT:
 			if (action == GLFW_PRESS)
 			{
-				game.level1.player1.direction = RIGHT;
-				game.level1.player2.direction = RIGHT;
-				game.level1.player1.move();
-				game.level1.player2.move();
+				for (int i = 0; i < MAX_PLAYER; i++)
+				{
+					game.level1.player[i]->direction = RIGHT;
+					game.level1.player[i]->move();
+				}
 			}
 			break;
 		case GLFW_KEY_SPACE:
 			if (action == GLFW_PRESS)
 			{
-				game.level1.player1.jump();
-				game.level1.player2.jump();
+				for (int i = 0; i < MAX_PLAYER; i++)
+				{
+					game.level1.player[i]->jump();
+				}
 			}
 			break;
 		default: 
