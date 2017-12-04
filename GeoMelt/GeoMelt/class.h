@@ -1,5 +1,6 @@
 #include "headers.h"
 #include "ppm.h"
+
 #pragma once
 
 #define GRAVITY 0.1
@@ -105,7 +106,7 @@ public:
 	virtual void jump(void) = 0;
 	virtual void move(void) = 0;
 	virtual void build(void) = 0;
-	virtual ~Player() { "PLAYERD"; }
+	virtual ~Player() {}
 };
 class Ball: public Player {
 public:
@@ -117,7 +118,7 @@ public:
 	void jump();
 	void exhale();
 	void build();
-	~Ball() { "BALLD"; }
+	~Ball() {}
 };
 class Boxy : public Player {
 public:
@@ -127,7 +128,7 @@ public:
 	void move();
 	void jump();
 	void build();
-	~Boxy() { "BOXYD"; }
+	~Boxy() {}
 };
 class Platform {
 public:
@@ -140,7 +141,6 @@ public:
 class MainMenu : public Menu {
 public:
 	void handler();
-	//void render();
 	void build_main_menu();
 };
 class PauseMenu : public Menu {
@@ -188,27 +188,25 @@ public:
 	Palette_BG palette;
 	Platform platform[MAX_PLATFORM];
 	Player *player[MAX_PLAYER] = {NULL}; //Polymorphism
-	~Level();
+	virtual ~Level() {}
 };
 class Field_Level : public Level {
 public:
 	Shape sun;
 	Cloud clouds[MAX_CLOUD];
-	//Ball player1;
-	//Boxy player2;
 	void render();
 	void handler();
 	void build();
+	~Field_Level();
 };
 class Night_Level : public Level {
 public:
 	Star stars[MAX_STAR];
 	Shape moon;
-	//Ball player1;
-	//Boxy player2;
 	void render();
 	void handler();
 	void build();
+	~Night_Level();
 };
 class Time_Level : public Level {
 public:
@@ -218,13 +216,12 @@ public:
 	Shape moon;
 	Star stars[MAX_STAR]; //change opacity during day
 	Cloud clouds[MAX_CLOUD];
-	//Ball player1;
-	//Boxy player2;
 	void render();
 	void handler();
 	void transition_handler();
 	void transition_to(Color *clr);
 	void build();
+	~Time_Level();
 };
 //
 class Image {

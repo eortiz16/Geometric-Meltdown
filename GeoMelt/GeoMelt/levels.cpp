@@ -3,15 +3,6 @@
 
 extern Game game;
 
-Level::~Level()
-{
-	for (int i = 0; i < MAX_PLAYER; i++)
-	{
-		player[i] = NULL;
-		delete player[i];
-	}
-}
-
 void Field_Level::build()
 {
 	srand((unsigned int)time(NULL));
@@ -132,6 +123,15 @@ void Field_Level::render()
 
 	for (int i = 0; i < MAX_STROKE; i++)
 		platform[0].body.stroke[i].render_line();
+}
+
+Field_Level::~Field_Level()
+{
+	for (int i = 0; i < MAX_PLAYER; i++)
+	{
+		player[i] = NULL;
+		delete player[i];
+	}
 }
 
 void Cloud::handler()
@@ -321,6 +321,15 @@ void Night_Level::render()
 		platform[i].body.render_quad();
 		for (int j = 0; j < MAX_STROKE; j++)
 			platform[i].body.stroke[j].render_line();
+	}
+}
+
+Night_Level::~Night_Level()
+{
+	for (int i = 0; i < MAX_PLAYER; i++)
+	{
+		player[i] = NULL;
+		delete player[i];
 	}
 }
 
@@ -588,6 +597,15 @@ void Time_Level::transition_to(Color *clr)
 		
 		transition = false;
 		time_of_day++;
+	}
+}
+
+Time_Level::~Time_Level()
+{
+	for (int i = 0; i < MAX_PLAYER; i++)
+	{
+		player[i] = NULL;
+		delete player[i];
 	}
 }
 

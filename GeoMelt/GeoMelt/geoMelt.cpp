@@ -77,7 +77,6 @@ int main(void)
 	glfwMakeContextCurrent(window);
 	glfwSetKeyCallback(window, key_callback);
 
-	
 	//Whlie Window is Open
 	while (!glfwWindowShouldClose(window))
 	{
