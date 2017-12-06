@@ -65,6 +65,53 @@ void Background::render()
 	glfwPollEvents();
 }
 
+void RoundCornerBox::render()
+{
+	vertical_box.render_quad();
+	horizontal_box.render_quad();
+
+	for (int j = 0; j < 4; j++)
+	{
+		corner[j].render_circle();
+	}
+}
+
+void RoundCornerBox::build()
+{
+	int size = 100; // diameter of circle
+
+	vertical_box.height = height; // actual height
+	
+	horizontal_box.center.x = vertical_box.center.x;
+	horizontal_box.center.y = vertical_box.center.y;
+	horizontal_box.width = width; // actual width
+
+	vertical_box.width = horizontal_box.width - size;
+	horizontal_box.height = vertical_box.height - size;
+	horizontal_box.boundary_assignment();
+	vertical_box.boundary_assignment();
+
+	//bottom left
+	corner[0].radius = size / 2;
+	corner[0].center.x = vertical_box.left_bnd;
+	corner[0].center.y = horizontal_box.bottom_bnd;
+
+	//top left
+	corner[1].radius = size / 2;
+	corner[1].center.x = vertical_box.left_bnd;
+	corner[1].center.y = horizontal_box.top_bnd;
+
+	//top right
+	corner[2].radius = size / 2;
+	corner[2].center.x = vertical_box.right_bnd;
+	corner[2].center.y = horizontal_box.top_bnd;
+
+	//bottom right
+	corner[3].radius = size / 2;
+	corner[3].center.x = vertical_box.right_bnd;
+	corner[3].center.y = horizontal_box.bottom_bnd;
+}
+
 void Shape::stroke_assignment()
 {
 	stroke[0].from.x = center.x - width / 2;

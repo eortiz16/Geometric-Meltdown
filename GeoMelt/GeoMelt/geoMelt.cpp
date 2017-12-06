@@ -16,12 +16,12 @@ Game::Game()
 	//picons.set_attributes();
 	//icons.set_attributes();
 	//sicons.set_attributes();
-	mainMenu.build();
-	charSelMenu.build();
-
 	window.width = HDX;
 	window.height = HDY;
-	render = FIELD;
+	render = CHARSEL;
+
+	mainMenu.build();
+	charSelMenu.build();
 	level1.build();
 	level2.build();
 	level3.build();
@@ -148,6 +148,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 				//Return Key changes Level
 				switch (game.render)
 				{
+				case CHARSEL:
+					game.render = FIELD;
+					break;
 				case FIELD:
 					game.render = NIGHT;
 					break;
@@ -158,7 +161,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 					game.render = MAIN;
 					break;
 				case MAIN:
-					game.render = FIELD;
+					game.render = CHARSEL;
 					break;
 				}
 			}

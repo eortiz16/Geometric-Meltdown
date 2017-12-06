@@ -17,7 +17,7 @@ void Field_Level::build()
 	background.body.width = 2 * w;
 	background.body.height = 2 * h;
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < CORNERS; i++)
 		if (i != 1 && i != 2) {
 			background.color[i].r = 0;
 			background.color[i].g = 155;
@@ -211,7 +211,7 @@ void Night_Level::build()
 	background.body.height = 2 * h;
 
 	//Color assignment
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < CORNERS; i++)
 		if (i != 1 && i != 2) {
 			background.color[i].r = 70;
 			background.color[i].g = 50;

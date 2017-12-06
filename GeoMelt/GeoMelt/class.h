@@ -157,16 +157,12 @@ public:
 };
 class RoundCornerBox {
 public:
+	GLfloat width, height;
 	Shape corner[CORNERS];
 	Shape vertical_box;
 	Shape horizontal_box;
-};
-class CharacterSelectMenu {
-public:
-	RoundCornerBox char_select_box[MAX_PLAYER];
-	Shape cursor[MAX_PLAYER];
-	void handler();
 	void build();
+	void render();
 };
 class Palette_Character {
 public:
@@ -197,6 +193,17 @@ public:
 	bool transition_done[4];
 	void render();
 };
+
+class CharacterSelectMenu {
+public:
+	Background background;
+	RoundCornerBox select_box[MAX_PLAYER];
+	RoundCornerBox select_box_outline[MAX_PLAYER];
+	Shape cursor[MAX_PLAYER];
+	void handler();
+	void build();
+};
+
 class Level {
 public:
 	Background background;

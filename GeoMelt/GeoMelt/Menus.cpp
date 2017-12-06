@@ -58,75 +58,78 @@ void MainMenu::handler()
 
 void CharacterSelectMenu::build()
 {
+	//Assigning Window Dimensions
+	GLfloat w = (GLfloat)game.window.width;
+	GLfloat h = (GLfloat)game.window.height;
+
+	//Background Color Assignment
+	background.body.center.x = 0;
+	background.body.center.y = 0;
+	background.body.width = 2 * w;
+	background.body.height = 2 * h;
+
+	for (int i = 0; i < CORNERS; i++)
+	{
+		background.color[i].r = 51;
+		background.color[i].g = 153;
+		background.color[i].b = 255;
+	}
+	
 	//assign center of each char select bg
-	int xSpacing = -3.0f * HDX / 4.0f;
+	float xSpacing = -3.0f * HDX / 4.0f;
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
-		int size = 100;
-		char_select_box[i].vertical_box.center.x = xSpacing;
-		char_select_box[i].vertical_box.height = HDY / 2.0f; // actual height
-		char_select_box[i].vertical_box.color.r = 255;
-		char_select_box[i].vertical_box.color.g = 255;
-		char_select_box[i].vertical_box.color.b = 255;
+		select_box[i].vertical_box.center.x = xSpacing;
+		select_box[i].vertical_box.center.y = -HDY / 2.5f;
+		select_box[i].width = HDX / 3.0f;
+		select_box[i].height = 3.0f * HDY / 4.0f;
 
-		char_select_box[i].horizontal_box.center.x = xSpacing;
-		char_select_box[i].horizontal_box.width = HDX / 4.5f; // actual width
-		
-		char_select_box[i].horizontal_box.color.r = 255;
-		char_select_box[i].horizontal_box.color.g = 255;
-		char_select_box[i].horizontal_box.color.b = 255;
-		
-		char_select_box[i].vertical_box.width = char_select_box[i].horizontal_box.width - size;
-		char_select_box[i].horizontal_box.height = char_select_box[i].vertical_box.height - size;
-		char_select_box[i].horizontal_box.boundary_assignment();
-		char_select_box[i].vertical_box.boundary_assignment();
+		select_box_outline[i].vertical_box.center.x = xSpacing;
+		select_box_outline[i].vertical_box.center.y = -HDY / 2.5f;
+		select_box_outline[i].width = select_box[i].width + 20;
+		select_box_outline[i].height = select_box[i].height + 20;
+
+		select_box[i].vertical_box.color.r = 255;
+		select_box[i].vertical_box.color.g = 255;
+		select_box[i].vertical_box.color.b = 255;
+
+		select_box[i].horizontal_box.color.r = 255;
+		select_box[i].horizontal_box.color.g = 255;
+		select_box[i].horizontal_box.color.b = 255;
+
+		select_box_outline[i].vertical_box.color.r = 0;
+		select_box_outline[i].vertical_box.color.g = 0;
+		select_box_outline[i].vertical_box.color.b = 0;
+
+		select_box_outline[i].horizontal_box.color.r = 0;
+		select_box_outline[i].horizontal_box.color.g = 0;
+		select_box_outline[i].horizontal_box.color.b = 0;
+
+		for (int j = 0; j < CORNERS; j++)
+		{
+			select_box[i].corner[j].color.r = 255;
+			select_box[i].corner[j].color.g = 255;
+			select_box[i].corner[j].color.b = 255;
+
+			select_box_outline[i].corner[j].color.r = 0;
+			select_box_outline[i].corner[j].color.g = 0;
+			select_box_outline[i].corner[j].color.b = 0;
+		}
+
+		select_box[i].build();
+		select_box_outline[i].build();
 
 		xSpacing += HDX / 2.0f;
-		
-		//bottom left
-		char_select_box[i].corner[0].radius = size / 2;
-		char_select_box[i].corner[0].center.x = char_select_box[i].vertical_box.left_bnd;
-		char_select_box[i].corner[0].center.y = char_select_box[i].horizontal_box.bottom_bnd;
-		char_select_box[i].corner[0].color.r = 255;
-		char_select_box[i].corner[0].color.g = 255;
-		char_select_box[i].corner[0].color.b = 255;
-
-		//top left
-		char_select_box[i].corner[1].radius = size / 2;
-		char_select_box[i].corner[1].center.x = char_select_box[i].vertical_box.left_bnd;
-		char_select_box[i].corner[1].center.y = char_select_box[i].horizontal_box.top_bnd;
-		char_select_box[i].corner[1].color.r = 255;
-		char_select_box[i].corner[1].color.g = 255;
-		char_select_box[i].corner[1].color.b = 255;
-
-		//top right
-		char_select_box[i].corner[2].radius = size / 2;
-		char_select_box[i].corner[2].center.x = char_select_box[i].vertical_box.right_bnd;
-		char_select_box[i].corner[2].center.y = char_select_box[i].horizontal_box.top_bnd;
-		char_select_box[i].corner[2].color.r = 255;
-		char_select_box[i].corner[2].color.g = 255;
-		char_select_box[i].corner[2].color.b = 255;
-
-		//bottom right
-		char_select_box[i].corner[3].radius = size / 2;
-		char_select_box[i].corner[3].center.x = char_select_box[i].vertical_box.right_bnd;
-		char_select_box[i].corner[3].center.y = char_select_box[i].horizontal_box.bottom_bnd;
-		char_select_box[i].corner[3].color.r = 255;
-		char_select_box[i].corner[3].color.g = 255;
-		char_select_box[i].corner[3].color.b = 255;
 	}
 }
 
 void CharacterSelectMenu::handler()
 {
-	for (int i = 0; i < 4; i++)
-	{
-		char_select_box[i].vertical_box.render_quad();
-		char_select_box[i].horizontal_box.render_quad();
+	background.render();
 
-		for (int j = 0; j < 4; j++)
-		{
-			char_select_box[i].corner[j].render_circle();
-		}
+	for (int i = 0; i < MAX_PLAYER; i++)
+	{
+		select_box_outline[i].render();
+		select_box[i].render();
 	}
 }
