@@ -104,9 +104,10 @@ int main(void)
 			case PAUSE:
 			case LEVELSEL:
 			case CHARSEL:
+				game.charSelMenu.handler();
+				break;
 			case FIELD:
 				game.level1.handler();
-				//game.charSelMenu.handler();
 				break;
 			case NIGHT:
 				game.level2.handler();
