@@ -1,7 +1,6 @@
 #include "headers.h"
 
-extern Game game;
-
+/*
 void MainMenu::build()
 {
 	//DevIL below
@@ -55,81 +54,54 @@ void MainMenu::handler()
 	game.sicons.pill.render();
 	game.level1.player[0]->render();
 }
+*/
 
-void CharacterSelectMenu::build()
+void CharacterSelectMenu::build(Resolution res, Palette pal)
 {
-	//Assigning Window Dimensions
-	GLfloat w = (GLfloat)game.window.width;
-	GLfloat h = (GLfloat)game.window.height;
-
-	//Background Color Assignment
+	//Background Attribute Assignment
 	background.body.center.x = 0;
 	background.body.center.y = 0;
-	background.body.width = 2 * w;
-	background.body.height = 2 * h;
+	background.body.width = 2 * res.width;
+	background.body.height = 2 * res.height;
 
 	for (int i = 0; i < CORNERS; i++)
 	{
-		background.color[i].r = 51;
-		background.color[i].g = 153;
-		background.color[i].b = 255;
+		background.color[i].r = pal.lightGrey.r;
+		background.color[i].g = pal.lightGrey.g;
+		background.color[i].b = pal.lightGrey.b;
 	}
 	
 	//assign center of each char select bg
-	float xSpacing = -3.0f * HDX / 4.0f;
+	float wSpace = -3.0f * res.width / 4.0f;
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
-		select_box[i].vertical_box.center.x = xSpacing;
-		select_box[i].vertical_box.center.y = -HDY / 2.5f;
-		select_box[i].width = HDX / 3.0f;
-		select_box[i].height = 3.0f * HDY / 4.0f;
+		selectBox[i].stroke = 30.0f;
 
-		select_box_outline[i].vertical_box.center.x = xSpacing;
-		select_box_outline[i].vertical_box.center.y = -HDY / 2.5f;
-		select_box_outline[i].width = select_box[i].width + 20;
-		select_box_outline[i].height = select_box[i].height + 20;
+		selectBox[i].box.center.x = wSpace;
+		selectBox[i].box.center.y = -res.height / 2.5f;
+		selectBox[i].box.width = res.width / 3.0f;
+		selectBox[i].box.height = 3.0f * res.height / 4.0f;
+		selectBox[i].box.build();
+		selectBox[i].box.set_color(pal.white);
 
-		select_box[i].vertical_box.color.r = 255;
-		select_box[i].vertical_box.color.g = 255;
-		select_box[i].vertical_box.color.b = 255;
+		selectBox[i].outline.center.x = selectBox[i].box.center.x;
+		selectBox[i].outline.center.y = selectBox[i].box.center.y;
+		selectBox[i].outline.width = selectBox[i].box.width + selectBox[i].stroke;
+		selectBox[i].outline.height = selectBox[i].box.height + selectBox[i].stroke;
+		selectBox[i].outline.build();
+		selectBox[i].outline.set_color(pal.black);
 
-		select_box[i].horizontal_box.color.r = 255;
-		select_box[i].horizontal_box.color.g = 255;
-		select_box[i].horizontal_box.color.b = 255;
-
-		select_box_outline[i].vertical_box.color.r = 0;
-		select_box_outline[i].vertical_box.color.g = 0;
-		select_box_outline[i].vertical_box.color.b = 0;
-
-		select_box_outline[i].horizontal_box.color.r = 0;
-		select_box_outline[i].horizontal_box.color.g = 0;
-		select_box_outline[i].horizontal_box.color.b = 0;
-
-		for (int j = 0; j < CORNERS; j++)
-		{
-			select_box[i].corner[j].color.r = 255;
-			select_box[i].corner[j].color.g = 255;
-			select_box[i].corner[j].color.b = 255;
-
-			select_box_outline[i].corner[j].color.r = 0;
-			select_box_outline[i].corner[j].color.g = 0;
-			select_box_outline[i].corner[j].color.b = 0;
-		}
-
-		select_box[i].build();
-		select_box_outline[i].build();
-
-		xSpacing += HDX / 2.0f;
+		wSpace += res.width / 2.0f;
 	}
 }
 
 void CharacterSelectMenu::handler()
 {
 	background.render();
-
+	
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
-		select_box_outline[i].render();
-		select_box[i].render();
+		selectBox[i].outline.render();
+		selectBox[i].box.render();
 	}
 }

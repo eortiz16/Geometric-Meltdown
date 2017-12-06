@@ -48,24 +48,37 @@ public:
 	Vec from, to;
 	Color color;
 	void render_line();
+	void set_color(Color clr);
 	Line();
 };
-class Shape {
+class Boundary {
+public:
+	GLfloat top;
+	GLfloat bottom;
+	GLfloat left;
+	GLfloat right;
+};
+class Shape { // Make a circle and square inheretance class
 public:
 	GLfloat width, height;
 	GLfloat radius;
-	GLfloat top_bnd;
-	GLfloat bottom_bnd;
-	GLfloat left_bnd;
-	GLfloat right_bnd;
+	Boundary boundary;
+	Color color;
 	Vec center;
 	Line stroke[MAX_STROKE];
 	void stroke_assignment();
 	void boundary_assignment();
 	void render_quad();
 	void render_circle();
-	Color color;
+	void set_color(Color clr);
 };
+class Circle : public Shape {
+public:
+};
+class Quad :public Shape {
+public:
+};
+class Resolution;
 class Cloud {
 public:
 	Shape body[3];
@@ -73,14 +86,14 @@ public:
 	int speed;
 	void render();
 	void physics();
-	void set_cloud_group();
-	void handler();
+	void set_cloud_group(Resolution res);
+	void handler(Resolution res);
 };
 class Star {
 public:
 	Shape body;
 	GLfloat offset;
-	void compute_coordinates(int count);
+	void compute_coordinates(int count, Resolution res);
 	void change_color();
 };
 class Particles {
@@ -142,8 +155,8 @@ public:
 };
 class MainMenu : public Menu {
 public:
-	void handler();
-	void build();
+	//void handler();
+	//void build();
 };
 class PauseMenu : public Menu {
 public:
@@ -158,23 +171,39 @@ public:
 class RoundCornerBox {
 public:
 	GLfloat width, height;
+	Vec center;
 	Shape corner[CORNERS];
-	Shape vertical_box;
-	Shape horizontal_box;
+	Shape vRectangle; //vertical
+	Shape hRectangle; //horizontal
+	void set_color(Color clr);
 	void build();
 	void render();
 };
-class Palette_Character {
+class CharSelBox {
 public:
-	Color Pink;
-	Color red;
-	Color green;
-	Color blue;
-	Color darkRed;
-	Color darkGreen;
-	Color darkBlue;
-	Color Purple;
+	RoundCornerBox box;
+	RoundCornerBox outline;
+	GLfloat stroke;
 };
+class Palette{
+public:
+	Color sun;
+	Color moon;
+	Color platform;
+	Color black;
+	Color grey;
+	Color darkGrey;
+	Color lightGrey;
+	Color white;
+	Color red;
+	Color darkRed;
+	Color green;
+	Color darkGreen;
+	Color blue;
+	Color darkBlue;
+	Palette();
+};
+
 class Palette_BG {
 public:
 	Color day[CORNERS];
@@ -192,16 +221,17 @@ public:
 	Color color[4];
 	bool transition_done[4];
 	void render();
+	void set_color(Color *clr);
 };
 
+class Resolution;
 class CharacterSelectMenu {
 public:
 	Background background;
-	RoundCornerBox select_box[MAX_PLAYER];
-	RoundCornerBox select_box_outline[MAX_PLAYER];
+	CharSelBox selectBox[MAX_PLAYER];
 	Shape cursor[MAX_PLAYER];
 	void handler();
-	void build();
+	void build(Resolution res, Palette pal);
 };
 
 class Level {
@@ -217,8 +247,8 @@ public:
 	Shape sun;
 	Cloud clouds[MAX_CLOUD];
 	void render();
-	void handler();
-	void build();
+	void handler(Level lvl, Resolution res);
+	void build(Resolution res, Palette pal);
 	~Field_Level();
 };
 class Night_Level : public Level {
@@ -226,8 +256,8 @@ public:
 	Star stars[MAX_STAR];
 	Shape moon;
 	void render();
-	void handler();
-	void build();
+	void handler(Level lvl, Resolution res);
+	void build(Resolution res, Palette pal);
 	~Night_Level();
 };
 class Time_Level : public Level {
@@ -239,10 +269,10 @@ public:
 	Star stars[MAX_STAR]; //change opacity during day
 	Cloud clouds[MAX_CLOUD];
 	void render();
-	void handler();
+	void handler(Level lvl, Resolution res);
 	void transition_handler();
 	void transition_to(Color *clr);
-	void build();
+	void build(Resolution res, Palette pal);
 	~Time_Level();
 };
 //
@@ -354,9 +384,9 @@ public:
 	void set_resolution();
 	const GLFWvidmode *monitor;
 	Resolution window;
-	MainMenu mainMenu;
+	//MainMenu mainMenu;
 	CharacterSelectMenu charSelMenu;
-	Palette_Character palette;
+	Palette palette;
 	State render;
 	ImageSet icons;
 	pImageSet picons;
@@ -365,5 +395,7 @@ public:
 	Night_Level level2;
 	Time_Level level3;
 	void render_triangle();
+	void keyfunc(GLFWwindow *window);
+	static void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	Game();
 };

@@ -1,8 +1,6 @@
 #include "headers.h"
 #include "player.h"
 
-extern Game game;
-
 void Player::update_reflection_x()
 {
 	//Takes the width resolution and scales down to a factor
@@ -115,16 +113,16 @@ void Ball::physics(Level lvl)
 
 	for (int i = 0; i < MAX_PLATFORM; i++)
 	{
-		if (body.bottom_bnd <= lvl.platform[i].body.top_bnd
-			&& body.bottom_bnd > lvl.platform[i].body.bottom_bnd
-			&& body.center.x >= lvl.platform[i].body.left_bnd
-			&& body.center.x <= lvl.platform[i].body.right_bnd
+		if (body.boundary.bottom <= lvl.platform[i].body.boundary.top
+			&& body.boundary.bottom > lvl.platform[i].body.boundary.bottom
+			&& body.center.x >= lvl.platform[i].body.boundary.left
+			&& body.center.x <= lvl.platform[i].body.boundary.right
 			&& velocity.y <= 0.0)
 		{
 			on_ground = true;
 			jumpCount = 0;
 			velocity.y *= -0.25f;
-			body.center.y = lvl.platform[i].body.top_bnd + body.height / 2;
+			body.center.y = lvl.platform[i].body.boundary.top + body.height / 2;
 			break;
 		}
 		else
@@ -264,16 +262,16 @@ void Boxy::physics(Level lvl)
 	for (int i = 0; i < MAX_PLATFORM; i++)
 	{
 		lvl.platform[i].body.boundary_assignment();
-		if (body.bottom_bnd <= lvl.platform[i].body.top_bnd
-			&& body.bottom_bnd > lvl.platform[i].body.bottom_bnd
-			&& body.right_bnd >= lvl.platform[i].body.left_bnd
-			&& body.left_bnd <= lvl.platform[i].body.right_bnd
+		if (body.boundary.bottom <= lvl.platform[i].body.boundary.top
+			&& body.boundary.bottom > lvl.platform[i].body.boundary.bottom
+			&& body.boundary.right >= lvl.platform[i].body.boundary.left
+			&& body.boundary.left <= lvl.platform[i].body.boundary.right
 			&& velocity.y <= 0.0)
 		{
 			on_ground = true;
 			jumpCount = 0;
 			velocity.y *= -0.25f;
-			body.center.y = lvl.platform[i].body.top_bnd + body.height / 2;
+			body.center.y = lvl.platform[i].body.boundary.top + body.height / 2;
 			break;
 		}
 		else

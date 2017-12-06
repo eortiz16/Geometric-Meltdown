@@ -1,64 +1,43 @@
 #include "headers.h"
 #include "levels.h"
 
-extern Game game;
-
-void Field_Level::build()
+void Field_Level::build(Resolution res, Palette pal)
 {
 	srand((unsigned int)time(NULL));
-	
-	//Assigning Window Dimensions
-	GLfloat w = (GLfloat)game.window.width;
-	GLfloat h = (GLfloat)game.window.height;
 
 	//Background Color Assignment
 	background.body.center.x = 0;
 	background.body.center.y = 0;
-	background.body.width = 2 * w;
-	background.body.height = 2 * h;
+	background.body.width = 2.0f * res.width;
+	background.body.height = 2.0f * res.height;
 
-	for (int i = 0; i < CORNERS; i++)
-		if (i != 1 && i != 2) {
-			background.color[i].r = 0;
-			background.color[i].g = 155;
-			background.color[i].b = 255;
-		} else {
-			background.color[i].r = 0;
-			background.color[i].g = 60;
-			background.color[i].b = 255;
-		}
+	background.set_color(palette.day);
 
 	//Sun Attributes
-	sun.radius = h;
-	sun.color.r = 255;
-	sun.color.g = 255;
-	sun.color.b = 100;
-	sun.center.x = w;
-	sun.center.y = h;
+	sun.radius = (GLfloat)res.height;
+	sun.set_color(pal.sun);
+	sun.center.x = (GLfloat)res.width;
+	sun.center.y = (GLfloat)res.height;
 
 	//Floor Center
 	platform[0].body.center.x = 0.0; 
 
 	//Floor Dimensions
-	platform[0].body.width = 5 * w / 6;
-	platform[0].body.height = h / 20.0f;
-	platform[0].body.center.y = -h / 3.0f;
+	platform[0].body.width = 5.0f * res.width / 6.0f;
+	platform[0].body.height = res.height / 20.0f;
+	platform[0].body.center.y = -res.height / 3.0f;
 
 	//Floor Boundaries - For Physics
 	platform[0].body.boundary_assignment();
 
 	//Assign Color to Floor
-	platform[0].body.color.r = 99;
-	platform[0].body.color.g = 160;
-	platform[0].body.color.b = 0;
+	platform[0].body.set_color(pal.platform);
 
 	//Assign Floor Outline Attributes
 	for (int i = 0; i < MAX_STROKE; i++)
 	{
 		platform[0].body.stroke[i].width = 2.0;
-		platform[0].body.stroke[i].color.r = 255;
-		platform[0].body.stroke[i].color.g = 255;
-		platform[0].body.stroke[i].color.b = 255;
+		platform[0].body.stroke[i].set_color(pal.black);
 	}
 
 	//Floor Stroke Assignment
@@ -74,41 +53,41 @@ void Field_Level::build()
 			clouds[i].direction = LEFT ;
 		
 		//Assign Uniform Cloud Groups
-		clouds[i].set_cloud_group();
+		clouds[i].set_cloud_group(res);
 	}
 
 	//Player Position
 	player[0] = new Ball;
 	player[0]->build();
 	player[0]->body.center.x = -600;
-	player[0]->body.center.y = (GLfloat)game.window.height;
+	player[0]->body.center.y = (GLfloat)res.height;
 
 	player[1] = new Boxy;
 	player[1]->build();
 	player[1]->body.center.x = -500;
-	player[1]->body.center.y = (GLfloat)game.window.height / 2;
+	player[1]->body.center.y = (GLfloat)res.height / 2;
 
 	player[2] = new Ball;
 	player[2]->build();
 	player[2]->body.center.x = 600;
-	player[2]->body.center.y = (GLfloat)game.window.height;
+	player[2]->body.center.y = (GLfloat)res.height;
 
 	player[3] = new Boxy;
 	player[3]->build();
 	player[3]->body.center.x = 500;
-	player[3]->body.center.y = (GLfloat)game.window.height / 2;
+	player[3]->body.center.y = (GLfloat)res.height / 2;
 }
 
-void Field_Level::handler()
+void Field_Level::handler(Level lvl, Resolution res)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for (int i = 0; i < MAX_CLOUD; i++)
-		clouds[i].handler();
+		clouds[i].handler(res);
 	render();
 
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
-		player[i]->update_position(game.level1);
+		player[i]->update_position(lvl);
 		player[i]->render();
 	}
 }
@@ -134,7 +113,7 @@ Field_Level::~Field_Level()
 	}
 }
 
-void Cloud::handler()
+void Cloud::handler(Resolution res)
 {
 	GLfloat arg1;
 	GLfloat arg2;
@@ -144,20 +123,20 @@ void Cloud::handler()
 	arg2 = body[1].center.x - (body[1].radius * 3);
 
 	//Reset if Last Cloud Offscreen
-	if (arg1 < -game.window.width && direction == LEFT)
-		set_cloud_group();
-	else if (arg2 > game.window.width && direction == RIGHT)
-		set_cloud_group();
+	if (arg1 < -res.width && direction == LEFT)
+		set_cloud_group(res);
+	else if (arg2 > res.width && direction == RIGHT)
+		set_cloud_group(res);
 
 	//Conduct Cloud Physics
 	physics();
 }
 
-void Cloud::set_cloud_group()
+void Cloud::set_cloud_group(Resolution res)
 {
 	float clr = (float)(rand() % 55 + 200);
 	GLfloat size = (GLfloat)(rand() % CLOUD_RANGE) + CLOUD_START;
-	GLfloat level = (GLfloat)(rand() % (2 * game.window.height) + (-game.window.height));
+	GLfloat level = (GLfloat)(rand() % (2 * res.height) + (-res.height));
 
 	//For All Shapes Assign Color, Size, Y Coordinate
 	for (int i = 0; i < CLOUD_GROUP; i++)
@@ -170,9 +149,9 @@ void Cloud::set_cloud_group()
 	}
 
 	if (direction == LEFT) //Starting on Right
-		body[1].center.x = (GLfloat)game.window.width + body[0].radius;
+		body[1].center.x = (GLfloat)res.width + body[0].radius;
 	else //Starting on Left
-		body[1].center.x = -game.window.width - body[0].radius;
+		body[1].center.x = -res.width - body[0].radius;
 
 	body[0].center.x = body[1].center.x - body[1].radius;
 	body[2].center.x = body[1].center.x + body[1].radius;
@@ -198,47 +177,30 @@ void Cloud::physics()
 			body[i].center.x += speed;
 }
 
-void Night_Level::build()
+void Night_Level::build(Resolution res, Palette pal)
 {
-	//Assigning Window Dimensions
-	GLfloat w = (GLfloat)game.window.width;
-	GLfloat h = (GLfloat)game.window.height;
-
 	//Background Attributes
 	background.body.center.x = 0;
 	background.body.center.y = 0;
-	background.body.width = 2 * w;
-	background.body.height = 2 * h;
+	background.body.width = 2 * res.width;
+	background.body.height = 2 * res.height;
 
 	//Color assignment
-	for (int i = 0; i < CORNERS; i++)
-		if (i != 1 && i != 2) {
-			background.color[i].r = 70;
-			background.color[i].g = 50;
-			background.color[i].b = 120;
-		} else {
-			background.color[i].r = 0;
-			background.color[i].g = 25;
-			background.color[i].b = 120;
-		}
+	background.set_color(palette.night);
 
 	//Moon Attributes
-	moon.color.r = 225;
-	moon.color.g = 225; 
-	moon.color.b = 214;
-	moon.center.x = w / 2;
-	moon.center.y = h / 2;
-	moon.radius = h / 2;
+	moon.set_color(pal.moon);
+	moon.center.x = res.width / 2;
+	moon.center.y = res.height / 2;
+	moon.radius = res.height / 2;
 
 	//Star Attributes
 	for (int i = 0; i < MAX_STAR; i++)
 	{
 		stars[i].offset = rnd();
 		stars[i].body.radius = 3;
-		stars[i].body.color.r = 255;
-		stars[i].body.color.g = 255;
-		stars[i].body.color.b = 255;
-		stars[i].compute_coordinates(i);
+		stars[i].body.set_color(pal.white);
+		stars[i].compute_coordinates(i, res);
 	}
 
 	//Platform Horizontal Center
@@ -248,14 +210,14 @@ void Night_Level::build()
 	platform[3].body.center.x = 750;
 
 	//Platform Dimensions
-	platform[0].body.width = 5 * w / 6;
-	platform[0].body.height = h / 20;
-	platform[0].body.center.y = -h / 3.0f;
+	platform[0].body.width = 5 * res.width / 6;
+	platform[0].body.height = res.height / 20;
+	platform[0].body.center.y = -res.height / 3.0f;
 
 	for (int i = 1; i < MAX_PLATFORM; i++)
 	{
-		platform[i].body.width = w / 4;
-		platform[i].body.height = h / 20;
+		platform[i].body.width = res.width / 4;
+		platform[i].body.height = res.height / 20;
 		platform[i].body.center.y = 100;
 	}
 
@@ -265,9 +227,7 @@ void Night_Level::build()
 		platform[i].body.boundary_assignment();
 
 		//Assign Color to Floor
-		platform[i].body.color.r = 99;
-		platform[i].body.color.g = 160;
-		platform[i].body.color.b = 0;
+		platform[i].body.set_color(pal.platform);
 		
 		//Assign Floor Outline Attributes
 		platform[i].body.stroke_assignment();
@@ -277,32 +237,32 @@ void Night_Level::build()
 	player[0] = new Ball;
 	player[0]->build();
 	player[0]->body.center.x = -600;
-	player[0]->body.center.y = (GLfloat)game.window.height;
+	player[0]->body.center.y = (GLfloat)res.height;
 
 	player[1] = new Boxy;
 	player[1]->build();
 	player[1]->body.center.x = 0;
-	player[1]->body.center.y = (GLfloat)game.window.height / 2;
+	player[1]->body.center.y = (GLfloat)res.height / 2;
 
 	player[2] = new Ball;
 	player[2]->build();
 	player[2]->body.center.x = 600;
-	player[2]->body.center.y = (GLfloat)game.window.height;
+	player[2]->body.center.y = (GLfloat)res.height;
 
 	player[3] = new Boxy;
 	player[3]->build();
 	player[3]->body.center.x = 500;
-	player[3]->body.center.y = (GLfloat)game.window.height / 2;
+	player[3]->body.center.y = (GLfloat)res.height / 2;
 }
 
-void Night_Level::handler()
+void Night_Level::handler(Level lvl, Resolution res)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	render();
 	
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
-		player[i]->update_position(game.level2);
+		player[i]->update_position(lvl);
 		player[i]->render();
 	}
 }
@@ -333,10 +293,10 @@ Night_Level::~Night_Level()
 	}
 }
 
-void Star::compute_coordinates(int count)
+void Star::compute_coordinates(int count, Resolution res)
 {
-	int w = 2 * game.window.width;
-	int h = 2 * game.window.height;
+	int w = 2 * res.width;
+	int h = 2 * res.height;
 	int r1 = rand() % 400 - 200;
 	int r2 = rand() % 400 - 200;
 	float horizonalPartition = (float)w / 8;
@@ -368,72 +328,48 @@ void Star::change_color()
 	}
 }
 
-void Time_Level::build()
+void Time_Level::build(Resolution res, Palette pal)
 {
 	srand((unsigned int)time(NULL));
 
-	//Assigning Window Dimensions
-	GLfloat w = (GLfloat)game.window.width;
-	GLfloat h = (GLfloat)game.window.height;
-
 	//Background Attribute Assignment
-	time_of_day = DAY;
+	time_of_day = EVENING;
 	background.body.center.x = 0;
 	background.body.center.y = 0;
-	background.body.width = 2 * w;
-	background.body.height = 2 * h;
+	background.body.width = 2 * res.width;
+	background.body.height = 2 * res.height;
 
 	transition = false;
 
 	//Initialize Background
-	for (int i = 0; i < 4; i++)
-	{
-		background.transition_done[i] = false;
-		if (i != 1 && i != 2) {
-			background.color[i].r = palette.day[i].r;
-			background.color[i].g = palette.day[i].g;
-			background.color[i].b = palette.day[i].b;
-		}
-		else 
-		{
-			background.color[i].r = palette.day[i].r;
-			background.color[i].g = palette.day[i].g;
-			background.color[i].b = palette.day[i].b;
-		}
-	}
+	background.set_color(palette.evening);
 
 	//Sun Attributes
-	sun.radius = h;
-	sun.color.r = 255;
-	sun.color.g = 255;
-	sun.color.b = 100;
-	sun.center.x = w;
-	sun.center.y = h;
+	sun.radius = res.height;
+	sun.set_color(pal.sun);
+	sun.center.x = res.width;
+	sun.center.y = res.height;
 
 	//Moon Attributes
-	moon.color.r = 225;
-	moon.color.g = 225;
-	moon.color.b = 214;
-	moon.center.x = w / 2;
-	moon.center.y = h / 2;
-	moon.radius = h / 2;
+	moon.set_color(pal.moon);
+	moon.center.x = res.width / 2;
+	moon.center.y = res.height / 2;
+	moon.radius = res.height / 2;
 
 	//Star Attributes
 	for (int i = 0; i < MAX_STAR; i++)
 	{
 		stars[i].offset = rnd();
 		stars[i].body.radius = 3;
-		stars[i].body.color.r = 255;
-		stars[i].body.color.g = 255;
-		stars[i].body.color.b = 255;
-		stars[i].compute_coordinates(i);
+		stars[i].body.set_color(pal.white);
+		stars[i].compute_coordinates(i, res);
 	}
 
 	//Floor Dimensions
-	platform[0].body.width = 5 * w / 6;
-	platform[0].body.height = h / 20;
+	platform[0].body.width = 5 * res.width / 6;
+	platform[0].body.height = res.height / 20;
 	platform[0].body.center.x = 0;
-	platform[0].body.center.y = -h / 3;
+	platform[0].body.center.y = -res.height / 3;
 
 	//Floor Boundaries - For Physics
 	platform[0].body.boundary_assignment();
@@ -447,9 +383,7 @@ void Time_Level::build()
 	for (int i = 0; i < MAX_STROKE; i++)
 	{
 		platform[0].body.stroke[i].width = 2.0;
-		platform[0].body.stroke[i].color.r = 255;
-		platform[0].body.stroke[i].color.g = 255;
-		platform[0].body.stroke[i].color.b = 255;
+		platform[0].body.stroke[i].set_color(pal.black);
 	}
 
 	//Floor Stroke Assignment
@@ -465,7 +399,7 @@ void Time_Level::build()
 			clouds[i].direction = LEFT;
 
 		//Assign Uniform Cloud Groups
-		clouds[i].set_cloud_group();
+		clouds[i].set_cloud_group(res);
 	}
 
 	//Player Position
@@ -473,22 +407,22 @@ void Time_Level::build()
 	player[0]->build();
 
 	player[0]->body.center.x = -600;
-	player[0]->body.center.y = (GLfloat)game.window.height;
+	player[0]->body.center.y = (GLfloat)res.height;
 
 	player[1] = new Boxy;
 	player[1]->build();
 	player[1]->body.center.x = -500;
-	player[1]->body.center.y = (GLfloat)game.window.height / 2;
+	player[1]->body.center.y = (GLfloat)res.height / 2;
 
 	player[2] = new Ball;
 	player[2]->build();
 	player[2]->body.center.x = 600;
-	player[2]->body.center.y = (GLfloat)game.window.height;
+	player[2]->body.center.y = (GLfloat)res.height;
 
 	player[3] = new Boxy;
 	player[3]->build();
 	player[3]->body.center.x = 500;
-	player[3]->body.center.y = (GLfloat)game.window.height / 2;
+	player[3]->body.center.y = (GLfloat)res.height / 2;
 }
 
 void Time_Level::transition_handler()
@@ -517,18 +451,18 @@ void Time_Level::transition_handler()
 		}
 }
 
-void Time_Level::handler()
+void Time_Level::handler(Level lvl, Resolution res)
 {
 	transition_handler();
 
 	for (int i = 0; i < MAX_CLOUD; i++)
-		clouds[i].handler(); //Cloud Physics
+		clouds[i].handler(res); //Cloud Physics
 
 	render();
 
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
-		player[i]->update_position(game.level1);
+		player[i]->update_position(lvl);
 		player[i]->render();
 	}
 }

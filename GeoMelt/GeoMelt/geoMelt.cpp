@@ -1,7 +1,6 @@
 #include "headers.h"
 #include "geoMelt.h"
 
-Game game;
 GLFWwindow *window;
 
 Game::Game()
@@ -18,13 +17,13 @@ Game::Game()
 	//sicons.set_attributes();
 	window.width = HDX;
 	window.height = HDY;
-	render = CHARSEL;
+	render = FIELD;
 
-	mainMenu.build();
-	charSelMenu.build();
-	level1.build();
-	level2.build();
-	level3.build();
+	//mainMenu.build();
+	charSelMenu.build(window, palette);
+	level1.build(window, palette);
+	level2.build(window, palette);
+	level3.build(window, palette);
 }
 
 void Game::display_details()
@@ -51,6 +50,8 @@ void Game::set_resolution()
 
 int main(void)
 {
+	Game game;
+
 	//Seed Random Number Generation
 	srand((unsigned int)time(0));
 
@@ -76,7 +77,7 @@ int main(void)
 	}
 
 	glfwMakeContextCurrent(window);
-	glfwSetKeyCallback(window, key_callback);
+	game.keyfunc(window);
 
 	//Whlie Window is Open
 	while (!glfwWindowShouldClose(window))
@@ -99,7 +100,7 @@ int main(void)
 		switch (game.render)
 		{
 			case MAIN:
-				game.mainMenu.handler();
+				//game.mainMenu.handler();
 				break;
 			case PAUSE:
 			case LEVELSEL:
@@ -107,13 +108,13 @@ int main(void)
 				game.charSelMenu.handler();
 				break;
 			case FIELD:
-				game.level1.handler();
+				game.level1.handler(game.level1, game.window);
 				break;
 			case NIGHT:
-				game.level2.handler();
+				game.level2.handler(game.level2, game.window);
 				break;
 			case TIME:
-				game.level3.handler();
+				game.level3.handler(game.level3, game.window);
 				break;
 			default:
 				break;
@@ -134,7 +135,7 @@ static void error_callback(int error, const char* description)
 	fputs(description, stderr);
 }
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	switch (key)
 	{
@@ -145,65 +146,111 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 		case GLFW_KEY_PAGE_UP:
 			if (action == GLFW_PRESS)
 			{
-				//Return Key changes Level
-				switch (game.render)
-				{
-				case CHARSEL:
-					game.render = FIELD;
-					break;
-				case FIELD:
-					game.render = NIGHT;
-					break;
-				case NIGHT:
-					game.render = TIME;
-					break;
-				case TIME:
-					game.render = MAIN;
-					break;
-				case MAIN:
-					game.render = CHARSEL;
-					break;
-				}
-			}
-			break;
-		case GLFW_KEY_DELETE:
-			if (action == GLFW_PRESS)
-			{
-				if (game.render == TIME)
-					game.level3.transition = true;
-			}
-			break;
-		case GLFW_KEY_LEFT:
-			if (action == GLFW_PRESS)
-			{
-				for (int i = 0; i < MAX_PLAYER; i++)
-				{
-					game.level1.player[i]->direction = LEFT;
-					game.level1.player[i]->move();
-				}
-	
-			}
-			break;
-		case GLFW_KEY_RIGHT:
-			if (action == GLFW_PRESS)
-			{
-				for (int i = 0; i < MAX_PLAYER; i++)
-				{
-					game.level1.player[i]->direction = RIGHT;
-					game.level1.player[i]->move();
-				}
-			}
-			break;
-		case GLFW_KEY_SPACE:
-			if (action == GLFW_PRESS)
-			{
-				for (int i = 0; i < MAX_PLAYER; i++)
-				{
-					game.level1.player[i]->jump();
-				}
+				//render_next();
 			}
 			break;
 		default: 
 			break;
 	}
 }
+
+void Game::keyfunc(GLFWwindow *window)
+{
+	glfwSetKeyCallback(window, key_callback);
+}
+
+
+/*
+class WindowManager {
+private:
+GLFWwindow* window_;
+GLFWmonitor* monitor_;
+Keyboard* keyboard_;
+...
+}
+
+
+https://gamedev.stackexchange.com/questions/58541/how-can-i-associate-a-key-callback-with-a-wrapper-class-instance
+WindowManager::WindowManager() {
+// set the window pointer to the keyboard object
+glfwSetUserPointer(window_, keyboard_);
+glfwSetKeyCallback(window_, key_callback_);
+// set it back to the window
+glfwSetUserPointer(window_, window_);
+// ...
+}
+
+void WindowManager::key_callback(GLFWwindow *window, int, int ,int, int) {
+keyboard_ *keyboard =
+static_cast<keyboard_*>(glfwGetUserPointer(window));
+switch(key) {
+case GLFW_KEY_ESCAPE:
+keyboard->reconfigure();
+break;
+}
+}
+*/
+
+/*
+case GLFW_KEY_PAGE_UP:
+if (action == GLFW_PRESS)
+{
+//Return Key changes Level
+switch (render)
+{
+case CHARSEL:
+render = FIELD;
+break;
+case FIELD:
+render = NIGHT;
+break;
+case NIGHT:
+render = TIME;
+break;
+case TIME:
+render = MAIN;
+break;
+case MAIN:
+render = CHARSEL;
+break;
+}
+}
+break;
+case GLFW_KEY_DELETE:
+if (action == GLFW_PRESS)
+{
+if (render == TIME)
+level3.transition = true;
+}
+break;
+case GLFW_KEY_LEFT:
+if (action == GLFW_PRESS)
+{
+for (int i = 0; i < MAX_PLAYER; i++)
+{
+level1.player[i]->direction = LEFT;
+level1.player[i]->move();
+}
+
+}
+break;
+case GLFW_KEY_RIGHT:
+if (action == GLFW_PRESS)
+{
+for (int i = 0; i < MAX_PLAYER; i++)
+{
+level1.player[i]->direction = RIGHT;
+level1.player[i]->move();
+}
+}
+break;
+case GLFW_KEY_SPACE:
+if (action == GLFW_PRESS)
+{
+for (int i = 0; i < MAX_PLAYER; i++)
+{
+level1.player[i]->jump();
+}
+}
+break;
+*/

@@ -67,8 +67,8 @@ void Background::render()
 
 void RoundCornerBox::render()
 {
-	vertical_box.render_quad();
-	horizontal_box.render_quad();
+	vRectangle.render_quad();
+	hRectangle.render_quad();
 
 	for (int j = 0; j < 4; j++)
 	{
@@ -78,38 +78,41 @@ void RoundCornerBox::render()
 
 void RoundCornerBox::build()
 {
-	int size = 100; // diameter of circle
+	int size = 250; // diameter of circle
 
-	vertical_box.height = height; // actual height
-	
-	horizontal_box.center.x = vertical_box.center.x;
-	horizontal_box.center.y = vertical_box.center.y;
-	horizontal_box.width = width; // actual width
+	vRectangle.height = height; // actual height
+	hRectangle.width = width; // actual width
 
-	vertical_box.width = horizontal_box.width - size;
-	horizontal_box.height = vertical_box.height - size;
-	horizontal_box.boundary_assignment();
-	vertical_box.boundary_assignment();
+	//Set center of both boxes
+	vRectangle.center.x = center.x;
+	vRectangle.center.y = center.y;
+	hRectangle.center.x = center.x;
+	hRectangle.center.y = center.y;
+
+	vRectangle.width = hRectangle.width - size;
+	hRectangle.height = vRectangle.height - size;
+	hRectangle.boundary_assignment();
+	vRectangle.boundary_assignment();
 
 	//bottom left
-	corner[0].radius = size / 2;
-	corner[0].center.x = vertical_box.left_bnd;
-	corner[0].center.y = horizontal_box.bottom_bnd;
+	corner[0].radius = size / 2.0f;
+	corner[0].center.x = vRectangle.boundary.left;
+	corner[0].center.y = hRectangle.boundary.bottom;
 
 	//top left
-	corner[1].radius = size / 2;
-	corner[1].center.x = vertical_box.left_bnd;
-	corner[1].center.y = horizontal_box.top_bnd;
+	corner[1].radius = size / 2.0f;
+	corner[1].center.x = vRectangle.boundary.left;
+	corner[1].center.y = hRectangle.boundary.top;
 
 	//top right
-	corner[2].radius = size / 2;
-	corner[2].center.x = vertical_box.right_bnd;
-	corner[2].center.y = horizontal_box.top_bnd;
+	corner[2].radius = size / 2.0f;
+	corner[2].center.x = vRectangle.boundary.right;
+	corner[2].center.y = hRectangle.boundary.top;
 
 	//bottom right
-	corner[3].radius = size / 2;
-	corner[3].center.x = vertical_box.right_bnd;
-	corner[3].center.y = horizontal_box.bottom_bnd;
+	corner[3].radius = size / 2.0f;
+	corner[3].center.x = vRectangle.boundary.right;
+	corner[3].center.y = hRectangle.boundary.bottom;
 }
 
 void Shape::stroke_assignment()
@@ -137,10 +140,10 @@ void Shape::stroke_assignment()
 
 void Shape::boundary_assignment()
 {
-	top_bnd = center.y + height / 2;
-	bottom_bnd = center.y - height / 2;
-	left_bnd = center.x - width / 2;
-	right_bnd = center.x + width / 2;
+	boundary.top = center.y + height / 2;
+	boundary.bottom = center.y - height / 2;
+	boundary.left = center.x - width / 2;
+	boundary.right = center.x + width / 2;
 }
 
 void Game::render_triangle()
@@ -168,3 +171,4 @@ void Game::render_triangle()
 	//glfwSwapBuffers(::window); //global
 	glfwPollEvents();
 }
+
