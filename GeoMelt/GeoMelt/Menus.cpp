@@ -2,7 +2,7 @@
 
 extern Game game;
 
-void MainMenu::build_main_menu()
+void MainMenu::build()
 {
 	//DevIL below
 	game.icons.title.box.center.x = (GLfloat)game.window.width;
@@ -56,3 +56,77 @@ void MainMenu::handler()
 	game.level1.player[0]->render();
 }
 
+void CharacterSelectMenu::build()
+{
+	//assign center of each char select bg
+	int xSpacing = -3.0f * HDX / 4.0f;
+	for (int i = 0; i < MAX_PLAYER; i++)
+	{
+		int size = 100;
+		char_select_box[i].vertical_box.center.x = xSpacing;
+		char_select_box[i].vertical_box.height = HDY / 2.0f; // actual height
+		char_select_box[i].vertical_box.color.r = 255;
+		char_select_box[i].vertical_box.color.g = 255;
+		char_select_box[i].vertical_box.color.b = 255;
+
+		char_select_box[i].horizontal_box.center.x = xSpacing;
+		char_select_box[i].horizontal_box.width = HDX / 4.5f; // actual width
+		
+		char_select_box[i].horizontal_box.color.r = 255;
+		char_select_box[i].horizontal_box.color.g = 255;
+		char_select_box[i].horizontal_box.color.b = 255;
+		
+		char_select_box[i].vertical_box.width = char_select_box[i].horizontal_box.width - size;
+		char_select_box[i].horizontal_box.height = char_select_box[i].vertical_box.height - size;
+		char_select_box[i].horizontal_box.boundary_assignment();
+		char_select_box[i].vertical_box.boundary_assignment();
+
+		xSpacing += HDX / 2.0f;
+		
+		//bottom left
+		char_select_box[i].corner[0].radius = size / 2;
+		char_select_box[i].corner[0].center.x = char_select_box[i].vertical_box.left_bnd;
+		char_select_box[i].corner[0].center.y = char_select_box[i].horizontal_box.bottom_bnd;
+		char_select_box[i].corner[0].color.r = 255;
+		char_select_box[i].corner[0].color.g = 255;
+		char_select_box[i].corner[0].color.b = 255;
+
+		//top left
+		char_select_box[i].corner[1].radius = size / 2;
+		char_select_box[i].corner[1].center.x = char_select_box[i].vertical_box.left_bnd;
+		char_select_box[i].corner[1].center.y = char_select_box[i].horizontal_box.top_bnd;
+		char_select_box[i].corner[1].color.r = 255;
+		char_select_box[i].corner[1].color.g = 255;
+		char_select_box[i].corner[1].color.b = 255;
+
+		//top right
+		char_select_box[i].corner[2].radius = size / 2;
+		char_select_box[i].corner[2].center.x = char_select_box[i].vertical_box.right_bnd;
+		char_select_box[i].corner[2].center.y = char_select_box[i].horizontal_box.top_bnd;
+		char_select_box[i].corner[2].color.r = 255;
+		char_select_box[i].corner[2].color.g = 255;
+		char_select_box[i].corner[2].color.b = 255;
+
+		//bottom right
+		char_select_box[i].corner[3].radius = size / 2;
+		char_select_box[i].corner[3].center.x = char_select_box[i].vertical_box.right_bnd;
+		char_select_box[i].corner[3].center.y = char_select_box[i].horizontal_box.bottom_bnd;
+		char_select_box[i].corner[3].color.r = 255;
+		char_select_box[i].corner[3].color.g = 255;
+		char_select_box[i].corner[3].color.b = 255;
+	}
+}
+
+void CharacterSelectMenu::handler()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		char_select_box[i].vertical_box.render_quad();
+		char_select_box[i].horizontal_box.render_quad();
+
+		for (int j = 0; j < 4; j++)
+		{
+			char_select_box[i].corner[j].render_circle();
+		}
+	}
+}

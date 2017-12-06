@@ -16,7 +16,8 @@ Game::Game()
 	//picons.set_attributes();
 	//icons.set_attributes();
 	//sicons.set_attributes();
-	mainMenu.build_main_menu();
+	mainMenu.build();
+	charSelMenu.build();
 
 	window.width = HDX;
 	window.height = HDY;
@@ -105,6 +106,7 @@ int main(void)
 			case CHARSEL:
 			case FIELD:
 				game.level1.handler();
+				//game.charSelMenu.handler();
 				break;
 			case NIGHT:
 				game.level2.handler();

@@ -137,21 +137,36 @@ public:
 class Menu {
 public:
 	Shape selector;
+	virtual void handler() = 0;
+	virtual void build() = 0;
 };
 class MainMenu : public Menu {
 public:
 	void handler();
-	void build_main_menu();
+	void build();
 };
 class PauseMenu : public Menu {
 public:
+	void handler();
+	void build();
 };
 class LevelMenu : public Menu {
 public:
+	void handler();
+	void build();
 };
-class CharacterSelect {
+class RoundCornerBox {
 public:
-	Shape selection[MAX_PLAYER];
+	Shape corner[CORNERS];
+	Shape vertical_box;
+	Shape horizontal_box;
+};
+class CharacterSelectMenu {
+public:
+	RoundCornerBox char_select_box[MAX_PLAYER];
+	Shape cursor[MAX_PLAYER];
+	void handler();
+	void build();
 };
 class Palette_Character {
 public:
@@ -333,6 +348,7 @@ public:
 	const GLFWvidmode *monitor;
 	Resolution window;
 	MainMenu mainMenu;
+	CharacterSelectMenu charSelMenu;
 	Palette_Character palette;
 	State render;
 	ImageSet icons;
