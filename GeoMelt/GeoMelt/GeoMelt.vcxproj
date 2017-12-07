@@ -136,6 +136,7 @@
     <ClCompile Include="render.cpp" />
     <ClCompile Include="Menus.cpp" />
     <ClCompile Include="images.cpp" />
+    <ClCompile Include="controller.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="class.h" />

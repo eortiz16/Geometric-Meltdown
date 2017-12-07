@@ -104,6 +104,7 @@ public:
 class Level;
 class Player {
 public:
+	unsigned int controllerID;
 	bool on_ground;
 	Vec	velocity;
 	Shape body;
@@ -119,6 +120,7 @@ public:
 	virtual void jump(void) = 0;
 	virtual void move(void) = 0;
 	virtual void build(void) = 0;
+	void controller();
 	virtual ~Player() {}
 };
 class Ball: public Player {
@@ -378,6 +380,7 @@ public:
 	void set_attributes();
 };
 //
+
 class Game {
 public:
 	void display_details();
@@ -395,7 +398,5 @@ public:
 	Night_Level level2;
 	Time_Level level3;
 	void render_triangle();
-	void keyfunc(GLFWwindow *window);
-	static void Game::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	Game();
 };

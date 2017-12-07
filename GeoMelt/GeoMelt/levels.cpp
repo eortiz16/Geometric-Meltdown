@@ -61,26 +61,34 @@ void Field_Level::build(Resolution res, Palette pal)
 	player[0]->build();
 	player[0]->body.center.x = -600;
 	player[0]->body.center.y = (GLfloat)res.height;
+	player[0]->controllerID = 0;
 
 	player[1] = new Boxy;
 	player[1]->build();
 	player[1]->body.center.x = -500;
 	player[1]->body.center.y = (GLfloat)res.height / 2;
+	player[1]->controllerID = 1;
 
 	player[2] = new Ball;
 	player[2]->build();
 	player[2]->body.center.x = 600;
 	player[2]->body.center.y = (GLfloat)res.height;
+	player[2]->controllerID = 2;
 
 	player[3] = new Boxy;
 	player[3]->build();
 	player[3]->body.center.x = 500;
 	player[3]->body.center.y = (GLfloat)res.height / 2;
+	player[3]->controllerID = 3;
 }
 
 void Field_Level::handler(Level lvl, Resolution res)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	for (int i = 0; i < MAX_PLAYER; i++)
+	player[i]->controller();
+
 	for (int i = 0; i < MAX_CLOUD; i++)
 		clouds[i].handler(res);
 	render();
@@ -182,17 +190,17 @@ void Night_Level::build(Resolution res, Palette pal)
 	//Background Attributes
 	background.body.center.x = 0;
 	background.body.center.y = 0;
-	background.body.width = 2 * res.width;
-	background.body.height = 2 * res.height;
+	background.body.width = 2.0f * res.width;
+	background.body.height = 2.0f * res.height;
 
 	//Color assignment
 	background.set_color(palette.night);
 
 	//Moon Attributes
 	moon.set_color(pal.moon);
-	moon.center.x = res.width / 2;
-	moon.center.y = res.height / 2;
-	moon.radius = res.height / 2;
+	moon.center.x = res.width / 2.0f;
+	moon.center.y = res.height / 2.0f;
+	moon.radius = res.height / 2.0f;
 
 	//Star Attributes
 	for (int i = 0; i < MAX_STAR; i++)
@@ -210,15 +218,15 @@ void Night_Level::build(Resolution res, Palette pal)
 	platform[3].body.center.x = 750;
 
 	//Platform Dimensions
-	platform[0].body.width = 5 * res.width / 6;
-	platform[0].body.height = res.height / 20;
+	platform[0].body.width = 5.0f * res.width / 6.0f;
+	platform[0].body.height = res.height / 20.0f;
 	platform[0].body.center.y = -res.height / 3.0f;
 
 	for (int i = 1; i < MAX_PLATFORM; i++)
 	{
-		platform[i].body.width = res.width / 4;
-		platform[i].body.height = res.height / 20;
-		platform[i].body.center.y = 100;
+		platform[i].body.width = res.width / 4.0f;
+		platform[i].body.height = res.height / 20.0f;
+		platform[i].body.center.y = 100.0f;
 	}
 
 	for (int i = 0; i < MAX_PLATFORM; i++)
@@ -253,6 +261,11 @@ void Night_Level::build(Resolution res, Palette pal)
 	player[3]->build();
 	player[3]->body.center.x = 500;
 	player[3]->body.center.y = (GLfloat)res.height / 2;
+
+	player[0]->controllerID = 0;
+	player[1]->controllerID = 1;
+	player[2]->controllerID = 2;
+	player[3]->controllerID = 3;
 }
 
 void Night_Level::handler(Level lvl, Resolution res)
@@ -336,8 +349,8 @@ void Time_Level::build(Resolution res, Palette pal)
 	time_of_day = EVENING;
 	background.body.center.x = 0;
 	background.body.center.y = 0;
-	background.body.width = 2 * res.width;
-	background.body.height = 2 * res.height;
+	background.body.width = 2.0f * res.width;
+	background.body.height = 2.0f * res.height;
 
 	transition = false;
 
@@ -345,16 +358,16 @@ void Time_Level::build(Resolution res, Palette pal)
 	background.set_color(palette.evening);
 
 	//Sun Attributes
-	sun.radius = res.height;
+	sun.radius = (GLfloat)res.height;
 	sun.set_color(pal.sun);
-	sun.center.x = res.width;
-	sun.center.y = res.height;
+	sun.center.x = (GLfloat)res.width;
+	sun.center.y = (GLfloat)res.height;
 
 	//Moon Attributes
 	moon.set_color(pal.moon);
-	moon.center.x = res.width / 2;
-	moon.center.y = res.height / 2;
-	moon.radius = res.height / 2;
+	moon.center.x = res.width / 2.0f;
+	moon.center.y = res.height / 2.0f;
+	moon.radius = res.height / 2.0f;
 
 	//Star Attributes
 	for (int i = 0; i < MAX_STAR; i++)
@@ -366,10 +379,10 @@ void Time_Level::build(Resolution res, Palette pal)
 	}
 
 	//Floor Dimensions
-	platform[0].body.width = 5 * res.width / 6;
-	platform[0].body.height = res.height / 20;
-	platform[0].body.center.x = 0;
-	platform[0].body.center.y = -res.height / 3;
+	platform[0].body.width = 5.0f * res.width / 6.0f;
+	platform[0].body.height = res.height / 20.0f;
+	platform[0].body.center.x = 0.0f;
+	platform[0].body.center.y = -res.height / 3.0f;
 
 	//Floor Boundaries - For Physics
 	platform[0].body.boundary_assignment();
@@ -423,6 +436,11 @@ void Time_Level::build(Resolution res, Palette pal)
 	player[3]->build();
 	player[3]->body.center.x = 500;
 	player[3]->body.center.y = (GLfloat)res.height / 2;
+
+	player[0]->controllerID = 0;
+	player[1]->controllerID = 1;
+	player[2]->controllerID = 2;
+	player[3]->controllerID = 3;
 }
 
 void Time_Level::transition_handler()
