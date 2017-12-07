@@ -165,7 +165,7 @@ class WindowManager {
 private:
 GLFWwindow* window_;
 GLFWmonitor* monitor_;
-Keyboard* keyboard_;
+Keyboard* keyboard_ ;
 ...
 }
 
