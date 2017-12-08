@@ -6,22 +6,40 @@ void Player::read_input(Controller *c)
 	{
 		c->buttons = glfwGetJoystickButtons(c->id, &c->buttonCount);
 
-		if (c->buttons[0] == GLFW_PRESS && c->singlePress[0] == false)
+		// Jump - B and Y buttons
+		if (c->buttons[1] == GLFW_PRESS && c->singlePress[1] == false)
 		{
 			jump();
-			c->singlePress[0] = true;
+			c->singlePress[1] = true;
 		}
-		else if (c->buttons[0] == GLFW_RELEASE && c->singlePress[0] == true)
+		if (c->buttons[1] == GLFW_RELEASE && c->singlePress[1] == true)
 		{
-			c->singlePress[0] = false;
+			c->singlePress[1] = false;
 		}
-	}
-}
 
-void Controller::build()
-{
-	for (int i = 0; i < 14; i++)
-		cout << singlePress[i] << endl;
+		if (c->buttons[3] == GLFW_PRESS && c->singlePress[3] == false)
+		{
+			jump();
+			c->singlePress[3] = true;
+		}
+		if (c->buttons[3] == GLFW_RELEASE && c->singlePress[3] == true)
+		{
+			c->singlePress[3] = false;
+		}
+
+		// Move Right - Right Dpad
+		if (c->buttons[11] == GLFW_PRESS)
+		{
+			move(RIGHT);
+		}
+		
+		// Move Left - Left Dpad
+		if (c->buttons[13] == GLFW_PRESS)
+		{
+			move(LEFT);
+		}
+		
+	}
 }
 
 //xbox 360 - 14 buttons

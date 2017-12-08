@@ -1,7 +1,7 @@
 #include "headers.h"
 #include "levels.h"
 
-void Field_Level::build(Resolution res, Palette pal)
+void Field_Level::build(Resolution res, Assets assets)
 {
 	srand((unsigned int)time(NULL));
 
@@ -11,11 +11,11 @@ void Field_Level::build(Resolution res, Palette pal)
 	background.body.width = 2.0f * res.width;
 	background.body.height = 2.0f * res.height;
 
-	background.set_color(palette.day);
+	background.set_color(assets.backgroundPalette.day);
 
 	//Sun Attributes
 	sun.radius = (GLfloat)res.height;
-	sun.set_color(pal.sun);
+	sun.set_color(assets.palette.sun);
 	sun.center.x = (GLfloat)res.width;
 	sun.center.y = (GLfloat)res.height;
 
@@ -31,13 +31,13 @@ void Field_Level::build(Resolution res, Palette pal)
 	platform[0].body.boundary_assignment();
 
 	//Assign Color to Floor
-	platform[0].body.set_color(pal.platform);
+	platform[0].body.set_color(assets.palette.platform);
 
 	//Assign Floor Outline Attributes
 	for (int i = 0; i < MAX_STROKE; i++)
 	{
 		platform[0].body.stroke[i].width = 2.0;
-		platform[0].body.stroke[i].set_color(pal.black);
+		platform[0].body.stroke[i].set_color(assets.palette.black);
 	}
 
 	//Floor Stroke Assignment
@@ -62,7 +62,6 @@ void Field_Level::build(Resolution res, Palette pal)
 	player[0]->body.center.x = -600;
 	player[0]->body.center.y = (GLfloat)res.height;
 	player[0]->controller.id = 0;
-	player[0]->controller.build();
 
 	player[1] = new Boxy;
 	player[1]->build();
@@ -187,7 +186,7 @@ void Cloud::physics()
 			body[i].center.x += speed;
 }
 
-void Night_Level::build(Resolution res, Palette pal)
+void Night_Level::build(Resolution res, Assets assets)
 {
 	//Background Attributes
 	background.body.center.x = 0;
@@ -196,10 +195,10 @@ void Night_Level::build(Resolution res, Palette pal)
 	background.body.height = 2.0f * res.height;
 
 	//Color assignment
-	background.set_color(palette.night);
+	background.set_color(assets.backgroundPalette.night);
 
 	//Moon Attributes
-	moon.set_color(pal.moon);
+	moon.set_color(assets.palette.moon);
 	moon.center.x = res.width / 2.0f;
 	moon.center.y = res.height / 2.0f;
 	moon.radius = res.height / 2.0f;
@@ -209,7 +208,7 @@ void Night_Level::build(Resolution res, Palette pal)
 	{
 		stars[i].offset = rnd();
 		stars[i].body.radius = 3;
-		stars[i].body.set_color(pal.white);
+		stars[i].body.set_color(assets.palette.white);
 		stars[i].compute_coordinates(i, res);
 	}
 
@@ -237,7 +236,7 @@ void Night_Level::build(Resolution res, Palette pal)
 		platform[i].body.boundary_assignment();
 
 		//Assign Color to Floor
-		platform[i].body.set_color(pal.platform);
+		platform[i].body.set_color(assets.palette.platform);
 		
 		//Assign Floor Outline Attributes
 		platform[i].body.stroke_assignment();
@@ -343,7 +342,7 @@ void Star::change_color()
 	}
 }
 
-void Time_Level::build(Resolution res, Palette pal)
+void Time_Level::build(Resolution res, Assets assets)
 {
 	srand((unsigned int)time(NULL));
 
@@ -357,16 +356,16 @@ void Time_Level::build(Resolution res, Palette pal)
 	transition = false;
 
 	//Initialize Background
-	background.set_color(palette.evening);
+	background.set_color(assets.backgroundPalette.evening);
 
 	//Sun Attributes
 	sun.radius = (GLfloat)res.height;
-	sun.set_color(pal.sun);
+	sun.set_color(assets.palette.sun);
 	sun.center.x = (GLfloat)res.width;
 	sun.center.y = (GLfloat)res.height;
 
 	//Moon Attributes
-	moon.set_color(pal.moon);
+	moon.set_color(assets.palette.moon);
 	moon.center.x = res.width / 2.0f;
 	moon.center.y = res.height / 2.0f;
 	moon.radius = res.height / 2.0f;
@@ -376,7 +375,7 @@ void Time_Level::build(Resolution res, Palette pal)
 	{
 		stars[i].offset = rnd();
 		stars[i].body.radius = 3;
-		stars[i].body.set_color(pal.white);
+		stars[i].body.set_color(assets.palette.white);
 		stars[i].compute_coordinates(i, res);
 	}
 
@@ -398,7 +397,7 @@ void Time_Level::build(Resolution res, Palette pal)
 	for (int i = 0; i < MAX_STROKE; i++)
 	{
 		platform[0].body.stroke[i].width = 2.0;
-		platform[0].body.stroke[i].set_color(pal.black);
+		platform[0].body.stroke[i].set_color(assets.palette.black);
 	}
 
 	//Floor Stroke Assignment
@@ -445,35 +444,35 @@ void Time_Level::build(Resolution res, Palette pal)
 	player[3]->controller.id = 3;
 }
 
-void Time_Level::transition_handler()
+void Time_Level::transition_handler(Palette_BG palbg)
 {
 	if (transition == true)
 		switch (time_of_day)
 		{
 		case DAY:
-			transition_to(palette.afternoon);
+			transition_to(palbg.afternoon);
 			break;
 		case AFTERNOON:
-			transition_to(palette.evening);
+			transition_to(palbg.evening);
 			break;
 		case EVENING:
-			transition_to(palette.night);
+			transition_to(palbg.night);
 			break;
 		case NITE:
-			transition_to(palette.dark_night);
+			transition_to(palbg.dark_night);
 			break;
 		case DNITE:
-			transition_to(palette.morning);
+			transition_to(palbg.morning);
 			break;
 		case MORNING:
-			transition_to(palette.day);
+			transition_to(palbg.day);
 			break;
 		}
 }
 
-void Time_Level::handler(Level lvl, Resolution res)
+void Time_Level::handler(Level lvl, Resolution res, Assets assets)
 {
-	transition_handler();
+	transition_handler(assets.backgroundPalette);
 
 	for (int i = 0; i < MAX_CLOUD; i++)
 		clouds[i].handler(res); //Cloud Physics

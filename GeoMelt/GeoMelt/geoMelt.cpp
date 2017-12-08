@@ -20,10 +20,10 @@ Game::Game()
 	render = FIELD;
 
 	//mainMenu.build();
-	charSelMenu.build(window, palette);
-	level1.build(window, palette);
-	level2.build(window, palette);
-	level3.build(window, palette);
+	menus.chacterSelection.build(window, assets.palette);
+	levels.field.build(window, assets);
+	levels.night.build(window, assets);
+	levels.time.build(window, assets);
 }
 
 void Game::display_details()
@@ -107,16 +107,16 @@ int main(void)
 			case PAUSE:
 			case LEVELSEL:
 			case CHARSEL:
-				game.charSelMenu.handler();
+				game.menus.chacterSelection.handler();
 				break;
 			case FIELD:
-				game.level1.handler(game.level1, game.window);
+				game.levels.field.handler(game.levels.field, game.window);
 				break;
 			case NIGHT:
-				game.level2.handler(game.level2, game.window);
+				game.levels.night.handler(game.levels.night, game.window);
 				break;
 			case TIME:
-				game.level3.handler(game.level3, game.window);
+				game.levels.time.handler(game.levels.time, game.window, game.assets);
 				break;
 			default:
 				break;

@@ -160,15 +160,14 @@ void Ball::exhale()
 
 }
 
-void Ball::move()
+void Ball::move(Direction dir)
 {
-	//Horizontal
-	if (direction == LEFT) 
+	direction = dir;
+	if (direction == LEFT)
 		velocity.x = -5.0f;
-	else // RIGHT
+	else 
 		velocity.x = 5.0f;
 
-	//Vertical
 	if (on_ground)
 		velocity.y = 1.25f;
 }
@@ -304,7 +303,7 @@ void Boxy::jump()
 	}
 }
 
-void Boxy::move()
+void Boxy::move(Direction dir)
 {
 	//Horizontal
 	if (direction == LEFT)

@@ -108,7 +108,6 @@ public:
 	bool singlePress[14] = { false };
 	int buttonCount;
 	const unsigned char *buttons;
-	void build();
 };
 
 class Level;
@@ -128,7 +127,7 @@ public:
 	virtual void update_position(Level lvl) = 0;
 	virtual void physics(Level lvl) = 0;
 	virtual void jump(void) = 0;
-	virtual void move(void) = 0;
+	virtual void move(Direction dir) = 0;
 	virtual void build(void) = 0;
 	void read_input(Controller *c);
 	virtual ~Player() {}
@@ -139,7 +138,7 @@ public:
 	void render();
 	void update_position(Level lvl);
 	void physics(Level lvl);
-	void move();
+	void move(Direction dir);
 	void jump();
 	void exhale();
 	void build();
@@ -150,7 +149,7 @@ public:
 	void render();
 	void update_position(Level lvl);
 	void physics(Level lvl);
-	void move();
+	void move(Direction dir);
 	void jump();
 	void build();
 	~Boxy() {}
@@ -246,10 +245,11 @@ public:
 	void build(Resolution res, Palette pal);
 };
 
+class Assets;
 class Level {
 public:
 	Background background;
-	Palette_BG palette;
+	
 	Platform platform[MAX_PLATFORM];
 	Player *player[MAX_PLAYER] = {NULL}; //Polymorphism
 	virtual ~Level() {}
@@ -260,7 +260,7 @@ public:
 	Cloud clouds[MAX_CLOUD];
 	void render();
 	void handler(Level lvl, Resolution res);
-	void build(Resolution res, Palette pal);
+	void build(Resolution res, Assets assets);
 	~Field_Level();
 };
 class Night_Level : public Level {
@@ -269,7 +269,7 @@ public:
 	Shape moon;
 	void render();
 	void handler(Level lvl, Resolution res);
-	void build(Resolution res, Palette pal);
+	void build(Resolution res, Assets assets);
 	~Night_Level();
 };
 class Time_Level : public Level {
@@ -281,13 +281,69 @@ public:
 	Star stars[MAX_STAR]; //change opacity during day
 	Cloud clouds[MAX_CLOUD];
 	void render();
-	void handler(Level lvl, Resolution res);
-	void transition_handler();
+	void handler(Level lvl, Resolution res, Assets assets);
+	void transition_handler(Palette_BG palbg);
 	void transition_to(Color *clr);
-	void build(Resolution res, Palette pal);
+	void build(Resolution res, Assets assets);
 	~Time_Level();
 };
-//
+
+class Resolution {
+public:
+	int width, height;
+	GLfloat ratio;
+};
+
+class Assets {
+public:
+	Palette palette;
+	Palette_BG backgroundPalette;
+	//ImageSet icons;
+	//pImageSet picons;
+	//sImageSet sicons;
+};
+
+class Menus {
+public:
+	//MainMenu mainMenu;
+	CharacterSelectMenu chacterSelection;
+};
+
+class Levels {
+public:
+	Field_Level field;
+	Night_Level night;
+	Time_Level time;
+};
+
+class Game {
+public:
+	const GLFWvidmode *monitor;
+	Resolution window;
+	State render;
+	Assets assets;
+	Menus menus;
+	Levels levels;
+	void display_details();
+	void set_resolution();
+	Game();
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class Image {
 public:
 	char* filename;
@@ -323,12 +379,7 @@ public:
 	Image level2;
 	void set_attributes();
 };
-class Resolution {
-public:
-	int width, height;
-	GLfloat ratio;
-};
-//
+
 class pImage {
 public:
 	Shape box;
@@ -344,12 +395,10 @@ public:
 };
 class pSelectImage : public pImage {
 public:
-	//_s flag designates selected icon
 	pImage selected;
 };
 class pImageSet {
 public:
-	//absence of _s flag designates unselected icon
 	pImage title;
 	pImage pill;
 	pSelectImage play;
@@ -361,7 +410,7 @@ public:
 	pImage level2;
 	void set_attributes();
 };
-//
+
 class sImage {
 public:
 	Shape box;
@@ -388,25 +437,4 @@ public:
 	sImage level1;
 	sImage level2;
 	void set_attributes();
-};
-//
-
-class Game {
-public:
-	void display_details();
-	void set_resolution();
-	const GLFWvidmode *monitor;
-	Resolution window;
-	//MainMenu mainMenu;
-	CharacterSelectMenu charSelMenu;
-	Palette palette;
-	State render;
-	ImageSet icons;
-	pImageSet picons;
-	sImageSet sicons;
-	Field_Level level1;
-	Night_Level level2;
-	Time_Level level3;
-	void render_triangle();
-	Game();
 };
