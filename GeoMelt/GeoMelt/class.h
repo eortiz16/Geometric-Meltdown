@@ -101,10 +101,20 @@ public:
 	Shape s;
 	Vec velocity;
 };
+
+class Controller {
+public:
+	unsigned int id;
+	bool singlePress[14] = { false };
+	int buttonCount;
+	const unsigned char *buttons;
+	void build();
+};
+
 class Level;
 class Player {
 public:
-	unsigned int controllerID;
+	Controller controller;
 	bool on_ground;
 	Vec	velocity;
 	Shape body;
@@ -120,7 +130,7 @@ public:
 	virtual void jump(void) = 0;
 	virtual void move(void) = 0;
 	virtual void build(void) = 0;
-	void controller();
+	void read_input(Controller *c);
 	virtual ~Player() {}
 };
 class Ball: public Player {

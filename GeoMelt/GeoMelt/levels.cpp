@@ -61,25 +61,27 @@ void Field_Level::build(Resolution res, Palette pal)
 	player[0]->build();
 	player[0]->body.center.x = -600;
 	player[0]->body.center.y = (GLfloat)res.height;
-	player[0]->controllerID = 0;
+	player[0]->controller.id = 0;
+	player[0]->controller.build();
 
 	player[1] = new Boxy;
 	player[1]->build();
 	player[1]->body.center.x = -500;
 	player[1]->body.center.y = (GLfloat)res.height / 2;
-	player[1]->controllerID = 1;
+	player[1]->controller.id = 1;
 
 	player[2] = new Ball;
 	player[2]->build();
 	player[2]->body.center.x = 600;
 	player[2]->body.center.y = (GLfloat)res.height;
-	player[2]->controllerID = 2;
+	player[2]->controller.id = 2;
 
 	player[3] = new Boxy;
 	player[3]->build();
 	player[3]->body.center.x = 500;
 	player[3]->body.center.y = (GLfloat)res.height / 2;
-	player[3]->controllerID = 3;
+	player[3]->controller.id = 3;
+
 }
 
 void Field_Level::handler(Level lvl, Resolution res)
@@ -87,7 +89,7 @@ void Field_Level::handler(Level lvl, Resolution res)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	for (int i = 0; i < MAX_PLAYER; i++)
-	player[i]->controller();
+		player[i]->read_input(&player[i]->controller);
 
 	for (int i = 0; i < MAX_CLOUD; i++)
 		clouds[i].handler(res);
@@ -262,10 +264,10 @@ void Night_Level::build(Resolution res, Palette pal)
 	player[3]->body.center.x = 500;
 	player[3]->body.center.y = (GLfloat)res.height / 2;
 
-	player[0]->controllerID = 0;
-	player[1]->controllerID = 1;
-	player[2]->controllerID = 2;
-	player[3]->controllerID = 3;
+	player[0]->controller.id = 0;
+	player[1]->controller.id = 1;
+	player[2]->controller.id = 2;
+	player[3]->controller.id = 3;
 }
 
 void Night_Level::handler(Level lvl, Resolution res)
@@ -437,10 +439,10 @@ void Time_Level::build(Resolution res, Palette pal)
 	player[3]->body.center.x = 500;
 	player[3]->body.center.y = (GLfloat)res.height / 2;
 
-	player[0]->controllerID = 0;
-	player[1]->controllerID = 1;
-	player[2]->controllerID = 2;
-	player[3]->controllerID = 3;
+	player[0]->controller.id = 0;
+	player[1]->controller.id = 1;
+	player[2]->controller.id = 2;
+	player[3]->controller.id = 3;
 }
 
 void Time_Level::transition_handler()
