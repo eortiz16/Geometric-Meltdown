@@ -47,7 +47,7 @@ public:
 	GLfloat width;
 	Vec from, to;
 	Color color;
-	void render_line();
+	void render();
 	void set_color(Color clr);
 	Line();
 };
@@ -70,18 +70,23 @@ public:
 	void boundary_assignment();
 	void render_quad();
 	void render_circle();
+
 	void set_color(Color clr);
 };
 class Circle : public Shape {
 public:
+	void render();
 };
 class Quad :public Shape {
 public:
+	void render();
+	//Line stroke[MAX_STROKE];
+	//void stroke_assignment();
 };
 class Resolution;
 class Cloud {
 public:
-	Shape body[3];
+	Circle body[3];
 	Direction direction;
 	int speed;
 	void render();
@@ -156,7 +161,7 @@ public:
 };
 class Platform {
 public:
-	Shape body;
+	Quad body;
 };
 class Menu {
 public:
@@ -183,9 +188,9 @@ class RoundCornerBox {
 public:
 	GLfloat width, height;
 	Vec center;
-	Shape corner[CORNERS];
-	Shape vRectangle; //vertical
-	Shape hRectangle; //horizontal
+	Circle corner[CORNERS];
+	Quad vRectangle; //vertical
+	Quad hRectangle; //horizontal
 	void set_color(Color clr);
 	void build();
 	void render();
@@ -228,7 +233,7 @@ public:
 };
 class Background {
 public:
-	Shape body;
+	Quad body;
 	Color color[4];
 	bool transition_done[4];
 	void render();
@@ -236,13 +241,14 @@ public:
 };
 
 class Resolution;
+class Assets;
 class CharacterSelectMenu {
 public:
 	Background background;
 	CharSelBox selectBox[MAX_PLAYER];
 	Shape cursor[MAX_PLAYER];
 	void handler();
-	void build(Resolution res, Palette pal);
+	void build(Resolution res, Assets assets);
 };
 
 class Assets;

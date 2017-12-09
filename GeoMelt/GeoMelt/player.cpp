@@ -238,7 +238,7 @@ void Boxy::render()
 	eye.render_circle();
 
 	for (int i = 0; i < MAX_STROKE; i++)
-		body.stroke[i].render_line();
+		body.stroke[i].render();
 }
 
 void Boxy::update_position(Level lvl)
@@ -305,6 +305,7 @@ void Boxy::jump()
 
 void Boxy::move(Direction dir)
 {
+	direction = dir;
 	//Horizontal
 	if (direction == LEFT)
 		velocity.x = -6.0f;

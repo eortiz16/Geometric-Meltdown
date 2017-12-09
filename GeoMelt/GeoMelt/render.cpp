@@ -21,6 +21,7 @@ void Shape::render_circle()
 	glEnd();
 }
 
+
 void Shape::render_quad()
 {
 	glColor3ub((GLubyte)color.r, (GLubyte)color.g, (GLubyte)color.b);
@@ -32,6 +33,7 @@ void Shape::render_quad()
 	glEnd();
 }
 
+
 Line::Line()
 {
 	width = 2.0;
@@ -40,7 +42,7 @@ Line::Line()
 	color.b = 0;
 }
 
-void Line::render_line()
+void Line::render()
 {
 	glLineWidth(width);
 	glColor3i((GLubyte)color.r, (GLubyte)color.g, (GLubyte)color.b);
@@ -67,12 +69,12 @@ void Background::render()
 
 void RoundCornerBox::render()
 {
-	vRectangle.render_quad();
-	hRectangle.render_quad();
+	vRectangle.render();
+	hRectangle.render();
 
 	for (int j = 0; j < 4; j++)
 	{
-		corner[j].render_circle();
+		corner[j].render();
 	}
 }
 
@@ -144,5 +146,34 @@ void Shape::boundary_assignment()
 	boundary.bottom = center.y - height / 2;
 	boundary.left = center.x - width / 2;
 	boundary.right = center.x + width / 2;
+}
+
+void Circle::render()
+{
+	GLfloat arg1, arg2;
+
+	glColor3ub((GLubyte)color.r, (GLubyte)color.g, (GLubyte)color.b);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex2f(center.x, center.y);
+	for (int i = 0; i < 240; i++)
+	{
+		arg1 = center.x + (radius * (GLfloat)cos(i * 2 * M_PI / TRI_NUM));
+		arg2 = center.y + (radius * (GLfloat)sin(i * 2 * M_PI / TRI_NUM));
+		glVertex2f(arg1, arg2);
+	}
+	glEnd();
+}
+
+void Quad::render()
+{
+	glColor3ub((GLubyte)color.r, (GLubyte)color.g, (GLubyte)color.b);
+	glBegin(GL_QUADS);
+	glVertex2f(center.x - width / 2, center.y - height / 2);
+	glVertex2f(center.x - width / 2, center.y + height / 2);
+	glVertex2f(center.x + width / 2, center.y + height / 2);
+	glVertex2f(center.x + width / 2, center.y - height / 2);
+	glEnd();
 }
 

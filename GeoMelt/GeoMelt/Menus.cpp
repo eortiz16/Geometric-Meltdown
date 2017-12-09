@@ -56,22 +56,22 @@ void MainMenu::handler()
 }
 */
 
-void CharacterSelectMenu::build(Resolution res, Palette pal)
+void CharacterSelectMenu::build(Resolution res, Assets assets)
 {
 	//Background Attribute Assignment
 	background.body.center.x = 0;
 	background.body.center.y = 0;
-	background.body.width = 2 * res.width;
-	background.body.height = 2 * res.height;
+	background.body.width = 2.0f * res.width;
+	background.body.height = 2.0f * res.height;
 
 	for (int i = 0; i < CORNERS; i++)
 	{
-		background.color[i].r = pal.lightGrey.r;
-		background.color[i].g = pal.lightGrey.g;
-		background.color[i].b = pal.lightGrey.b;
+		background.color[i].r = assets.palette.lightGrey.r;
+		background.color[i].g = assets.palette.lightGrey.g;
+		background.color[i].b = assets.palette.lightGrey.b;
 	}
 	
-	//assign center of each char select bg
+	//assign center of each char select box
 	float wSpace = -3.0f * res.width / 4.0f;
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
@@ -82,14 +82,14 @@ void CharacterSelectMenu::build(Resolution res, Palette pal)
 		selectBox[i].box.width = res.width / 3.0f;
 		selectBox[i].box.height = 3.0f * res.height / 4.0f;
 		selectBox[i].box.build();
-		selectBox[i].box.set_color(pal.white);
+		selectBox[i].box.set_color(assets.palette.white);
 
 		selectBox[i].outline.center.x = selectBox[i].box.center.x;
 		selectBox[i].outline.center.y = selectBox[i].box.center.y;
 		selectBox[i].outline.width = selectBox[i].box.width + selectBox[i].stroke;
 		selectBox[i].outline.height = selectBox[i].box.height + selectBox[i].stroke;
 		selectBox[i].outline.build();
-		selectBox[i].outline.set_color(pal.black);
+		selectBox[i].outline.set_color(assets.palette.black);
 
 		wSpace += res.width / 2.0f;
 	}

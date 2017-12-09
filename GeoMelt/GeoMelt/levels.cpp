@@ -87,15 +87,14 @@ void Field_Level::handler(Level lvl, Resolution res)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	for (int i = 0; i < MAX_PLAYER; i++)
-		player[i]->read_input(&player[i]->controller);
-
 	for (int i = 0; i < MAX_CLOUD; i++)
 		clouds[i].handler(res);
+
 	render();
 
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
+		player[i]->read_input(&player[i]->controller);
 		player[i]->update_position(lvl);
 		player[i]->render();
 	}
@@ -107,10 +106,10 @@ void Field_Level::render()
 	sun.render_circle();
 	for (int i = 0; i < MAX_CLOUD; i++)
 		clouds[i].render();
-	platform[0].body.render_quad();
+	platform[0].body.render();
 
 	for (int i = 0; i < MAX_STROKE; i++)
-		platform[0].body.stroke[i].render_line();
+		platform[0].body.stroke[i].render();
 }
 
 Field_Level::~Field_Level()
@@ -272,10 +271,12 @@ void Night_Level::build(Resolution res, Assets assets)
 void Night_Level::handler(Level lvl, Resolution res)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
 	render();
 	
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
+		player[i]->read_input(&player[i]->controller);
 		player[i]->update_position(lvl);
 		player[i]->render();
 	}
@@ -292,9 +293,9 @@ void Night_Level::render()
 	moon.render_circle();
 	for (int i = 0; i < MAX_PLATFORM; i++)
 	{
-		platform[i].body.render_quad();
+		platform[i].body.render();
 		for (int j = 0; j < MAX_STROKE; j++)
-			platform[i].body.stroke[j].render_line();
+			platform[i].body.stroke[j].render();
 	}
 }
 
@@ -481,6 +482,7 @@ void Time_Level::handler(Level lvl, Resolution res, Assets assets)
 
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
+		player[i]->read_input(&player[i]->controller);
 		player[i]->update_position(lvl);
 		player[i]->render();
 	}
@@ -502,9 +504,9 @@ void Time_Level::render()
 	}
 	for (int i = 0; i < MAX_CLOUD; i++)
 		clouds[i].render();
-	platform[0].body.render_quad();
+	platform[0].body.render();
 	for (int i = 0; i < MAX_STROKE; i++)
-		platform[0].body.stroke[i].render_line();
+		platform[0].body.stroke[i].render();
 }
 
 //changes color of background by factor of 1 each frame

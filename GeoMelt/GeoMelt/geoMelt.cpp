@@ -1,7 +1,6 @@
 #include "headers.h"
 #include "geoMelt.h"
-
-GLFWwindow *window;
+#include <thread>
 
 Game::Game()
 {	
@@ -17,10 +16,10 @@ Game::Game()
 	//sicons.set_attributes();
 	window.width = HDX;
 	window.height = HDY;
-	render = FIELD;
+	render = NIGHT;
 
 	//mainMenu.build();
-	menus.chacterSelection.build(window, assets.palette);
+	menus.chacterSelection.build(window, assets);
 	levels.field.build(window, assets);
 	levels.night.build(window, assets);
 	levels.time.build(window, assets);
@@ -55,7 +54,7 @@ int main(void)
 	//Seed Random Number Generation
 	srand((unsigned int)time(0));
 
-	//GLFWwindow *window;
+	GLFWwindow *window;
 
 	//Error Handling - If GLFW Libraries Not Present
 	glfwSetErrorCallback(error_callback);
