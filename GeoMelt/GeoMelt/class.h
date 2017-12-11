@@ -1,6 +1,11 @@
 #include "headers.h"
 #include "ppm.h"
 
+#include <iostream>
+#include <thread>
+using namespace std;
+
+
 #pragma once
 
 #define GRAVITY 0.1
@@ -27,6 +32,7 @@
 enum State {MAIN, PAUSE, LEVELSEL, CHARSEL, FIELD, NIGHT, TIME, DISCO, POLLUTION};
 enum Direction {LEFT, RIGHT};
 enum TOD { DAY, AFTERNOON, EVENING, NITE, DNITE, MORNING };
+enum PlayerState { ALIVE, DEAD };
 
 inline void operator++(TOD &ti, int)
 {
@@ -34,9 +40,19 @@ inline void operator++(TOD &ti, int)
 	ti = static_cast<TOD>((i + 1) % TOD_CARDINALITY);
 }
 
+class Attributes {
+public:
+	bool initDeath;
+	float health;
+	int lifeCount;
+	PlayerState lifeState;
+	Attributes();
+};
 class Color {
 public:
 	float r, g, b, alpha;
+	Color() {}
+	Color(const Color &obj);
 };
 class Vec {
 public:
@@ -70,8 +86,6 @@ public:
 	void boundary_assignment();
 	void render_quad();
 	void render_circle();
-
-	void set_color(Color clr);
 };
 class Circle : public Shape {
 public:
@@ -116,9 +130,11 @@ public:
 };
 
 class Level;
+class Platform;
 class Player {
 public:
 	Controller controller;
+	Attributes stats;
 	bool on_ground;
 	Vec	velocity;
 	Shape body;
@@ -128,9 +144,11 @@ public:
 	int jumpCount;
 	Direction direction;
 	void update_reflection_x();
+	void respawn();
+	void death_handler(Resolution res);
 	virtual void render(void) = 0;
 	virtual void update_position(Level lvl) = 0;
-	virtual void physics(Level lvl) = 0;
+	virtual void physics(Platform *plat) = 0;
 	virtual void jump(void) = 0;
 	virtual void move(Direction dir) = 0;
 	virtual void build(void) = 0;
@@ -142,7 +160,7 @@ public:
 	Shape outline;
 	void render();
 	void update_position(Level lvl);
-	void physics(Level lvl);
+	void physics(Platform *plat);
 	void move(Direction dir);
 	void jump();
 	void exhale();
@@ -153,7 +171,7 @@ class Boxy : public Player {
 public:
 	void render();
 	void update_position(Level lvl);
-	void physics(Level lvl);
+	void physics(Platform *plat);
 	void move(Direction dir);
 	void jump();
 	void build();
@@ -231,6 +249,28 @@ public:
 	Color overcast[CORNERS];
 	Palette_BG();
 };
+class Palette_CHAR {
+public:
+	// "_b" flag represents body color
+	// "_r" flag represents reflection color
+	Color red_b;
+	Color red_r;
+	Color green_b;
+	Color green_r;
+	Color blue_b;
+	Color blue_r;
+	Color yellow_b;
+	Color yellow_r;
+	Color pink_b;
+	Color pink_r;
+	Color purple_b;
+	Color purple_r;
+	Color white_b;
+	Color white_r;
+	Color black_b;
+	Color black_r;
+	Palette_CHAR();
+};
 class Background {
 public:
 	Quad body;
@@ -288,7 +328,7 @@ public:
 	Cloud clouds[MAX_CLOUD];
 	void render();
 	void handler(Level lvl, Resolution res, Assets assets);
-	void transition_handler(Palette_BG palbg);
+	void transition_handler(Palette_BG pal);
 	void transition_to(Color *clr);
 	void build(Resolution res, Assets assets);
 	~Time_Level();
@@ -304,6 +344,7 @@ class Assets {
 public:
 	Palette palette;
 	Palette_BG backgroundPalette;
+	Palette_CHAR characterPalette;
 	//ImageSet icons;
 	//pImageSet picons;
 	//sImageSet sicons;

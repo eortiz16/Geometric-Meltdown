@@ -56,14 +56,6 @@ void Ball::build()
 	outline.color.g = 0;
 	outline.color.b = 0;
 
-	body.color.r = 85;
-	body.color.g = 35;
-	body.color.b = 160;
-
-	reflection.color.r = 100;
-	reflection.color.g = 50;
-	reflection.color.b = 175;
-
 	eye.color.r = 0;
 	eye.color.g = 0;
 	eye.color.b = 0;
@@ -85,16 +77,17 @@ void Ball::render()
 	update_reflection_x();
 	reflection.render_circle();
 
-	eye.center.y = body.center.y + body.radius/2;
 	(direction == LEFT) ?
 		eye.center.x = body.center.x - body.radius/2 :
 		eye.center.x = body.center.x + body.radius/2 ;
+	eye.center.y = body.center.y + body.radius / 2;
+
 	eye.render_circle();
 }
 
 void Ball::update_position(Level lvl)
 {
-	physics(lvl);
+	physics(lvl.platform);
 	update_reflection_x();
 	reflection.center.y = body.center.y + sqrt(body.radius);
 	outline.center.x = body.center.x;
@@ -104,7 +97,7 @@ void Ball::update_position(Level lvl)
 	body.boundary_assignment();
 }
 
-void Ball::physics(Level lvl)
+void Ball::physics(Platform *plat)
 {
 	//This character is less affected by gravity
 	velocity.y -= 3.0f * GLfloat(GRAVITY) / 4.0f;
@@ -113,16 +106,16 @@ void Ball::physics(Level lvl)
 
 	for (int i = 0; i < MAX_PLATFORM; i++)
 	{
-		if (body.boundary.bottom <= lvl.platform[i].body.boundary.top
-			&& body.boundary.bottom > lvl.platform[i].body.boundary.bottom
-			&& body.center.x >= lvl.platform[i].body.boundary.left
-			&& body.center.x <= lvl.platform[i].body.boundary.right
+		if (body.boundary.bottom <= plat[i].body.boundary.top
+			&& body.boundary.bottom > plat[i].body.boundary.bottom
+			&& body.center.x >= plat[i].body.boundary.left
+			&& body.center.x <= plat[i].body.boundary.right
 			&& velocity.y <= 0.0)
 		{
 			on_ground = true;
 			jumpCount = 0;
 			velocity.y *= -0.25f;
-			body.center.y = lvl.platform[i].body.boundary.top + body.height / 2;
+			body.center.y = plat[i].body.boundary.top + body.height / 2;
 			break;
 		}
 		else
@@ -203,14 +196,6 @@ void Boxy::build()
 	reflection.center.y = body.center.y + sqrt(body.radius)*2;
 
 	//Color Assignment
-	body.color.r = 85;
-	body.color.g = 35;
-	body.color.b = 160;
-
-	reflection.color.r = 100;
-	reflection.color.g = 50;
-	reflection.color.b = 175;
-
 	eye.color.r = 0;
 	eye.color.g = 0;
 	eye.color.b = 0;
@@ -243,7 +228,7 @@ void Boxy::render()
 
 void Boxy::update_position(Level lvl)
 {
-	physics(lvl);
+	physics(lvl.platform);
 	update_reflection_x();
 	reflection.center.y = body.center.y + sqrt(body.radius) * 1.5f;
 	body.stroke_assignment();
@@ -252,7 +237,7 @@ void Boxy::update_position(Level lvl)
 	body.boundary_assignment();
 }
 
-void Boxy::physics(Level lvl)
+void Boxy::physics(Platform *plat)
 {
 	velocity.y -= GLfloat(GRAVITY);
 	body.center.y += velocity.y;
@@ -260,17 +245,17 @@ void Boxy::physics(Level lvl)
 
 	for (int i = 0; i < MAX_PLATFORM; i++)
 	{
-		lvl.platform[i].body.boundary_assignment();
-		if (body.boundary.bottom <= lvl.platform[i].body.boundary.top
-			&& body.boundary.bottom > lvl.platform[i].body.boundary.bottom
-			&& body.boundary.right >= lvl.platform[i].body.boundary.left
-			&& body.boundary.left <= lvl.platform[i].body.boundary.right
+		plat[i].body.boundary_assignment();
+		if (body.boundary.bottom <= plat[i].body.boundary.top
+			&& body.boundary.bottom > plat[i].body.boundary.bottom
+			&& body.boundary.right >= plat[i].body.boundary.left
+			&& body.boundary.left <= plat[i].body.boundary.right
 			&& velocity.y <= 0.0)
 		{
 			on_ground = true;
 			jumpCount = 0;
 			velocity.y *= -0.25f;
-			body.center.y = lvl.platform[i].body.boundary.top + body.height / 2;
+			body.center.y = plat[i].body.boundary.top + body.height / 2;
 			break;
 		}
 		else
@@ -306,13 +291,50 @@ void Boxy::jump()
 void Boxy::move(Direction dir)
 {
 	direction = dir;
-	//Horizontal
+	
 	if (direction == LEFT)
 		velocity.x = -6.0f;
-	else // RIGHT
+	else 
 		velocity.x = 6.0f;
 
-	//Vertical
 	if (on_ground)
 		velocity.y = 1.25f;
+}
+
+void Player::respawn()
+{
+	//reset attributes
+	body.center.x = 0;
+	body.center.y = 750;
+	velocity.x = 0;
+	velocity.y = -25.0f;
+	stats.lifeCount--;
+}
+
+void Player::death_handler(Resolution res)
+{
+	if (body.boundary.right < -res.width * 3)
+		if (stats.lifeCount > 0)
+			respawn();
+	//else set flag and delete this player in level
+
+	if (body.boundary.left > res.width * 3)
+		if (stats.lifeCount > 0)
+			respawn();
+
+	if (body.boundary.top < -res.height * 3)
+		if (stats.lifeCount > 0)
+			respawn();
+
+	if (body.boundary.bottom > res.height * 3)
+		if (stats.lifeCount > 0)
+			respawn();
+}
+
+Attributes::Attributes()
+{
+	initDeath = false;
+	health = 0.0f;
+	lifeCount = 5;
+	lifeState = ALIVE;
 }

@@ -16,7 +16,7 @@ Game::Game()
 	//sicons.set_attributes();
 	window.width = HDX;
 	window.height = HDY;
-	render = NIGHT;
+	render = FIELD;
 
 	//mainMenu.build();
 	menus.chacterSelection.build(window, assets);
@@ -80,6 +80,9 @@ int main(void)
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetJoystickCallback(joystick_callback);
 
+	int i = 0;
+	Field_Level * temp = new Field_Level;
+
 	//Whlie Window is Open
 	while (!glfwWindowShouldClose(window))
 	{	
@@ -98,6 +101,9 @@ int main(void)
 		glOrtho(-game.window.width, game.window.width,
 			-game.window.height, game.window.height, -1, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
+		 
+		
+
 		switch (game.render)
 		{
 			case MAIN:
@@ -117,6 +123,8 @@ int main(void)
 			case TIME:
 				game.levels.time.handler(game.levels.time, game.window, game.assets);
 				break;
+			case POLLUTION:
+				break;
 			default:
 				break;
 		}
@@ -128,6 +136,10 @@ int main(void)
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	exit(EXIT_SUCCESS);
+
+	temp = NULL;
+	delete temp;
+
 	return 0;
 }
 
@@ -144,69 +156,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			if (action == GLFW_PRESS) 
 				glfwSetWindowShouldClose(window, GL_TRUE);
 			break;
-			/*
-		case GLFW_KEY_PAGE_UP:
-			if (action == GLFW_PRESS)
-			{
-				//Return Key changes Level
-				switch (game.render)
-				{
-				case CHARSEL:
-					game.render = FIELD;
-					break;
-				case FIELD:
-					game.render = NIGHT;
-					break;
-				case NIGHT:
-					game.render = TIME;
-					break;
-				case TIME:
-					game.render = MAIN;
-					break;
-				case MAIN:
-					game.render = CHARSEL;
-					break;
-				}
-			}
-			break;
-		case GLFW_KEY_DELETE:
-			if (action == GLFW_PRESS)
-			{
-				if (game.render == TIME)
-					game.level3.transition = true;
-			}
-			break;
-		case GLFW_KEY_LEFT:
-			if (action == GLFW_PRESS)
-			{
-				for (int i = 0; i < MAX_PLAYER; i++)
-				{
-					game.level1.player[i]->direction = LEFT;
-					game.level1.player[i]->move();
-				}
-
-			}
-			break;
-		case GLFW_KEY_RIGHT:
-			if (action == GLFW_PRESS)
-			{
-				for (int i = 0; i < MAX_PLAYER; i++)
-				{
-					game.level1.player[i]->direction = RIGHT;
-					game.level1.player[i]->move();
-				}
-			}
-			break;
-		case GLFW_KEY_SPACE:
-			if (action == GLFW_PRESS)
-			{
-				for (int i = 0; i < MAX_PLAYER; i++)
-				{
-					game.level1.player[i]->jump();
-				}
-			}
-			break;
-			*/
 		default:
 			break;
 	}
@@ -223,42 +172,3 @@ void joystick_callback(int joy, int event)
 		cout << "Player " << joy + 1 << ": controller disconnected" << endl;
 	}
 }
-
-/*
-http://www.glfw.org/docs/3.3/input_guide.html#joystick
-*/
-
-/*
-class WindowManager {
-private:
-GLFWwindow* window_;
-GLFWmonitor* monitor_;
-Keyboard* keyboard_ ;
-...
-}
-
-
-https://gamedev.stackexchange.com/questions/58541/how-can-i-associate-a-key-callback-with-a-wrapper-class-instance
-WindowManager::WindowManager() {
-// set the window pointer to the keyboard object
-glfwSetUserPointer(window_, keyboard_);
-glfwSetKeyCallback(window_, key_callback_);
-// set it back to the window
-glfwSetUserPointer(window_, window_);
-// ...
-}
-
-void WindowManager::key_callback(GLFWwindow *window, int, int ,int, int) {
-keyboard_ *keyboard =
-static_cast<keyboard_*>(glfwGetUserPointer(window));
-switch(key) {
-case GLFW_KEY_ESCAPE:
-keyboard->reconfigure();
-break;
-}
-}
-*/
-
-/*
-https://stackoverflow.com/questions/30275250/is-there-a-way-to-modify-class-state-from-a-function-pointer-passed-to-a-c-api
-*/

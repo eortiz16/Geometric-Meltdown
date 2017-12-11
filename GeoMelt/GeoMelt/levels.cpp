@@ -15,7 +15,7 @@ void Field_Level::build(Resolution res, Assets assets)
 
 	//Sun Attributes
 	sun.radius = (GLfloat)res.height;
-	sun.set_color(assets.palette.sun);
+	sun.color = assets.palette.sun;
 	sun.center.x = (GLfloat)res.width;
 	sun.center.y = (GLfloat)res.height;
 
@@ -31,13 +31,13 @@ void Field_Level::build(Resolution res, Assets assets)
 	platform[0].body.boundary_assignment();
 
 	//Assign Color to Floor
-	platform[0].body.set_color(assets.palette.platform);
+	platform[0].body.color = assets.palette.platform;
 
 	//Assign Floor Outline Attributes
 	for (int i = 0; i < MAX_STROKE; i++)
 	{
 		platform[0].body.stroke[i].width = 2.0;
-		platform[0].body.stroke[i].set_color(assets.palette.black);
+		platform[0].body.stroke[i].color = assets.palette.black;
 	}
 
 	//Floor Stroke Assignment
@@ -59,24 +59,32 @@ void Field_Level::build(Resolution res, Assets assets)
 	//Player Position
 	player[0] = new Ball;
 	player[0]->build();
+	player[0]->body.color = assets.characterPalette.red_b;
+	player[0]->reflection.color = assets.characterPalette.red_r;
 	player[0]->body.center.x = -600;
 	player[0]->body.center.y = (GLfloat)res.height;
 	player[0]->controller.id = 0;
 
 	player[1] = new Boxy;
 	player[1]->build();
+	player[1]->body.color = assets.characterPalette.green_b;
+	player[1]->reflection.color = assets.characterPalette.green_r;
 	player[1]->body.center.x = -500;
 	player[1]->body.center.y = (GLfloat)res.height / 2;
 	player[1]->controller.id = 1;
 
 	player[2] = new Ball;
 	player[2]->build();
+	player[2]->body.color = assets.characterPalette.yellow_b;
+	player[2]->reflection.color = assets.characterPalette.yellow_r;
 	player[2]->body.center.x = 600;
 	player[2]->body.center.y = (GLfloat)res.height;
 	player[2]->controller.id = 2;
 
 	player[3] = new Boxy;
 	player[3]->build();
+	player[3]->body.color = assets.characterPalette.pink_b;
+	player[3]->reflection.color = assets.characterPalette.pink_r;
 	player[3]->body.center.x = 500;
 	player[3]->body.center.y = (GLfloat)res.height / 2;
 	player[3]->controller.id = 3;
@@ -97,6 +105,7 @@ void Field_Level::handler(Level lvl, Resolution res)
 		player[i]->read_input(&player[i]->controller);
 		player[i]->update_position(lvl);
 		player[i]->render();
+		player[i]->death_handler(res);
 	}
 }
 
@@ -197,7 +206,7 @@ void Night_Level::build(Resolution res, Assets assets)
 	background.set_color(assets.backgroundPalette.night);
 
 	//Moon Attributes
-	moon.set_color(assets.palette.moon);
+	moon.color = assets.palette.moon;
 	moon.center.x = res.width / 2.0f;
 	moon.center.y = res.height / 2.0f;
 	moon.radius = res.height / 2.0f;
@@ -207,7 +216,7 @@ void Night_Level::build(Resolution res, Assets assets)
 	{
 		stars[i].offset = rnd();
 		stars[i].body.radius = 3;
-		stars[i].body.set_color(assets.palette.white);
+		stars[i].body.color = assets.palette.white;
 		stars[i].compute_coordinates(i, res);
 	}
 
@@ -235,7 +244,7 @@ void Night_Level::build(Resolution res, Assets assets)
 		platform[i].body.boundary_assignment();
 
 		//Assign Color to Floor
-		platform[i].body.set_color(assets.palette.platform);
+		platform[i].body.color = assets.palette.platform;
 		
 		//Assign Floor Outline Attributes
 		platform[i].body.stroke_assignment();
@@ -244,27 +253,34 @@ void Night_Level::build(Resolution res, Assets assets)
 	//Player Position
 	player[0] = new Ball;
 	player[0]->build();
+	player[0]->body.color = assets.characterPalette.red_b;
+	player[0]->reflection.color = assets.characterPalette.red_r;
 	player[0]->body.center.x = -600;
 	player[0]->body.center.y = (GLfloat)res.height;
+	player[0]->controller.id = 0;
 
 	player[1] = new Boxy;
 	player[1]->build();
-	player[1]->body.center.x = 0;
+	player[1]->body.color = assets.characterPalette.black_b;
+	player[1]->reflection.color = assets.characterPalette.black_r;
+	player[1]->body.center.x = -500;
 	player[1]->body.center.y = (GLfloat)res.height / 2;
+	player[1]->controller.id = 1;
 
 	player[2] = new Ball;
 	player[2]->build();
+	player[2]->body.color = assets.characterPalette.white_b;
+	player[2]->reflection.color = assets.characterPalette.white_r;
 	player[2]->body.center.x = 600;
 	player[2]->body.center.y = (GLfloat)res.height;
+	player[2]->controller.id = 2;
 
 	player[3] = new Boxy;
 	player[3]->build();
+	player[3]->body.color = assets.characterPalette.pink_b;
+	player[3]->reflection.color = assets.characterPalette.pink_r;
 	player[3]->body.center.x = 500;
 	player[3]->body.center.y = (GLfloat)res.height / 2;
-
-	player[0]->controller.id = 0;
-	player[1]->controller.id = 1;
-	player[2]->controller.id = 2;
 	player[3]->controller.id = 3;
 }
 
@@ -279,6 +295,7 @@ void Night_Level::handler(Level lvl, Resolution res)
 		player[i]->read_input(&player[i]->controller);
 		player[i]->update_position(lvl);
 		player[i]->render();
+		player[i]->death_handler(res);
 	}
 }
 
@@ -361,12 +378,12 @@ void Time_Level::build(Resolution res, Assets assets)
 
 	//Sun Attributes
 	sun.radius = (GLfloat)res.height;
-	sun.set_color(assets.palette.sun);
+	sun.color = assets.palette.sun;
 	sun.center.x = (GLfloat)res.width;
 	sun.center.y = (GLfloat)res.height;
 
 	//Moon Attributes
-	moon.set_color(assets.palette.moon);
+	moon.color = assets.palette.moon;
 	moon.center.x = res.width / 2.0f;
 	moon.center.y = res.height / 2.0f;
 	moon.radius = res.height / 2.0f;
@@ -376,7 +393,7 @@ void Time_Level::build(Resolution res, Assets assets)
 	{
 		stars[i].offset = rnd();
 		stars[i].body.radius = 3;
-		stars[i].body.set_color(assets.palette.white);
+		stars[i].body.color = assets.palette.white;
 		stars[i].compute_coordinates(i, res);
 	}
 
@@ -398,7 +415,7 @@ void Time_Level::build(Resolution res, Assets assets)
 	for (int i = 0; i < MAX_STROKE; i++)
 	{
 		platform[0].body.stroke[i].width = 2.0;
-		platform[0].body.stroke[i].set_color(assets.palette.black);
+		platform[0].body.stroke[i].color = assets.palette.black;
 	}
 
 	//Floor Stroke Assignment
@@ -420,53 +437,59 @@ void Time_Level::build(Resolution res, Assets assets)
 	//Player Position
 	player[0] = new Ball;
 	player[0]->build();
-
+	player[0]->body.color = assets.characterPalette.red_b;
+	player[0]->reflection.color = assets.characterPalette.red_r;
 	player[0]->body.center.x = -600;
 	player[0]->body.center.y = (GLfloat)res.height;
+	player[0]->controller.id = 0;
 
 	player[1] = new Boxy;
 	player[1]->build();
+	player[1]->body.color = assets.characterPalette.black_b;
+	player[1]->reflection.color = assets.characterPalette.black_r;
 	player[1]->body.center.x = -500;
 	player[1]->body.center.y = (GLfloat)res.height / 2;
+	player[1]->controller.id = 1;
 
 	player[2] = new Ball;
 	player[2]->build();
+	player[2]->body.color = assets.characterPalette.white_b;
+	player[2]->reflection.color = assets.characterPalette.white_r;
 	player[2]->body.center.x = 600;
 	player[2]->body.center.y = (GLfloat)res.height;
+	player[2]->controller.id = 2;
 
 	player[3] = new Boxy;
 	player[3]->build();
+	player[3]->body.color = assets.characterPalette.pink_b;
+	player[3]->reflection.color = assets.characterPalette.pink_r;
 	player[3]->body.center.x = 500;
 	player[3]->body.center.y = (GLfloat)res.height / 2;
-
-	player[0]->controller.id = 0;
-	player[1]->controller.id = 1;
-	player[2]->controller.id = 2;
 	player[3]->controller.id = 3;
 }
 
-void Time_Level::transition_handler(Palette_BG palbg)
+void Time_Level::transition_handler(Palette_BG pal)
 {
 	if (transition == true)
 		switch (time_of_day)
 		{
 		case DAY:
-			transition_to(palbg.afternoon);
+			transition_to(pal.afternoon);
 			break;
 		case AFTERNOON:
-			transition_to(palbg.evening);
+			transition_to(pal.evening);
 			break;
 		case EVENING:
-			transition_to(palbg.night);
+			transition_to(pal.night);
 			break;
 		case NITE:
-			transition_to(palbg.dark_night);
+			transition_to(pal.dark_night);
 			break;
 		case DNITE:
-			transition_to(palbg.morning);
+			transition_to(pal.morning);
 			break;
 		case MORNING:
-			transition_to(palbg.day);
+			transition_to(pal.day);
 			break;
 		}
 }
@@ -485,6 +508,7 @@ void Time_Level::handler(Level lvl, Resolution res, Assets assets)
 		player[i]->read_input(&player[i]->controller);
 		player[i]->update_position(lvl);
 		player[i]->render();
+		player[i]->death_handler(res);
 	}
 }
 
