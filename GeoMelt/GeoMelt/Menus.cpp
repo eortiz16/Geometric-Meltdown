@@ -1,5 +1,7 @@
 #include "headers.h"
 
+extern int width_r, height_r;
+
 /*
 void MainMenu::build()
 {
@@ -56,13 +58,13 @@ void MainMenu::handler()
 }
 */
 
-void CharacterSelectMenu::build(Resolution res, Assets assets)
+void CharacterSelectMenu::build(Assets assets)
 {
 	//Background Attribute Assignment
 	background.body.center.x = 0;
 	background.body.center.y = 0;
-	background.body.width = 2.0f * res.width;
-	background.body.height = 2.0f * res.height;
+	background.body.width = 2.0f * width_r;
+	background.body.height = 2.0f * height_r;
 
 	for (int i = 0; i < CORNERS; i++)
 	{
@@ -72,15 +74,15 @@ void CharacterSelectMenu::build(Resolution res, Assets assets)
 	}
 	
 	//assign center of each char select box
-	float wSpace = -3.0f * res.width / 4.0f;
+	float wSpace = -3.0f * width_r / 4.0f;
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
 		selectBox[i].stroke = 30.0f;
 
 		selectBox[i].box.center.x = wSpace;
-		selectBox[i].box.center.y = -res.height / 2.5f;
-		selectBox[i].box.width = res.width / 3.0f;
-		selectBox[i].box.height = 3.0f * res.height / 4.0f;
+		selectBox[i].box.center.y = - height_r / 2.5f;
+		selectBox[i].box.width = width_r / 3.0f;
+		selectBox[i].box.height = 3.0f * height_r / 4.0f;
 		selectBox[i].box.build();
 		selectBox[i].box.set_color(assets.palette.white);
 
@@ -91,7 +93,7 @@ void CharacterSelectMenu::build(Resolution res, Assets assets)
 		selectBox[i].outline.build();
 		selectBox[i].outline.set_color(assets.palette.black);
 
-		wSpace += res.width / 2.0f;
+		wSpace += width_r / 2.0f;
 	}
 }
 

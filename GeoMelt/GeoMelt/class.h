@@ -1,13 +1,7 @@
 #include "headers.h"
 #include "ppm.h"
 
-#include <iostream>
-#include <thread>
-using namespace std;
-
-
 #pragma once
-
 #define GRAVITY 0.1
 #define FRICTION 0.35
 #define TOD_CARDINALITY 6 
@@ -105,14 +99,14 @@ public:
 	int speed;
 	void render();
 	void physics();
-	void set_cloud_group(Resolution res);
-	void handler(Resolution res);
+	void set_cloud_group();
+	void handler();
 };
 class Star {
 public:
 	Shape body;
 	GLfloat offset;
-	void compute_coordinates(int count, Resolution res);
+	void compute_coordinates(int count);
 	void change_color();
 };
 class Particles {
@@ -145,7 +139,7 @@ public:
 	Direction direction;
 	void update_reflection_x();
 	void respawn();
-	void death_handler(Resolution res);
+	void death_handler();
 	virtual void render(void) = 0;
 	virtual void update_position(Level lvl) = 0;
 	virtual void physics(Platform *plat) = 0;
@@ -288,7 +282,7 @@ public:
 	CharSelBox selectBox[MAX_PLAYER];
 	Shape cursor[MAX_PLAYER];
 	void handler();
-	void build(Resolution res, Assets assets);
+	void build(Assets assets);
 };
 
 class Assets;
@@ -296,7 +290,7 @@ class Level {
 public:
 	Background background;
 	
-	void physics(Level lvl, Resolution res);
+	void physics(Level lvl);
 
 	Platform platform[MAX_PLATFORM];
 	Player *player[MAX_PLAYER] = {NULL}; //Polymorphism
@@ -307,9 +301,9 @@ public:
 	Shape sun;
 	Cloud clouds[MAX_CLOUD];
 	void render();
-	void handler(Level lvl, Resolution res);
+	void handler();
 	
-	void build(Resolution res, Assets assets);
+	void build(Assets assets);
 	~Field_Level();
 };
 class Night_Level : public Level {
@@ -317,9 +311,9 @@ public:
 	Star stars[MAX_STAR];
 	Shape moon;
 	void render();
-	void handler(Level lvl, Resolution res);
+	void handler();
 
-	void build(Resolution res, Assets assets);
+	void build(Assets assets);
 	~Night_Level();
 };
 class Time_Level : public Level {
@@ -331,11 +325,11 @@ public:
 	Star stars[MAX_STAR]; //change opacity during day
 	Cloud clouds[MAX_CLOUD];
 	void render();
-	void handler(Level lvl, Resolution res, Assets assets);
+	void handler();
 	
 	void transition_handler(Palette_BG pal);
 	void transition_to(Color *clr);
-	void build(Resolution res, Assets assets);
+	void build(Assets assets);
 	~Time_Level();
 };
 
@@ -371,7 +365,6 @@ public:
 class Game {
 public:
 	const GLFWvidmode *monitor;
-	Resolution window;
 	State render;
 	Assets assets;
 	Menus menus;

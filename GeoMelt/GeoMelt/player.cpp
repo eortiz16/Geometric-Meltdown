@@ -1,6 +1,8 @@
 #include "headers.h"
 #include "player.h"
 
+extern int width_r, height_r;
+
 void Player::update_reflection_x()
 {
 	//Takes the width resolution and scales down to a factor
@@ -309,24 +311,26 @@ void Player::respawn()
 	velocity.x = 0;
 	velocity.y = -25.0f;
 	stats.lifeCount--;
+	cout << "Player " << controller.id << " respawn" << endl;
+	cout << "life count = " << stats.lifeCount << endl;
 }
 
-void Player::death_handler(Resolution res)
+void Player::death_handler()
 {
-	if (body.boundary.right < -res.width * 3)
+	if (body.boundary.right < -width_r * 3)
 		if (stats.lifeCount > 0)
 			respawn();
 	//else set flag and delete this player in level
 
-	if (body.boundary.left > res.width * 3)
+	if (body.boundary.left > width_r * 3)
 		if (stats.lifeCount > 0)
 			respawn();
 
-	if (body.boundary.top < -res.height * 3)
+	if (body.boundary.top < -height_r * 3)
 		if (stats.lifeCount > 0)
 			respawn();
 
-	if (body.boundary.bottom > res.height * 3)
+	if (body.boundary.bottom > height_r * 3)
 		if (stats.lifeCount > 0)
 			respawn();
 }

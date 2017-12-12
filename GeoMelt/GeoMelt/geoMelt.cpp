@@ -3,6 +3,8 @@
 #include <thread>
 
 GLFWwindow *window;
+int width_r = HDX;
+int height_r = HDY;
 
 Game::Game()
 {	
@@ -16,36 +18,33 @@ Game::Game()
 	//picons.set_attributes();
 	//icons.set_attributes();
 	//sicons.set_attributes();
-	window.width = HDX;
-	window.height = HDY;
-	render = TIME;
+	
+	render = FIELD;
 
 	//mainMenu.build();
-	menus.chacterSelection.build(window, assets);
-	levels.field.build(window, assets);
-	levels.night.build(window, assets);
-	levels.time.build(window, assets);
+	menus.chacterSelection.build(assets);
+	levels.field.build(assets);
+	levels.night.build(assets);
+	levels.time.build(assets);
 }
 
 void Game::display_details()
 {
-	cout << "Monitor Resolution:	" << monitor->width << "x" << monitor->height << endl;
-	cout << "Window Resolution:	" << window.width << "x" << window.height << endl;
+	cout << "Monitor Resolution:	" << width_r << "x" << height_r << endl;
+	cout << "Window Resolution:	" << width_r << "x" << height_r << endl;
 }
 
 void Game::set_resolution()
 {
 	if (monitor->width < HDX || monitor->width < HDY)
 	{
-		window.width = monitor->width;
-		window.height = monitor->width;
-		window.ratio = (GLfloat)window.width / (GLfloat)window.height;
+		width_r = monitor->width;
+		height_r = monitor->width;
 	}
 	else
 	{
-		window.width = HDX;
-		window.height = HDY;
-		window.ratio = (GLfloat)HDY / (GLfloat)HDX;
+		width_r = HDX;
+		height_r = HDY;
 	}
 }
 
@@ -66,7 +65,7 @@ int main(void)
 	game.display_details();
 
 	//Create GLFW Window
-	window = glfwCreateWindow(game.window.width, game.window.height, "Geometric Meltdown", NULL, NULL);
+	window = glfwCreateWindow(width_r, height_r, "Geometric Meltdown", NULL, NULL);
 
 	//Error Handling - If Window is Not Created
 	if (!window)
@@ -79,6 +78,7 @@ int main(void)
 
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetJoystickCallback(joystick_callback);
+	glfwSetWindowSizeCallback(window, window_size_callback);
 
 	//Start new thread
 	thread p(&phys,&game);
@@ -86,20 +86,19 @@ int main(void)
 
 	while (!glfwWindowShouldClose(window))
 	{
-		glfwGetWindowSize(window, &game.window.width, &game.window.height);
-		glfwGetFramebufferSize(window, &game.window.width, &game.window.height);
+		glfwGetWindowSize(window, &width_r, &height_r);
+		glfwGetFramebufferSize(window, &width_r, &height_r);
 		glShadeModel(GL_SMOOTH);
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CCW);
 		glClearColor(0, 0, 0, 0);
-		glViewport(0, 0, game.window.width, game.window.height);
+		glViewport(0, 0, width_r, height_r);
 		glMatrixMode(GL_PROJECTION); glLoadIdentity();
 		glMatrixMode(GL_MODELVIEW); glLoadIdentity();
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_BLEND);
 		glDisable(GL_TEXTURE_2D);
-		glOrtho(-game.window.width, game.window.width,
-			-game.window.height, game.window.height, -1, 1);
+		glOrtho(-width_r, width_r, -height_r, height_r, -1, 1);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -114,13 +113,28 @@ int main(void)
 			game.menus.chacterSelection.handler();
 			break;
 		case FIELD:
-			game.levels.field.handler(game.levels.field, game.window);
+			game.levels.field.handler();
+			for (int i = 0; i < MAX_PLAYER; i++)
+			{
+				game.levels.field.player[i]->death_handler();
+				game.levels.field.player[i]->read_input(&game.levels.field.player[i]->controller);
+			}
 			break;
 		case NIGHT:
-			game.levels.night.handler(game.levels.night, game.window);
+			game.levels.night.handler();
+			for (int i = 0; i < MAX_PLAYER; i++)
+			{
+				game.levels.night.player[i]->death_handler();
+				game.levels.night.player[i]->read_input(&game.levels.night.player[i]->controller);
+			}
 			break;
 		case TIME:
-			game.levels.time.handler(game.levels.time, game.window, game.assets);
+			game.levels.time.handler();
+			for (int i = 0; i < MAX_PLAYER; i++)
+			{
+				game.levels.time.player[i]->death_handler();
+				game.levels.time.player[i]->read_input(&game.levels.time.player[i]->controller);
+			}
 			break;
 		case POLLUTION:
 			break;
@@ -133,6 +147,7 @@ int main(void)
 	}
 
 	//Termination Procedure
+	p.~thread();
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	exit(EXIT_SUCCESS);
@@ -142,26 +157,24 @@ int main(void)
 
 void phys(Game *game)
 {
+	
 	while (!glfwWindowShouldClose(window))
 	{
 		switch (game->render)
 		{
 		case FIELD:
 			for (int i = 0; i < MAX_CLOUD; i++)
-				game->levels.field.clouds[i].handler(game->window);
-
-			game->levels.field.physics(game->levels.field, game->window);
+				game->levels.field.clouds[i].handler();
+			game->levels.field.physics(game->levels.field);
 			break;
 		case NIGHT:
-			game->levels.night.physics(game->levels.night, game->window);
+			game->levels.night.physics(game->levels.night);
 			break;
 		case TIME:
 			game->levels.time.transition_handler(game->assets.backgroundPalette);
-
 			for (int i = 0; i < MAX_CLOUD; i++)
-				game->levels.time.clouds[i].handler(game->window);
-
-			game->levels.time.physics(game->levels.time, game->window);
+				game->levels.time.clouds[i].handler();
+			game->levels.time.physics(game->levels.time);
 			break;
 		default:
 			break;
@@ -170,7 +183,14 @@ void phys(Game *game)
 	}
 }
 
-static void error_callback(int error, const char* description)
+void window_size_callback(GLFWwindow* window, int width, int height)
+{
+	cout << "\nWindow Resized: " << width << " x " << height << "\n";
+	width_r = width;
+	height_r = height;
+}
+
+void error_callback(int error, const char* description)
 {
 	fputs(description, stderr);
 }
@@ -191,11 +211,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void joystick_callback(int joy, int event)
 {
 	if (event == GLFW_CONNECTED)
-	{
 		cout << "Player " << joy + 1 << ": controller connected" << endl;
-	}
 	else if (event == GLFW_DISCONNECTED)
-	{
 		cout << "Player " << joy + 1 << ": controller disconnected" << endl;
-	}
 }
