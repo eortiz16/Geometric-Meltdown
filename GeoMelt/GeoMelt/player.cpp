@@ -95,6 +95,9 @@ void Ball::update_position(Level lvl)
 	outline.center.x = body.center.x;
 	outline.center.y = body.center.y;
 
+	outline.radius = body.radius + 4;
+	reflection.radius = body.radius - body.radius / 4;
+
 	//Player Boundaries
 	body.boundary_assignment();
 }
@@ -137,6 +140,11 @@ void Ball::physics(Platform *plat)
 		if (velocity.x < 0.0)
 			velocity.x = 0.0;
 	}
+
+	if (on_ground)
+	{
+		body.radius = body.width / 2;
+	}
 }
 
 void Ball::jump()
@@ -152,7 +160,7 @@ void Ball::jump()
 
 void Ball::exhale()
 {
-
+	body.radius *= 0.9f;
 }
 
 void Ball::move(Direction dir)
