@@ -39,7 +39,7 @@ void Game::set_resolution()
 	if (monitor->width < HDX || monitor->width < HDY)
 	{
 		width_r = monitor->width;
-		height_r = monitor->width;
+		height_r = monitor->height;
 	}
 	else
 	{
