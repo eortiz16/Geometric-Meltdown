@@ -16,7 +16,7 @@ using namespace std;
 #define MAX_PLATFORM 4
 #define MAX_STAR 40 
 #define MAX_CLOUD 7
-#define MAX_SPEED 15
+#define MAX_SPEED 5
 #define MAX_STROKE 4
 #define CLOUD_GROUP 3
 #define CLOUD_START 50
@@ -296,6 +296,8 @@ class Level {
 public:
 	Background background;
 	
+	void physics(Level lvl, Resolution res);
+
 	Platform platform[MAX_PLATFORM];
 	Player *player[MAX_PLAYER] = {NULL}; //Polymorphism
 	virtual ~Level() {}
@@ -306,6 +308,7 @@ public:
 	Cloud clouds[MAX_CLOUD];
 	void render();
 	void handler(Level lvl, Resolution res);
+	
 	void build(Resolution res, Assets assets);
 	~Field_Level();
 };
@@ -315,6 +318,7 @@ public:
 	Shape moon;
 	void render();
 	void handler(Level lvl, Resolution res);
+
 	void build(Resolution res, Assets assets);
 	~Night_Level();
 };
@@ -328,6 +332,7 @@ public:
 	Cloud clouds[MAX_CLOUD];
 	void render();
 	void handler(Level lvl, Resolution res, Assets assets);
+	
 	void transition_handler(Palette_BG pal);
 	void transition_to(Color *clr);
 	void build(Resolution res, Assets assets);

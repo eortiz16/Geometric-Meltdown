@@ -2,6 +2,8 @@
 #include "geoMelt.h"
 #include <thread>
 
+GLFWwindow *window;
+
 Game::Game()
 {	
 	//DevIL Init
@@ -16,7 +18,7 @@ Game::Game()
 	//sicons.set_attributes();
 	window.width = HDX;
 	window.height = HDY;
-	render = FIELD;
+	render = TIME;
 
 	//mainMenu.build();
 	menus.chacterSelection.build(window, assets);
@@ -49,12 +51,10 @@ void Game::set_resolution()
 
 int main(void)
 {
-	Game game;
-
 	//Seed Random Number Generation
 	srand((unsigned int)time(0));
 
-	GLFWwindow *window;
+	Game game;
 
 	//Error Handling - If GLFW Libraries Not Present
 	glfwSetErrorCallback(error_callback);
@@ -80,12 +80,12 @@ int main(void)
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetJoystickCallback(joystick_callback);
 
-	int i = 0;
-	Field_Level * temp = new Field_Level;
+	//Start new thread
+	thread p(&phys,&game);
+	p.detach();
 
-	//Whlie Window is Open
 	while (!glfwWindowShouldClose(window))
-	{	
+	{
 		glfwGetWindowSize(window, &game.window.width, &game.window.height);
 		glfwGetFramebufferSize(window, &game.window.width, &game.window.height);
 		glShadeModel(GL_SMOOTH);
@@ -100,47 +100,74 @@ int main(void)
 		glDisable(GL_TEXTURE_2D);
 		glOrtho(-game.window.width, game.window.width,
 			-game.window.height, game.window.height, -1, 1);
-		glClear(GL_COLOR_BUFFER_BIT);
-		 
-		
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		switch (game.render)
 		{
-			case MAIN:
-				//game.mainMenu.handler();
-				break;
-			case PAUSE:
-			case LEVELSEL:
-			case CHARSEL:
-				game.menus.chacterSelection.handler();
-				break;
-			case FIELD:
-				game.levels.field.handler(game.levels.field, game.window);
-				break;
-			case NIGHT:
-				game.levels.night.handler(game.levels.night, game.window);
-				break;
-			case TIME:
-				game.levels.time.handler(game.levels.time, game.window, game.assets);
-				break;
-			case POLLUTION:
-				break;
-			default:
-				break;
+		case MAIN:
+			//game.mainMenu.handler();
+			break;
+		case PAUSE:
+		case LEVELSEL:
+		case CHARSEL:
+			game.menus.chacterSelection.handler();
+			break;
+		case FIELD:
+			game.levels.field.handler(game.levels.field, game.window);
+			break;
+		case NIGHT:
+			game.levels.night.handler(game.levels.night, game.window);
+			break;
+		case TIME:
+			game.levels.time.handler(game.levels.time, game.window, game.assets);
+			break;
+		case POLLUTION:
+			break;
+		default:
+			break;
 		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
 	//Termination Procedure
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	exit(EXIT_SUCCESS);
 
-	temp = NULL;
-	delete temp;
-
 	return 0;
+}
+
+void phys(Game *game)
+{
+	while (!glfwWindowShouldClose(window))
+	{
+		switch (game->render)
+		{
+		case FIELD:
+			for (int i = 0; i < MAX_CLOUD; i++)
+				game->levels.field.clouds[i].handler(game->window);
+
+			game->levels.field.physics(game->levels.field, game->window);
+			break;
+		case NIGHT:
+			game->levels.night.physics(game->levels.night, game->window);
+			break;
+		case TIME:
+			game->levels.time.transition_handler(game->assets.backgroundPalette);
+
+			for (int i = 0; i < MAX_CLOUD; i++)
+				game->levels.time.clouds[i].handler(game->window);
+
+			game->levels.time.physics(game->levels.time, game->window);
+			break;
+		default:
+			break;
+		}
+		Sleep(10);
+	}
 }
 
 static void error_callback(int error, const char* description)

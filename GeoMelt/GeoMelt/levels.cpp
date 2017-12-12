@@ -1,6 +1,7 @@
 #include "headers.h"
 #include "levels.h"
 
+extern GLFWwindow *window;
 void Field_Level::build(Resolution res, Assets assets)
 {
 	srand((unsigned int)time(NULL));
@@ -93,19 +94,19 @@ void Field_Level::build(Resolution res, Assets assets)
 
 void Field_Level::handler(Level lvl, Resolution res)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		render();
 
-	for (int i = 0; i < MAX_CLOUD; i++)
-		clouds[i].handler(res);
+		for (int i = 0; i < MAX_PLAYER; i++)
+			player[i]->render();
+}
 
-	render();
-
+void Level::physics(Level lvl, Resolution res)
+{
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
-		player[i]->read_input(&player[i]->controller);
-		player[i]->update_position(lvl);
-		player[i]->render();
-		player[i]->death_handler(res);
+		lvl.player[i]->update_position(lvl);
+		lvl.player[i]->read_input(&lvl.player[i]->controller);
+		lvl.player[i]->death_handler(res);
 	}
 }
 
@@ -286,17 +287,10 @@ void Night_Level::build(Resolution res, Assets assets)
 
 void Night_Level::handler(Level lvl, Resolution res)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
 	render();
 	
 	for (int i = 0; i < MAX_PLAYER; i++)
-	{
-		player[i]->read_input(&player[i]->controller);
-		player[i]->update_position(lvl);
 		player[i]->render();
-		player[i]->death_handler(res);
-	}
 }
 
 void Night_Level::render()
@@ -496,20 +490,12 @@ void Time_Level::transition_handler(Palette_BG pal)
 
 void Time_Level::handler(Level lvl, Resolution res, Assets assets)
 {
-	transition_handler(assets.backgroundPalette);
-
-	for (int i = 0; i < MAX_CLOUD; i++)
-		clouds[i].handler(res); //Cloud Physics
+	
 
 	render();
 
 	for (int i = 0; i < MAX_PLAYER; i++)
-	{
-		player[i]->read_input(&player[i]->controller);
-		player[i]->update_position(lvl);
 		player[i]->render();
-		player[i]->death_handler(res);
-	}
 }
 
 void Time_Level::render()
