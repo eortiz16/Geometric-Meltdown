@@ -3,8 +3,8 @@
 #include <thread>
 
 GLFWwindow *window;
-int height_r = HDY;
-int width_r = HDX;
+//static int height_r = HDY;
+//static int width_r = HDX;
 
 Game::Game()
 {	
@@ -87,11 +87,7 @@ int main(void)
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwGetWindowSize(window, &width_r, &height_r);
-		if (height_r == 0)
-			cout << "@";
 		glfwGetFramebufferSize(window, &width_r, &height_r);
-		if (height_r == 0)
-			cout << "#";
 		glShadeModel(GL_SMOOTH);
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CCW);
@@ -118,27 +114,12 @@ int main(void)
 			break;
 		case FIELD:
 			game.levels.field.handler();
-			for (int i = 0; i < MAX_PLAYER; i++)
-			{
-				game.levels.field.player[i]->death_handler();
-				game.levels.field.player[i]->read_input(&game.levels.field.player[i]->controller);
-			}
 			break;
 		case NIGHT:
 			game.levels.night.handler();
-			for (int i = 0; i < MAX_PLAYER; i++)
-			{
-				game.levels.night.player[i]->death_handler();
-				game.levels.night.player[i]->read_input(&game.levels.night.player[i]->controller);
-			}
 			break;
 		case TIME:
 			game.levels.time.handler();
-			for (int i = 0; i < MAX_PLAYER; i++)
-			{
-				game.levels.time.player[i]->death_handler();
-				game.levels.time.player[i]->read_input(&game.levels.time.player[i]->controller);
-			}
 			break;
 		case POLLUTION:
 			break;
@@ -161,30 +142,51 @@ int main(void)
 
 void phys(Game *game)
 {
-	const int w = width_r;
-	const int h = height_r;
-
 	while (!glfwWindowShouldClose(window))
 	{
 		switch (game->render)
 		{
 		case FIELD:
 			for (int i = 0; i < MAX_CLOUD; i++)
-				game->levels.field.clouds[i].handler(h);
+				game->levels.field.clouds[i].handler();
 			game->levels.field.physics(game->levels.field);
+			for (int i = 0; i < MAX_PLAYER; i++)
+			{
+				game->levels.field.player[i]->death_handler();
+				game->levels.field.player[i]->read_input(&game->levels.field.player[i]->controller);
+			}
 			break;
 		case NIGHT:
 			game->levels.night.physics(game->levels.night);
+			for (int i = 0; i < MAX_PLAYER; i++)
+			{
+				game->levels.night.player[i]->death_handler();
+				game->levels.night.player[i]->read_input(&game->levels.night.player[i]->controller);
+			}
 			break;
 		case TIME:
 			game->levels.time.transition_handler(game->assets.backgroundPalette);
 			for (int i = 0; i < MAX_CLOUD; i++)
-				game->levels.time.clouds[i].handler(h);
+				game->levels.time.clouds[i].handler();
 			game->levels.time.physics(game->levels.time);
+			for (int i = 0; i < MAX_PLAYER; i++)
+			{
+				game->levels.time.player[i]->death_handler();
+				game->levels.time.player[i]->read_input(&game->levels.time.player[i]->controller);
+			}
 			break;
 		default:
 			break;
 		}
+		/*
+		if (resize == true)
+		{
+			game->levels.field.build(game->assets);
+			game->levels.night.build(game->assets);
+			game->levels.time.build(game->assets);
+			resize = false;
+		}
+		*/
 		Sleep(10);
 	}
 }
@@ -194,6 +196,7 @@ void window_size_callback(GLFWwindow* window, int width, int height)
 	cout << "\nWindow Resized: " << width << " x " << height << "\n";
 	width_r = width;
 	height_r = height;
+	resize = true;
 }
 
 void error_callback(int error, const char* description)

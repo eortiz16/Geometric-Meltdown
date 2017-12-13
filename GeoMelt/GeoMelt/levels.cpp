@@ -55,7 +55,7 @@ void Field_Level::build(Assets assets)
 			clouds[i].direction = LEFT ;
 		
 		//Assign Uniform Cloud Groups
-		clouds[i].set_cloud_group(height_r);
+		clouds[i].set_cloud_group();
 	}
 
 	//Player Position
@@ -128,7 +128,7 @@ Field_Level::~Field_Level()
 	}
 }
 
-void Cloud::handler(int h)
+void Cloud::handler()
 {
 	GLfloat arg1;
 	GLfloat arg2;
@@ -139,21 +139,19 @@ void Cloud::handler(int h)
 
 	//Reset if Last Cloud Offscreen
 	if (arg1 < - width_r && direction == LEFT)
-		set_cloud_group(h);
+		set_cloud_group();
 	else if (arg2 > width_r && direction == RIGHT)
-		set_cloud_group(h);
+		set_cloud_group();
 
 	//Conduct Cloud Physics
 	physics();
 }
 
-void Cloud::set_cloud_group(int h)
+void Cloud::set_cloud_group()
 {
 	float clr = (float)(rand() % 55 + 200);
 	GLfloat size = (GLfloat)(rand() % CLOUD_RANGE) + CLOUD_START;
-	
-	int level = 0; 
-	level = (rand() % (2 * h)) - h;
+	int level = (rand() % (2 * height_r)) - height_r;
 
 	//For All Shapes Assign Color, Size, Y Coordinate
 	for (int i = 0; i < CLOUD_GROUP; i++)
@@ -162,7 +160,7 @@ void Cloud::set_cloud_group(int h)
 		body[i].color.g = clr;
 		body[i].color.b = clr;
 		body[i].radius = size;
-		body[i].center.y = level;
+		body[i].center.y = (GLfloat)level;
 	}
 
 	if (direction == LEFT) //Starting on Right
@@ -422,7 +420,7 @@ void Time_Level::build(Assets assets)
 			clouds[i].direction = LEFT;
 
 		//Assign Uniform Cloud Groups
-		clouds[i].set_cloud_group(height_r);
+		clouds[i].set_cloud_group();
 	}
 
 	//Player Position

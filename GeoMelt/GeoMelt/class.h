@@ -99,8 +99,8 @@ public:
 	int speed;
 	void render();
 	void physics();
-	void set_cloud_group(int h);
-	void handler(int h);
+	void set_cloud_group();
+	void handler();
 };
 class Star {
 public:

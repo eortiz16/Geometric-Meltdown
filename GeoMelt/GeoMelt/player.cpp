@@ -313,8 +313,6 @@ void Player::respawn()
 	velocity.x = 0;
 	velocity.y = -25.0f;
 	stats.lifeCount--;
-	cout << "Player " << controller.id << " respawn" << endl;
-	cout << "life count = " << stats.lifeCount << endl;
 }
 
 void Player::death_handler()
