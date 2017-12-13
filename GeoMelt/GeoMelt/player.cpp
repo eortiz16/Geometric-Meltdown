@@ -1,8 +1,6 @@
 #include "headers.h"
 #include "player.h"
 
-//extern int width_r, height_r;
-
 void Player::update_reflection_x()
 {
 	//Takes the width resolution and scales down to a factor

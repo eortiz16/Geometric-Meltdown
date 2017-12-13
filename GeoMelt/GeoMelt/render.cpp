@@ -1,8 +1,6 @@
 #include "headers.h"
 #include "render.h"
 
-extern GLFWwindow *window;
-
 void Shape::render_circle()
 {
 	GLfloat arg1, arg2;

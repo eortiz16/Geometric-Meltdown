@@ -3,8 +3,6 @@
 #include <thread>
 
 GLFWwindow *window;
-//static int height_r = HDY;
-//static int width_r = HDX;
 
 Game::Game()
 {	
@@ -20,7 +18,6 @@ Game::Game()
 	//sicons.set_attributes();
 	
 	render = FIELD;
-
 	//mainMenu.build();
 	menus.chacterSelection.build(assets);
 	levels.field.build(assets);
@@ -30,7 +27,7 @@ Game::Game()
 
 void Game::display_details()
 {
-	cout << "Monitor Resolution:	" << width_r << "x" << height_r << endl;
+	cout << "Monitor Resolution:	" << monitor->width << "x" << monitor->height << endl;
 	cout << "Window Resolution:	" << width_r << "x" << height_r << endl;
 }
 

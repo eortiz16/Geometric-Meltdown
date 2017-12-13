@@ -9,3 +9,4 @@ void phys(Game *game);
 static int width_r = HDX;
 static int height_r = HDY;
 static bool resize = false;
+extern GLFWwindow *window;
