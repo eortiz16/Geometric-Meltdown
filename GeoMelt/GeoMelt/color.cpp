@@ -15,20 +15,11 @@ void Background::set_color(Color *clr)
 
 void RoundCornerBox::set_color(Color clr)
 {
-	vRectangle.color.r = clr.r;
-	vRectangle.color.g = clr.g;
-	vRectangle.color.b = clr.b;
-
-	hRectangle.color.r = clr.r;
-	hRectangle.color.g = clr.g;
-	hRectangle.color.b = clr.b;
+	vRectangle.color = clr;
+	hRectangle.color = clr;
 
 	for (int j = 0; j < CORNERS; j++)
-	{
-		corner[j].color.r = clr.r;
-		corner[j].color.g = clr.g;
-		corner[j].color.b = clr.b;
-	}
+		corner[j].color = clr;
 }
 
 Palette::Palette()
@@ -159,7 +150,5 @@ Palette_CHAR::Palette_CHAR()
 
 void Line::set_color(Color clr)
 {
-	color.r = clr.r;
-	color.g = clr.g;
-	color.b = clr.b;
+	color = clr;
 }

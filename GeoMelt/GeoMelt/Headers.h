@@ -13,6 +13,7 @@
 #include "class.h"
 #include "levels.h"
 #include "render.h"
+#include "geomelt.h"
 #include "ppm.h"
 #include <math.h>
 #include <ctime>

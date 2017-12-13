@@ -6,3 +6,5 @@ void joystick_callback(int joy, int event);
 void window_size_callback(GLFWwindow* window, int width, int height);
 
 void phys(Game *game);
+extern int width_r;
+extern int height_r;

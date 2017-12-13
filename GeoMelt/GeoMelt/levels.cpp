@@ -55,12 +55,12 @@ void Field_Level::build(Assets assets)
 			clouds[i].direction = LEFT ;
 		
 		//Assign Uniform Cloud Groups
-		clouds[i].set_cloud_group();
+		clouds[i].set_cloud_group(height_r);
 	}
 
 	//Player Position
 	player[0] = new Ball;
-	player[0]->build();
+	player[0]->build(assets);
 	player[0]->body.color = assets.characterPalette.red_b;
 	player[0]->reflection.color = assets.characterPalette.red_r;
 	player[0]->body.center.x = -600;
@@ -68,7 +68,7 @@ void Field_Level::build(Assets assets)
 	player[0]->controller.id = 0;
 
 	player[1] = new Boxy;
-	player[1]->build();
+	player[1]->build(assets);
 	player[1]->body.color = assets.characterPalette.green_b;
 	player[1]->reflection.color = assets.characterPalette.green_r;
 	player[1]->body.center.x = -500;
@@ -76,7 +76,7 @@ void Field_Level::build(Assets assets)
 	player[1]->controller.id = 1;
 
 	player[2] = new Ball;
-	player[2]->build();
+	player[2]->build(assets);
 	player[2]->body.color = assets.characterPalette.yellow_b;
 	player[2]->reflection.color = assets.characterPalette.yellow_r;
 	player[2]->body.center.x = 600;
@@ -84,7 +84,7 @@ void Field_Level::build(Assets assets)
 	player[2]->controller.id = 2;
 
 	player[3] = new Boxy;
-	player[3]->build();
+	player[3]->build(assets);
 	player[3]->body.color = assets.characterPalette.pink_b;
 	player[3]->reflection.color = assets.characterPalette.pink_r;
 	player[3]->body.center.x = 500;
@@ -128,7 +128,7 @@ Field_Level::~Field_Level()
 	}
 }
 
-void Cloud::handler()
+void Cloud::handler(int h)
 {
 	GLfloat arg1;
 	GLfloat arg2;
@@ -139,19 +139,21 @@ void Cloud::handler()
 
 	//Reset if Last Cloud Offscreen
 	if (arg1 < - width_r && direction == LEFT)
-		set_cloud_group();
+		set_cloud_group(h);
 	else if (arg2 > width_r && direction == RIGHT)
-		set_cloud_group();
+		set_cloud_group(h);
 
 	//Conduct Cloud Physics
 	physics();
 }
 
-void Cloud::set_cloud_group()
+void Cloud::set_cloud_group(int h)
 {
 	float clr = (float)(rand() % 55 + 200);
 	GLfloat size = (GLfloat)(rand() % CLOUD_RANGE) + CLOUD_START;
-	GLfloat level = (GLfloat)(rand() % (2 * height_r) + (- height_r));
+	
+	int level = 0; 
+	level = (rand() % (2 * h)) - h;
 
 	//For All Shapes Assign Color, Size, Y Coordinate
 	for (int i = 0; i < CLOUD_GROUP; i++)
@@ -250,7 +252,7 @@ void Night_Level::build(Assets assets)
 
 	//Player Position
 	player[0] = new Ball;
-	player[0]->build();
+	player[0]->build(assets);
 	player[0]->body.color = assets.characterPalette.red_b;
 	player[0]->reflection.color = assets.characterPalette.red_r;
 	player[0]->body.center.x = -600;
@@ -258,7 +260,7 @@ void Night_Level::build(Assets assets)
 	player[0]->controller.id = 0;
 
 	player[1] = new Boxy;
-	player[1]->build();
+	player[1]->build(assets);
 	player[1]->body.color = assets.characterPalette.black_b;
 	player[1]->reflection.color = assets.characterPalette.black_r;
 	player[1]->body.center.x = -500;
@@ -266,7 +268,7 @@ void Night_Level::build(Assets assets)
 	player[1]->controller.id = 1;
 
 	player[2] = new Ball;
-	player[2]->build();
+	player[2]->build(assets);
 	player[2]->body.color = assets.characterPalette.white_b;
 	player[2]->reflection.color = assets.characterPalette.white_r;
 	player[2]->body.center.x = 600;
@@ -274,7 +276,7 @@ void Night_Level::build(Assets assets)
 	player[2]->controller.id = 2;
 
 	player[3] = new Boxy;
-	player[3]->build();
+	player[3]->build(assets);
 	player[3]->body.color = assets.characterPalette.pink_b;
 	player[3]->reflection.color = assets.characterPalette.pink_r;
 	player[3]->body.center.x = 500;
@@ -398,9 +400,7 @@ void Time_Level::build(Assets assets)
 	platform[0].body.boundary_assignment();
 
 	//Assign Color to Floor
-	platform[0].body.color.r = 99;
-	platform[0].body.color.g = 160;
-	platform[0].body.color.b = 0;
+	platform[0].body.color = assets.palette.platform;
 
 	//Assign Floor Outline Attributes
 	for (int i = 0; i < MAX_STROKE; i++)
@@ -422,12 +422,12 @@ void Time_Level::build(Assets assets)
 			clouds[i].direction = LEFT;
 
 		//Assign Uniform Cloud Groups
-		clouds[i].set_cloud_group();
+		clouds[i].set_cloud_group(height_r);
 	}
 
 	//Player Position
 	player[0] = new Ball;
-	player[0]->build();
+	player[0]->build(assets);
 	player[0]->body.color = assets.characterPalette.red_b;
 	player[0]->reflection.color = assets.characterPalette.red_r;
 	player[0]->body.center.x = -600;
@@ -435,7 +435,7 @@ void Time_Level::build(Assets assets)
 	player[0]->controller.id = 0;
 
 	player[1] = new Boxy;
-	player[1]->build();
+	player[1]->build(assets);
 	player[1]->body.color = assets.characterPalette.black_b;
 	player[1]->reflection.color = assets.characterPalette.black_r;
 	player[1]->body.center.x = -500;
@@ -443,7 +443,7 @@ void Time_Level::build(Assets assets)
 	player[1]->controller.id = 1;
 
 	player[2] = new Ball;
-	player[2]->build();
+	player[2]->build(assets);
 	player[2]->body.color = assets.characterPalette.white_b;
 	player[2]->reflection.color = assets.characterPalette.white_r;
 	player[2]->body.center.x = 600;
@@ -451,7 +451,7 @@ void Time_Level::build(Assets assets)
 	player[2]->controller.id = 2;
 
 	player[3] = new Boxy;
-	player[3]->build();
+	player[3]->build(assets);
 	player[3]->body.color = assets.characterPalette.pink_b;
 	player[3]->reflection.color = assets.characterPalette.pink_r;
 	player[3]->body.center.x = 500;

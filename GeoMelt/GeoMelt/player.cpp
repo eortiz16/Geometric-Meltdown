@@ -1,7 +1,7 @@
 #include "headers.h"
 #include "player.h"
 
-extern int width_r, height_r;
+//extern int width_r, height_r;
 
 void Player::update_reflection_x()
 {
@@ -25,7 +25,7 @@ void Player::update_reflection_x()
 	reflection.center.x = body.center.x + offset;
 }
 
-void Ball::build()
+void Ball::build(Assets assets)
 {
 	//Default Character Values
 	JUMP_MAX = 4;
@@ -54,13 +54,9 @@ void Ball::build()
 	reflection.center.y = body.center.y + sqrt(body.radius);
 	
 	//Color Assignment
-	outline.color.r = 0;
-	outline.color.g = 0;
-	outline.color.b = 0;
+	outline.color = assets.palette.black;
 
-	eye.color.r = 0;
-	eye.color.g = 0;
-	eye.color.b = 0;
+	eye.color = assets.palette.black;
 
 	//Default Center
 	body.center.x = 0;
@@ -175,7 +171,7 @@ void Ball::move(Direction dir)
 		velocity.y = 1.25f;
 }
 
-void Boxy::build()
+void Boxy::build(Assets assets)
 {
 	//Default Character Values
 	JUMP_MAX = 2;
@@ -206,9 +202,7 @@ void Boxy::build()
 	reflection.center.y = body.center.y + sqrt(body.radius)*2;
 
 	//Color Assignment
-	eye.color.r = 0;
-	eye.color.g = 0;
-	eye.color.b = 0;
+	eye.color = assets.palette.black;
 
 	//Default Center
 	body.center.x = 0;

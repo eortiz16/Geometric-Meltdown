@@ -3,8 +3,8 @@
 #include <thread>
 
 GLFWwindow *window;
-int width_r = HDX;
 int height_r = HDY;
+int width_r = HDX;
 
 Game::Game()
 {	
@@ -87,7 +87,11 @@ int main(void)
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwGetWindowSize(window, &width_r, &height_r);
+		if (height_r == 0)
+			cout << "@";
 		glfwGetFramebufferSize(window, &width_r, &height_r);
+		if (height_r == 0)
+			cout << "#";
 		glShadeModel(GL_SMOOTH);
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CCW);
@@ -157,14 +161,16 @@ int main(void)
 
 void phys(Game *game)
 {
-	
+	const int w = width_r;
+	const int h = height_r;
+
 	while (!glfwWindowShouldClose(window))
 	{
 		switch (game->render)
 		{
 		case FIELD:
 			for (int i = 0; i < MAX_CLOUD; i++)
-				game->levels.field.clouds[i].handler();
+				game->levels.field.clouds[i].handler(h);
 			game->levels.field.physics(game->levels.field);
 			break;
 		case NIGHT:
@@ -173,7 +179,7 @@ void phys(Game *game)
 		case TIME:
 			game->levels.time.transition_handler(game->assets.backgroundPalette);
 			for (int i = 0; i < MAX_CLOUD; i++)
-				game->levels.time.clouds[i].handler();
+				game->levels.time.clouds[i].handler(h);
 			game->levels.time.physics(game->levels.time);
 			break;
 		default:

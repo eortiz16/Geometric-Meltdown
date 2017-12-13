@@ -1,6 +1,6 @@
 #include "headers.h"
 
-extern int width_r, height_r;
+//extern int width_r, height_r;
 
 /*
 void MainMenu::build()

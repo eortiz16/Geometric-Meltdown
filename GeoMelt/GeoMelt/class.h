@@ -9,8 +9,8 @@
 #define MAX_PLAYER 4
 #define MAX_PLATFORM 4
 #define MAX_STAR 40 
-#define MAX_CLOUD 7
-#define MAX_SPEED 5
+#define MAX_CLOUD 10
+#define MAX_SPEED 10
 #define MAX_STROKE 4
 #define CLOUD_GROUP 3
 #define CLOUD_START 50
@@ -99,8 +99,8 @@ public:
 	int speed;
 	void render();
 	void physics();
-	void set_cloud_group();
-	void handler();
+	void set_cloud_group(int h);
+	void handler(int h);
 };
 class Star {
 public:
@@ -125,6 +125,7 @@ public:
 
 class Level;
 class Platform;
+class Assets;
 class Player {
 public:
 	Controller controller;
@@ -145,7 +146,7 @@ public:
 	virtual void physics(Platform *plat) = 0;
 	virtual void jump(void) = 0;
 	virtual void move(Direction dir) = 0;
-	virtual void build(void) = 0;
+	virtual void build(Assets assets) = 0;
 	void read_input(Controller *c);
 	virtual ~Player() {}
 };
@@ -158,7 +159,7 @@ public:
 	void move(Direction dir);
 	void jump();
 	void exhale();
-	void build();
+	void build(Assets assets);
 	~Ball() {}
 };
 class Boxy : public Player {
@@ -168,7 +169,7 @@ public:
 	void physics(Platform *plat);
 	void move(Direction dir);
 	void jump();
-	void build();
+	void build(Assets assets);
 	~Boxy() {}
 };
 class Platform {
