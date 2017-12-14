@@ -63,8 +63,8 @@ void CharacterSelectMenu::build(Assets assets)
 	//Background Attribute Assignment
 	background.body.center.x = 0;
 	background.body.center.y = 0;
-	background.body.width = 2.0f * width_r;
-	background.body.height = 2.0f * height_r;
+	background.body.width = 2.0f * width_resolution;
+	background.body.height = 2.0f * height_resolution;
 
 	for (int i = 0; i < CORNERS; i++)
 	{
@@ -74,15 +74,15 @@ void CharacterSelectMenu::build(Assets assets)
 	}
 	
 	//assign center of each char select box
-	float wSpace = -3.0f * width_r / 4.0f;
+	float wSpace = -3.0f * width_resolution / 4.0f;
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
 		selectBox[i].stroke = 30.0f;
 
 		selectBox[i].box.center.x = wSpace;
-		selectBox[i].box.center.y = - height_r / 2.5f;
-		selectBox[i].box.width = width_r / 3.0f;
-		selectBox[i].box.height = 3.0f * height_r / 4.0f;
+		selectBox[i].box.center.y = - height_resolution / 2.5f;
+		selectBox[i].box.width = width_resolution / 3.0f;
+		selectBox[i].box.height = 3.0f * height_resolution / 4.0f;
 		selectBox[i].box.build();
 		selectBox[i].box.set_color(assets.palette.white);
 
@@ -93,7 +93,7 @@ void CharacterSelectMenu::build(Assets assets)
 		selectBox[i].outline.build();
 		selectBox[i].outline.set_color(assets.palette.black);
 
-		wSpace += width_r / 2.0f;
+		wSpace += width_resolution / 2.0f;
 	}
 }
 

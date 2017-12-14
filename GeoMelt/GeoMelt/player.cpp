@@ -66,33 +66,32 @@ void Ball::build(Assets assets)
 
 void Ball::render()
 {
-	outline.render_circle();
-	body.render_circle();
-
-	//Adjust Shadow
-	update_reflection_x();
-	reflection.render_circle();
-
-	(direction == LEFT) ?
-		eye.center.x = body.center.x - body.radius/2 :
-		eye.center.x = body.center.x + body.radius/2 ;
-	eye.center.y = body.center.y + body.radius / 2;
-
-	eye.render_circle();
+	if (stats.lifeState == ALIVE)
+	{
+		outline.render_circle();
+		body.render_circle();
+		reflection.render_circle();
+		eye.render_circle();
+	}
 }
 
 void Ball::update_position(Level lvl)
 {
 	physics(lvl.platform);
 	update_reflection_x();
-	reflection.center.y = body.center.y + sqrt(body.radius);
-	outline.center.x = body.center.x;
-	outline.center.y = body.center.y;
 
 	outline.radius = body.radius + 4;
 	reflection.radius = body.radius - body.radius / 4;
 
-	//Player Boundaries
+	reflection.center.y = body.center.y + sqrt(body.radius);
+	outline.center.x = body.center.x;
+	outline.center.y = body.center.y;
+
+	(direction == LEFT) ?
+		eye.center.x = body.center.x - body.radius / 2 :
+		eye.center.x = body.center.x + body.radius / 2;
+	eye.center.y = body.center.y + body.radius / 2;
+
 	body.boundary_assignment();
 }
 
@@ -187,6 +186,8 @@ void Boxy::build(Assets assets)
 	body.boundary_assignment();
 
 	//Stroke Assignment
+	for (int i = 0; i < MAX_STROKE; i++)
+		body.stroke[i].width = 3;
 	body.stroke_assignment();
 
 	eye.width = body.width/20 + 1;
@@ -212,31 +213,31 @@ void Boxy::build(Assets assets)
 
 void Boxy::render()
 {
-	body.render_quad();
+	if (stats.lifeState == ALIVE)
+	{
+		body.render_quad();
+		reflection.render_quad();
+		eye.render_circle();
 
-	//Adjust Reflection
-	update_reflection_x();
-	reflection.render_quad();
-
-	eye.center.y = body.center.y + body.radius / 2;
-	(direction == LEFT) ?
-		eye.center.x = body.center.x - body.radius / 2 :
-		eye.center.x = body.center.x + body.radius / 2 ;
-	eye.render_circle();
-
-	for (int i = 0; i < MAX_STROKE; i++)
-		body.stroke[i].render();
+		for (int i = 0; i < MAX_STROKE; i++)
+			body.stroke[i].render();
+	}
 }
 
 void Boxy::update_position(Level lvl)
 {
 	physics(lvl.platform);
-	update_reflection_x();
-	reflection.center.y = body.center.y + sqrt(body.radius) * 1.5f;
+
+	body.boundary_assignment();
 	body.stroke_assignment();
 
-	//Player Boundaries
-	body.boundary_assignment();
+	eye.center.y = body.center.y + body.radius / 2;
+	(direction == LEFT) ?
+		eye.center.x = body.center.x - body.radius / 2 :
+		eye.center.x = body.center.x + body.radius / 2;
+	
+	update_reflection_x();
+	reflection.center.y = body.center.y + sqrt(body.radius) * 1.5f;
 }
 
 void Boxy::physics(Platform *plat)
@@ -305,38 +306,55 @@ void Boxy::move(Direction dir)
 
 void Player::respawn()
 {
-	//reset attributes
-	body.center.x = 0;
-	body.center.y = 750;
-	velocity.x = 0;
-	velocity.y = -25.0f;
 	stats.lifeCount--;
+	if (stats.lifeState != ELIMINATED && stats.lifeCount < 0)
+	{
+		stats.lifeState = ELIMINATED;
+	}
+	else
+	{
+		stats.lifeState = ALIVE;
+		body.center.x = 0;
+		body.center.y = 750;
+		velocity.x = 0;
+		velocity.y = -25.0f;
+	}
 }
 
 void Player::death_handler()
-{
-	if (body.boundary.right < -width_r * 3)
-		if (stats.lifeCount > 0)
+{	
+	if (body.boundary.right < -width_resolution * 3)
+		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED)
+		{
+			stats.lifeState = DEAD;
 			respawn();
-	//else set flag and delete this player in level
+		}
 
-	if (body.boundary.left > width_r * 3)
-		if (stats.lifeCount > 0)
+	if (body.boundary.left > width_resolution * 3)
+		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED)
+		{
+			stats.lifeState = DEAD;
 			respawn();
+		}
 
-	if (body.boundary.top < -height_r * 3)
-		if (stats.lifeCount > 0)
+	if (body.boundary.top < -height_resolution * 3)
+		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED)
+		{
+			stats.lifeState = DEAD;
 			respawn();
-
-	if (body.boundary.bottom > height_r * 3)
-		if (stats.lifeCount > 0)
+		}
+	if (body.boundary.bottom > height_resolution * 3)
+		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED)
+		{
+			stats.lifeState = DEAD;
 			respawn();
+		}
 }
 
 Attributes::Attributes()
 {
 	initDeath = false;
 	health = 0.0f;
-	lifeCount = 5;
+	lifeCount = 4;
 	lifeState = ALIVE;
 }

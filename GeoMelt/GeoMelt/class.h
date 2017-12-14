@@ -26,7 +26,7 @@
 enum State {MAIN, PAUSE, LEVELSEL, CHARSEL, FIELD, NIGHT, TIME, DISCO, POLLUTION};
 enum Direction {LEFT, RIGHT};
 enum TOD { DAY, AFTERNOON, EVENING, NITE, DNITE, MORNING };
-enum PlayerState { ALIVE, DEAD };
+enum PlayerState { ALIVE, DEAD, ELIMINATED };
 
 inline void operator++(TOD &ti, int)
 {
@@ -290,9 +290,8 @@ class Assets;
 class Level {
 public:
 	Background background;
-	
 	void physics(Level lvl);
-
+	void camera(Level lvl);
 	Platform platform[MAX_PLATFORM];
 	Player *player[MAX_PLAYER] = {NULL}; //Polymorphism
 	virtual ~Level() {}

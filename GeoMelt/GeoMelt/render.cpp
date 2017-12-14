@@ -117,25 +117,25 @@ void RoundCornerBox::build()
 
 void Shape::stroke_assignment()
 {
-	stroke[0].from.x = center.x - width / 2;
-	stroke[0].from.y = center.y - height / 2;
-	stroke[0].to.x = center.x - width / 2;
-	stroke[0].to.y = center.y + height / 2;
+	stroke[0].from.x = boundary.left;
+	stroke[0].from.y = boundary.bottom;
+	stroke[0].to.x = boundary.left;
+	stroke[0].to.y = boundary.top;
 
-	stroke[1].from.x = center.x - width / 2;
-	stroke[1].from.y = center.y + height / 2;
-	stroke[1].to.x = center.x + width / 2;
-	stroke[1].to.y = center.y + height / 2;
+	stroke[1].from.x = boundary.left;
+	stroke[1].from.y = boundary.top;
+	stroke[1].to.x = boundary.right;
+	stroke[1].to.y = boundary.top;
 
-	stroke[2].from.x = center.x + width / 2;
-	stroke[2].from.y = center.y + height / 2;
-	stroke[2].to.x = center.x + width / 2;
-	stroke[2].to.y = center.y - height / 2;
+	stroke[2].from.x = boundary.right;
+	stroke[2].from.y = boundary.top;
+	stroke[2].to.x = boundary.right;
+	stroke[2].to.y = boundary.bottom;
 
-	stroke[3].from.x = center.x + width / 2;
-	stroke[3].from.y = center.y - height / 2;
-	stroke[3].to.x = center.x - width / 2;
-	stroke[3].to.y = center.y - height / 2;
+	stroke[3].from.x = boundary.right;
+	stroke[3].from.y = boundary.bottom;
+	stroke[3].to.x = boundary.left;
+	stroke[3].to.y = boundary.bottom;
 }
 
 void Shape::boundary_assignment()
