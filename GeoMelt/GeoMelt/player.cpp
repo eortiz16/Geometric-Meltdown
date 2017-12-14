@@ -315,7 +315,7 @@ void Player::respawn()
 	{
 		stats.lifeState = ALIVE;
 		body.center.x = 0;
-		body.center.y = 750;
+		body.center.y = 550;
 		velocity.x = 0;
 		velocity.y = -25.0f;
 	}
@@ -324,31 +324,50 @@ void Player::respawn()
 void Player::death_handler()
 {	
 	if (body.boundary.right < -width_resolution * 3)
-		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED)
+	{
+		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED && stats.initDeath == false)
 		{
+			stats.initDeath = true;
 			stats.lifeState = DEAD;
+			stats.deathTimer = glfwGetTime();
+		}
+	}
+	else if (body.boundary.left > width_resolution * 3)
+	{
+		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED && stats.initDeath == false)
+		{
+			stats.initDeath = true;
+			stats.lifeState = DEAD;
+			stats.deathTimer = glfwGetTime();
+		}
+	}
+	else if (body.boundary.top < -height_resolution * 3)
+	{
+		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED && stats.initDeath == false)
+		{
+			stats.initDeath = true;
+			stats.lifeState = DEAD;
+			stats.deathTimer = glfwGetTime();
+		}
+	}
+	else if (body.boundary.bottom > height_resolution * 3)
+	{
+		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED && stats.initDeath == false)
+		{
+			stats.initDeath = true;
+			stats.lifeState = DEAD;
+			stats.deathTimer = glfwGetTime();
+		}
+	}
+	
+	if (stats.lifeState == DEAD)
+	{
+		if (glfwGetTime() - stats.deathTimer >= 5.0)
+		{
+			stats.initDeath = false;
 			respawn();
 		}
-
-	if (body.boundary.left > width_resolution * 3)
-		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED)
-		{
-			stats.lifeState = DEAD;
-			respawn();
-		}
-
-	if (body.boundary.top < -height_resolution * 3)
-		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED)
-		{
-			stats.lifeState = DEAD;
-			respawn();
-		}
-	if (body.boundary.bottom > height_resolution * 3)
-		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED)
-		{
-			stats.lifeState = DEAD;
-			respawn();
-		}
+	}
 }
 
 Attributes::Attributes()

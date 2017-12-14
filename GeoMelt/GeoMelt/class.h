@@ -37,6 +37,7 @@ inline void operator++(TOD &ti, int)
 class Attributes {
 public:
 	bool initDeath;
+	double deathTimer;
 	float health;
 	int lifeCount;
 	PlayerState lifeState;

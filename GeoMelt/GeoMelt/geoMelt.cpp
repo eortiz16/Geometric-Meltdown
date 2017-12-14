@@ -17,7 +17,7 @@ Game::Game()
 	//icons.set_attributes();
 	//sicons.set_attributes();
 	
-	render = FIELD;
+	render = NIGHT;
 	//mainMenu.build();
 	menus.chacterSelection.build(assets);
 	levels.field.build(assets);
@@ -205,23 +205,34 @@ void Level::camera(Level lvl)
 	// obtain furthest distance away from center
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
-		//if (lvl.player[i]->stats.lifeState == ALIVE)
+		if (lvl.player[i]->stats.lifeState == ALIVE)
 		{
 			if (abs(player[i]->body.center.x) + player[i]->body.radius > x)
-				x = abs(player[i]->body.center.x);// +250;
+				x = abs(player[i]->body.center.x) + 250;
 			if (abs(player[i]->body.center.y) + player[i]->body.radius > y)
-				y = abs(player[i]->body.center.y);// +141;
+				y = abs(player[i]->body.center.y) + 250;
 		}
 	}
 
 	if (fla)
 	{
+		if (width_ortho > (0.75f * HDX) || height_ortho > (0.75f * HDY))
+		{
+			width_ortho *= 0.997555f;
+			height_ortho *= 0.997555f;
+		}
+		if (width_ortho <= x || height_ortho <= y)
+		{
+			fla = false;
+		}
+
+		/*
 		//All characters in bounds
 		// Where is camera at though?
 		if (width_ortho > 0.75f * HDX)
 		{
-			width_ortho *= 0.9952f;
-			height_ortho *= 0.9952f;
+			width_ortho *= 0.9955f;
+			height_ortho *= 0.9955f;
 
 			if (width_ortho <= 0.75f * HDX)
 			{
@@ -234,24 +245,25 @@ void Level::camera(Level lvl)
 		{
 			fla = false;
 		}
+		*/
 	}
 	else
 	{
 		// Set max camera distance
-		if (x > 1.5f * HDX || y > 1.5f * HDY)
+		if (x > 1.25f * HDX || y > 1.25f * HDY)
 		{
-			width_ortho = 1.5f * HDX;
-			height_ortho = 1.5f * HDY;
+			width_ortho = 1.25f * HDX;
+			height_ortho = 1.25f * HDY;
 		}
 		//X is further away
-		else if (x > y && x > (0.75f* width_resolution))
+		if (x > y* aspect_ratio && x > (0.75f* width_resolution))
 		{
 			percent = (abs(x) - (0.75f * width_resolution)) / width_resolution;
 			height_ortho = (1.0f + percent) *  0.75f * HDY;
 			width_ortho = (1.0f + percent) * 0.75f * HDX;
 		}
 		//Y if further away
-		else if (y > x && y > (0.75f * height_resolution))
+		else if (y * aspect_ratio > x && y > (0.75f * height_resolution))
 		{
 			percent = (abs(y) - (0.75f * height_resolution)) / height_resolution;
 			height_ortho = (1.0f + percent) *  0.75f * HDY ;
