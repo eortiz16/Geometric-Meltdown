@@ -17,8 +17,9 @@ Game::Game()
 	//icons.set_attributes();
 	//sicons.set_attributes();
 	
-	render = NIGHT;
 	//mainMenu.build();
+
+	render = NIGHT;
 	menus.chacterSelection.build(assets);
 	levels.field.build(assets);
 	levels.night.build(assets);
@@ -181,15 +182,6 @@ void phys(Game *game)
 		default:
 			break;
 		}
-		/*
-		if (resize == true)
-		{
-			game->levels.field.build(game->assets);
-			game->levels.night.build(game->assets);
-			game->levels.time.build(game->assets);
-			resize = false;
-		}
-		*/
 		Sleep(10);
 	}
 }
@@ -201,23 +193,28 @@ void Level::camera(Level lvl)
 	float percent;
 	float x = 0;
 	float y = 0;
+	float buffer = 500;
 
 	// obtain furthest distance away from center
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
 		if (lvl.player[i]->stats.lifeState == ALIVE)
 		{
+			// use distance formula from coordinates to (0,0)
+			// scale = max (coor x , coor y)
 			if (abs(player[i]->body.center.x) + player[i]->body.radius > x)
-				x = abs(player[i]->body.center.x) + 250;
+				x = abs(player[i]->body.center.x) + buffer;
 			if (abs(player[i]->body.center.y) + player[i]->body.radius > y)
-				y = abs(player[i]->body.center.y) + 250;
+				y = abs(player[i]->body.center.y) + buffer / aspect_ratio;
 		}
 	}
 
 	if (fla)
 	{
-		if (width_ortho > (0.75f * HDX) || height_ortho > (0.75f * HDY))
+		if (width_ortho > (0.75f * width_resolution) 
+			|| height_ortho > (0.75f * height_resolution))
 		{
+			//Slowly reset camera
 			width_ortho *= 0.997555f;
 			height_ortho *= 0.997555f;
 		}
@@ -225,54 +222,33 @@ void Level::camera(Level lvl)
 		{
 			fla = false;
 		}
-
-		/*
-		//All characters in bounds
-		// Where is camera at though?
-		if (width_ortho > 0.75f * HDX)
-		{
-			width_ortho *= 0.9955f;
-			height_ortho *= 0.9955f;
-
-			if (width_ortho <= 0.75f * HDX)
-			{
-				width_ortho = 0.75f * HDX;
-				height_ortho = 0.75f * HDY;
-				fla = false;
-			}
-		}
-		else
-		{
-			fla = false;
-		}
-		*/
 	}
 	else
 	{
 		// Set max camera distance
-		if (x > 1.25f * HDX || y > 1.25f * HDY)
+		if (x > 1.25f * width_resolution || y > 1.25f * height_resolution)
 		{
-			width_ortho = 1.25f * HDX;
-			height_ortho = 1.25f * HDY;
+			width_ortho = 1.25f * width_resolution;
+			height_ortho = 1.25f * height_resolution;
 		}
 		//X is further away
-		if (x > y* aspect_ratio && x > (0.75f* width_resolution))
+		if (x > y && x > (0.75f* width_resolution))
 		{
 			percent = (abs(x) - (0.75f * width_resolution)) / width_resolution;
-			height_ortho = (1.0f + percent) *  0.75f * HDY;
-			width_ortho = (1.0f + percent) * 0.75f * HDX;
+			height_ortho = (1.0f + percent) *  0.75f * height_resolution;
+			width_ortho = (1.0f + percent) * 0.75f * width_resolution;
 		}
 		//Y if further away
-		else if (y * aspect_ratio > x && y > (0.75f * height_resolution))
+		else if (y > x && y > (0.75f * height_resolution))
 		{
+			cout << "$";
 			percent = (abs(y) - (0.75f * height_resolution)) / height_resolution;
-			height_ortho = (1.0f + percent) *  0.75f * HDY ;
-			width_ortho = (1.0f + percent) * 0.75f * HDX;
+			height_ortho = (1.0f + percent) *  0.75f * height_resolution;
+			width_ortho = (1.0f + percent) * 0.75f * width_resolution;
 		}
 		//else in bounds
 		else
 		{
-			//Slowly reset camera
 			fla = true;
 		}
 	}
@@ -312,87 +288,3 @@ void joystick_callback(int joy, int event)
 	else if (event == GLFW_DISCONNECTED)
 		cout << "Player " << joy + 1 << ": controller disconnected" << endl;
 }
-
-/*
-bool fla = false;
-int source = 0;
-int source_x = 0;
-int source_y = 0;
-void Level::camera(Level lvl)
-{
-	//find furthest player away from center (x and y)
-	float percent;
-	float x = 0;
-	float y = 0;
-
-	// obtain furthest distance away from center
-	for (int i = 0; i < MAX_PLAYER; i++)
-	{
-		if (lvl.player[i]->stats.lifeState == ALIVE)
-		{
-			if (abs(player[i]->body.center.x) > x)
-			{
-				x = abs(player[i]->body.center.x + player[i]->body.radius) + 200;
-				source_x = i;
-			}
-			if (abs(player[i]->body.center.y) > y)
-			{
-				y = abs(player[i]->body.center.y + player[i]->body.radius) + 200;
-				source_y = i;
-			}
-		}
-	}
-
-	if (fla)
-	{
-		if (width_ortho > (3 * HDX / 4) + (0.1f * HDX)
-			|| height_ortho > (3 * HDY / 4) + (0.1f * HDY))
-		{
-			cout << "@";
-			width_ortho *= 0.9999;
-			height_ortho *= 0.9999;
-		}
-		if (width_ortho <= x || height_ortho <= y)
-		{
-			cout << "exit";
-			fla = false;
-		}
-	}
-	else
-	{
-		if (x > 2 * HDX || y > 2 * HDY)
-		{
-			width_ortho = 2 * HDX;
-			height_ortho = 2 * HDY;
-		}
-		else if (x > (y * aspect_ratio) && x > (3 * width_resolution / 4))
-		{
-			percent = (abs(x) - (3 * width_resolution / 4)) / width_resolution;
-			width_ortho = (1.0f + percent) * 3.0f * HDX / 4.0f;
-			height_ortho = (1.0f + percent) * 3.0f * HDY / 4.0f;
-		}
-		else if ((y * aspect_ratio) > x && y > 3 * height_resolution / 4)
-		{
-			percent = (abs(y) - (3 * height_resolution / 4)) / height_resolution;
-			height_ortho = (1.0f + percent) *  3.0f * HDY / 4.0f;
-			width_ortho = (1.0f + percent) * 3.0f * HDX / 4.0f;
-		}
-		else if (x < (3 * width_resolution / 4) && y < (3 * height_resolution / 4))
-		{
-			cout << "1";
-			//Players within boundary? Slowly reset camera
-			if (player[source]->stats.lifeState == DEAD)
-			{
-				cout << "2";
-				if (x > y)
-					source = source_x;
-				else if (y > x)
-					source = source_y;
-				fla = true;
-			}
-			else
-				fla = false;
-		}
-	}
-}
-*/
