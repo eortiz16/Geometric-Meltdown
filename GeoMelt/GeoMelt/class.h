@@ -69,6 +69,20 @@ public:
 	GLfloat left;
 	GLfloat right;
 };
+class Level;
+class Camera {
+public:
+	float xMin;
+	float xMax;
+	float yMin;
+	float yMax;
+	Boundary edges;
+	Boundary ortho;
+	Vec center;
+	void set_center(Level lvl);
+	void set_edges();
+	void transition();
+};
 class Shape { // Make a circle and square inheretance class
 public:
 	GLfloat width, height;

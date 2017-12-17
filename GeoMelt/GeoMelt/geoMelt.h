@@ -8,8 +8,16 @@ void window_size_callback(GLFWwindow* window, int width, int height);
 void phys(Game *game);
 static int width_resolution = HDX;
 static int height_resolution = HDY;
-static int aspect_ratio = width_resolution / height_resolution;
-static float width_ortho = 3.0f * HDX / 4.0f;
-static float height_ortho = 3.0f * HDY / 4.0f;
+static float aspect_ratio = (float)width_resolution / (float)height_resolution;
+
+//=============================================
+static float left_ortho = -0.75f * HDX;
+static float right_ortho = 0.75f * HDX;
+static float top_ortho = 0.75f * HDY;
+static float bottom_ortho = -0.75f * HDY;
+
+static Camera camera;
+//=============================================
+
 static bool resize = false;
 extern GLFWwindow *window;

@@ -69,7 +69,7 @@ void Field_Level::build(Assets assets)
 	player[1]->build(assets);
 	player[1]->body.color = assets.characterPalette.green_b;
 	player[1]->reflection.color = assets.characterPalette.green_r;
-	player[1]->body.center.x = -500;
+	player[1]->body.center.x = -600;
 	player[1]->body.center.y = height_resolution / 2.0f;
 	player[1]->controller.id = 1;
 
@@ -85,21 +85,20 @@ void Field_Level::build(Assets assets)
 	player[3]->build(assets);
 	player[3]->body.color = assets.characterPalette.pink_b;
 	player[3]->reflection.color = assets.characterPalette.pink_r;
-	player[3]->body.center.x = 500;
+	player[3]->body.center.x = 600;
 	player[3]->body.center.y = height_resolution / 2.0f;
 	player[3]->controller.id = 3;
-
 }
 
 void Field_Level::handler()
 {
-		render();
+	render();
 
-		for (int i = 0; i < MAX_PLAYER; i++)
-		{
-			if (player[i]->stats.lifeState == ALIVE)
-			player[i]->render();
-		}
+	for (int i = 0; i < MAX_PLAYER; i++)
+	{
+		if (player[i]->stats.lifeState == ALIVE)
+		player[i]->render();
+	}
 }
 
 void Level::physics(Level lvl)
@@ -266,7 +265,7 @@ void Night_Level::build(Assets assets)
 	player[1]->body.color = assets.characterPalette.black_b;
 	player[1]->reflection.color = assets.characterPalette.black_r;
 	player[1]->body.center.x = -500;
-	player[1]->body.center.y = (GLfloat)height_resolution / 2;
+	player[1]->body.center.y = (GLfloat)200;
 	player[1]->controller.id = 1;
 
 	player[2] = new Ball;
@@ -281,8 +280,8 @@ void Night_Level::build(Assets assets)
 	player[3]->build(assets);
 	player[3]->body.color = assets.characterPalette.pink_b;
 	player[3]->reflection.color = assets.characterPalette.pink_r;
-	player[3]->body.center.x = 500;
-	player[3]->body.center.y = (GLfloat)height_resolution / 2;
+	player[3]->body.center.x = 550;
+	player[3]->body.center.y = (GLfloat)100;
 	player[3]->controller.id = 3;
 }
 
