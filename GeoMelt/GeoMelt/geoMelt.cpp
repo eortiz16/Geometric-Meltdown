@@ -17,9 +17,8 @@ Game::Game()
 	//icons.set_attributes();
 	//sicons.set_attributes();
 	
+	render = FIELD;
 	//mainMenu.build();
-
-	render = NIGHT;
 	menus.chacterSelection.build(assets);
 	levels.field.build(assets);
 	levels.night.build(assets);
@@ -30,6 +29,7 @@ void Game::display_details()
 {
 	cout << "Monitor Resolution:	" << monitor->width << "x" << monitor->height << endl;
 	cout << "Window Resolution:	" << width_resolution << "x" << height_resolution << endl;
+	cout << "Window Aspect Ratio:	" << aspect_ratio << endl;
 }
 
 void Game::set_resolution()
@@ -44,7 +44,7 @@ void Game::set_resolution()
 		width_resolution = HDX;
 		height_resolution = HDY;
 	}
-	aspect_ratio = width_resolution / height_resolution;
+	aspect_ratio = (float)width_resolution / (float)height_resolution;
 }
 
 int main(void)
@@ -99,7 +99,8 @@ int main(void)
 		glEnable(GL_BLEND);
 		glDisable(GL_TEXTURE_2D);
 		
-		glOrtho(-width_ortho, width_ortho, -height_ortho, height_ortho, -1, 1);
+		//glOrtho(camera.ortho.left, camera.ortho.right, camera.ortho.bottom, camera.ortho.top, -1, 1);
+		glOrtho(camera.edges.left, camera.edges.right, camera.edges.bottom, camera.edges.top, -1, 1);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -156,7 +157,9 @@ void phys(Game *game)
 				game->levels.field.player[i]->death_handler();
 				game->levels.field.player[i]->read_input(&game->levels.field.player[i]->controller);
 			}
-			game->levels.field.camera(game->levels.field);
+			camera.set_center(game->levels.field);
+			camera.set_edges();
+			camera.transition();
 			break;
 		case NIGHT:
 			game->levels.night.physics(game->levels.night);
@@ -165,7 +168,9 @@ void phys(Game *game)
 				game->levels.night.player[i]->death_handler();
 				game->levels.night.player[i]->read_input(&game->levels.night.player[i]->controller);
 			}
-			game->levels.night.camera(game->levels.night);
+			camera.set_center(game->levels.night);
+			camera.set_edges();
+			camera.transition();
 			break;
 		case TIME:
 			game->levels.time.transition_handler(game->assets.backgroundPalette);
@@ -177,7 +182,9 @@ void phys(Game *game)
 				game->levels.time.player[i]->death_handler();
 				game->levels.time.player[i]->read_input(&game->levels.time.player[i]->controller);
 			}
-			game->levels.time.camera(game->levels.time);
+			camera.set_center(game->levels.time);
+			camera.set_edges();
+			camera.transition();
 			break;
 		default:
 			break;
@@ -186,72 +193,71 @@ void phys(Game *game)
 	}
 }
 
-bool fla = false;
-void Level::camera(Level lvl)
+void Camera::set_center(Level lvl)
 {
 	//find furthest player away from center (x and y)
-	float percent;
-	float x = 0;
-	float y = 0;
-	float buffer = 500;
+	xMin = INT_MAX;
+	xMax = INT_MIN;
+	yMin = INT_MAX;
+	yMax = INT_MIN;
 
-	// obtain furthest distance away from center
+	// obtain center (x,y) between ALL players
 	for (int i = 0; i < MAX_PLAYER; i++)
 	{
 		if (lvl.player[i]->stats.lifeState == ALIVE)
 		{
-			// use distance formula from coordinates to (0,0)
-			// scale = max (coor x , coor y)
-			if (abs(player[i]->body.center.x) + player[i]->body.radius > x)
-				x = abs(player[i]->body.center.x) + buffer;
-			if (abs(player[i]->body.center.y) + player[i]->body.radius > y)
-				y = abs(player[i]->body.center.y) + buffer / aspect_ratio;
+			//Set all min and max
+			if (lvl.player[i]->body->center.x < xMin)
+				xMin = lvl.player[i]->body->center.x;
+
+			if (lvl.player[i]->body->center.x > xMax)
+				xMax = lvl.player[i]->body->center.x;
+
+			if (lvl.player[i]->body->center.y < yMin)
+				yMin = lvl.player[i]->body->center.y;
+
+			if (lvl.player[i]->body->center.y > yMax)
+				yMax = lvl.player[i]->body->center.y;
 		}
 	}
 
-	if (fla)
+	// Center of camera
+	center.x = (xMin + xMax) / 2.0f;
+	center.y = (yMin + yMax) / 2.0f;
+}
+
+void Camera::set_edges()
+{
+	// For "outside of boundary camera"
+	// Add conditions
+	// define minimum camera and maximum
+	if (xMax - xMin > yMax - yMin)
 	{
-		if (width_ortho > (0.75f * width_resolution) 
-			|| height_ortho > (0.75f * height_resolution))
-		{
-			//Slowly reset camera
-			width_ortho *= 0.997555f;
-			height_ortho *= 0.997555f;
-		}
-		if (width_ortho <= x || height_ortho <= y)
-		{
-			fla = false;
-		}
+		edges.left = center.x - (xMax - xMin) * ZOOM;
+		edges.right = center.x + (xMax - xMin) * ZOOM;
+		edges.top = center.y + ((edges.right - edges.left) / aspect_ratio) / 2.0f;
+		edges.bottom = center.y - ((edges.right - edges.left) / aspect_ratio) / 2.0f;
 	}
 	else
 	{
-		// Set max camera distance
-		if (x > 1.25f * width_resolution || y > 1.25f * height_resolution)
-		{
-			width_ortho = 1.25f * width_resolution;
-			height_ortho = 1.25f * height_resolution;
-		}
-		//X is further away
-		if (x > y && x > (0.75f* width_resolution))
-		{
-			percent = (abs(x) - (0.75f * width_resolution)) / width_resolution;
-			height_ortho = (1.0f + percent) *  0.75f * height_resolution;
-			width_ortho = (1.0f + percent) * 0.75f * width_resolution;
-		}
-		//Y if further away
-		else if (y > x && y > (0.75f * height_resolution))
-		{
-			cout << "$";
-			percent = (abs(y) - (0.75f * height_resolution)) / height_resolution;
-			height_ortho = (1.0f + percent) *  0.75f * height_resolution;
-			width_ortho = (1.0f + percent) * 0.75f * width_resolution;
-		}
-		//else in bounds
-		else
-		{
-			fla = true;
-		}
+		edges.top = center.y + (yMax - yMin) * ZOOM / aspect_ratio;
+		edges.bottom = center.y - (yMax - yMin) * ZOOM / aspect_ratio;
+		edges.left = center.x - (edges.top - edges.bottom) * aspect_ratio / 2.0f;
+		edges.right = center.x + (edges.top - edges.bottom) * aspect_ratio / 2.0f;
 	}
+}
+void Camera::transition()
+{
+	/*
+	if (edges.right - edges.left > ortho.right - ortho.left)
+	{
+		cout << "!";
+		ortho.left = edges.left * 0.999f;
+		ortho.right = edges.right * 0.999f;
+		ortho.top = edges.top * 0.999f;
+		ortho.bottom = edges.bottom * 0.999f;
+	}
+	*/
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height)

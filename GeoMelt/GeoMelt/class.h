@@ -22,6 +22,7 @@
 #define TRI_NUM 50
 #define	HDX 1920
 #define HDY 1080
+#define ZOOM 1.25f
 
 enum State {MAIN, PAUSE, LEVELSEL, CHARSEL, FIELD, NIGHT, TIME, DISCO, POLLUTION};
 enum Direction {LEFT, RIGHT};
@@ -69,18 +70,29 @@ public:
 	GLfloat left;
 	GLfloat right;
 };
-class Shape { // Make a circle and square inheretance class
+class Level;
+class Camera {
+public:
+	float xMin;
+	float xMax;
+	float yMin;
+	float yMax;
+	Boundary edges;
+	Boundary ortho;
+	Vec center;
+	void set_center(Level lvl);
+	void set_edges();
+	void transition();
+};
+class Shape { 
 public:
 	GLfloat width, height;
 	GLfloat radius;
 	Boundary boundary;
 	Color color;
 	Vec center;
-	Line stroke[MAX_STROKE];
-	void stroke_assignment();
 	void boundary_assignment();
-	void render_quad();
-	void render_circle();
+	virtual void render() = 0;
 };
 class Circle : public Shape {
 public:
@@ -89,8 +101,6 @@ public:
 class Quad :public Shape {
 public:
 	void render();
-	//Line stroke[MAX_STROKE];
-	//void stroke_assignment();
 };
 class Resolution;
 class Cloud {
@@ -105,14 +115,14 @@ public:
 };
 class Star {
 public:
-	Shape body;
+	Circle body;
 	GLfloat offset;
 	void compute_coordinates(int count);
 	void change_color();
 };
 class Particles {
 public:
-	Shape s;
+	Quad s;
 	Vec velocity;
 };
 
@@ -133,15 +143,15 @@ public:
 	Attributes stats;
 	bool on_ground;
 	Vec	velocity;
-	Shape body;
-	Shape reflection;
-	Shape eye;
+	Shape *body;
+	Shape *reflection;
+	Circle eye;
 	int JUMP_MAX;
 	int jumpCount;
 	Direction direction;
-	void update_reflection_x();
 	void respawn();
 	void death_handler();
+	void update_reflection_x();
 	virtual void render(void) = 0;
 	virtual void update_position(Level lvl) = 0;
 	virtual void physics(Platform *plat) = 0;
@@ -153,7 +163,7 @@ public:
 };
 class Ball: public Player {
 public:
-	Shape outline;
+	Circle outline;
 	void render();
 	void update_position(Level lvl);
 	void physics(Platform *plat);
@@ -161,25 +171,28 @@ public:
 	void jump();
 	void exhale();
 	void build(Assets assets);
-	~Ball() {}
+	~Ball();
 };
 class Boxy : public Player {
 public:
+	Quad outline;
 	void render();
 	void update_position(Level lvl);
 	void physics(Platform *plat);
 	void move(Direction dir);
 	void jump();
 	void build(Assets assets);
-	~Boxy() {}
+	~Boxy();
 };
 class Platform {
 public:
 	Quad body;
+	Line stroke[MAX_STROKE];
+	void stroke_assignment();
 };
 class Menu {
 public:
-	Shape selector;
+	//Shape selector;
 	virtual void handler() = 0;
 	virtual void build() = 0;
 };
@@ -282,7 +295,7 @@ class CharacterSelectMenu {
 public:
 	Background background;
 	CharSelBox selectBox[MAX_PLAYER];
-	Shape cursor[MAX_PLAYER];
+	//Shape cursor[MAX_PLAYER];
 	void handler();
 	void build(Assets assets);
 };
@@ -299,7 +312,7 @@ public:
 };
 class Field_Level : public Level {
 public:
-	Shape sun;
+	Circle sun;
 	Cloud clouds[MAX_CLOUD];
 	void render();
 	void handler();
@@ -310,7 +323,7 @@ public:
 class Night_Level : public Level {
 public:
 	Star stars[MAX_STAR];
-	Shape moon;
+	Circle moon;
 	void render();
 	void handler();
 
@@ -321,8 +334,8 @@ class Time_Level : public Level {
 public:
 	TOD time_of_day;
 	bool transition;
-	Shape sun;
-	Shape moon;
+	Circle sun;
+	Circle moon;
 	Star stars[MAX_STAR]; //change opacity during day
 	Cloud clouds[MAX_CLOUD];
 	void render();
@@ -395,7 +408,7 @@ public:
 	char* filename;
 	GLfloat w, h;
 	GLfloat ratio;
-	Shape box;
+	Quad box;
 	ILuint imageID;
 	GLuint textureID;
 	ILboolean success;
@@ -428,7 +441,7 @@ public:
 
 class pImage {
 public:
-	Shape box;
+	Quad box;
 	Ppmimage *img;
 	GLuint sil;
 	GLuint texture;
@@ -459,7 +472,7 @@ public:
 
 class sImage {
 public:
-	Shape box;
+	Quad box;
 	char *filename;
 	GLint w, h;
 	GLuint texture;

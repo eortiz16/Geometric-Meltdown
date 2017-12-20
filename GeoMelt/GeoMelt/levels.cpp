@@ -36,12 +36,13 @@ void Field_Level::build(Assets assets)
 	//Assign Floor Outline Attributes
 	for (int i = 0; i < MAX_STROKE; i++)
 	{
-		platform[0].body.stroke[i].width = 2.0;
-		platform[0].body.stroke[i].color = assets.palette.black;
+		platform[0].stroke[i].width = 2.0;
+		platform[0].stroke[i].color = assets.palette.black;
 	}
 
 	//Floor Stroke Assignment
-	platform[0].body.stroke_assignment();
+	platform[0].body.boundary_assignment();
+	platform[0].stroke_assignment();
 
 	//Cloud Initialization
 	int dir = rand() % 2;
@@ -59,47 +60,46 @@ void Field_Level::build(Assets assets)
 	//Player Position
 	player[0] = new Ball;
 	player[0]->build(assets);
-	player[0]->body.color = assets.characterPalette.red_b;
-	player[0]->reflection.color = assets.characterPalette.red_r;
-	player[0]->body.center.x = -600;
-	player[0]->body.center.y = (GLfloat)height_resolution;
+	player[0]->body->color = assets.characterPalette.red_b;
+	player[0]->reflection->color = assets.characterPalette.red_r;
+	player[0]->body->center.x = -600;
+	player[0]->body->center.y = (GLfloat)height_resolution;
 	player[0]->controller.id = 0;
 
 	player[1] = new Boxy;
 	player[1]->build(assets);
-	player[1]->body.color = assets.characterPalette.green_b;
-	player[1]->reflection.color = assets.characterPalette.green_r;
-	player[1]->body.center.x = -500;
-	player[1]->body.center.y = height_resolution / 2.0f;
+	player[1]->body->color = assets.characterPalette.green_b;
+	player[1]->reflection->color = assets.characterPalette.green_r;
+	player[1]->body->center.x = 600;
+	player[1]->body->center.y = height_resolution / 2.0f;
 	player[1]->controller.id = 1;
 
 	player[2] = new Ball;
 	player[2]->build(assets);
-	player[2]->body.color = assets.characterPalette.yellow_b;
-	player[2]->reflection.color = assets.characterPalette.yellow_r;
-	player[2]->body.center.x = 600;
-	player[2]->body.center.y = (GLfloat)height_resolution;
+	player[2]->body->color = assets.characterPalette.yellow_b;
+	player[2]->reflection->color = assets.characterPalette.yellow_r;
+	player[2]->body->center.x = 600;
+	player[2]->body->center.y = (GLfloat)height_resolution;
 	player[2]->controller.id = 2;
 
 	player[3] = new Boxy;
 	player[3]->build(assets);
-	player[3]->body.color = assets.characterPalette.pink_b;
-	player[3]->reflection.color = assets.characterPalette.pink_r;
-	player[3]->body.center.x = 500;
-	player[3]->body.center.y = height_resolution / 2.0f;
+	player[3]->body->color = assets.characterPalette.pink_b;
+	player[3]->reflection->color = assets.characterPalette.pink_r;
+	player[3]->body->center.x = 600;
+	player[3]->body->center.y = height_resolution / 2.0f;
 	player[3]->controller.id = 3;
-
 }
 
 void Field_Level::handler()
 {
-		render();
+	render();
 
-		for (int i = 0; i < MAX_PLAYER; i++)
-		{
-			if (player[i]->stats.lifeState == ALIVE)
-			player[i]->render();
-		}
+	for (int i = 0; i < MAX_PLAYER; i++)
+	{
+		if (player[i]->stats.lifeState == ALIVE)
+		player[i]->render();
+	}
 }
 
 void Level::physics(Level lvl)
@@ -114,13 +114,13 @@ void Level::physics(Level lvl)
 void Field_Level::render()
 {
 	background.render();
-	sun.render_circle();
+	sun.render();
 	for (int i = 0; i < MAX_CLOUD; i++)
 		clouds[i].render();
 	platform[0].body.render();
 
 	for (int i = 0; i < MAX_STROKE; i++)
-		platform[0].body.stroke[i].render();
+		platform[0].stroke[i].render();
 }
 
 Field_Level::~Field_Level()
@@ -182,7 +182,7 @@ void Cloud::set_cloud_group()
 void Cloud::render()
 {
 	for (int i = 0; i < CLOUD_GROUP; i++)
-		body[i].render_circle(); 
+		body[i].render(); 
 }
 
 void Cloud::physics()
@@ -249,40 +249,41 @@ void Night_Level::build(Assets assets)
 		platform[i].body.color = assets.palette.platform;
 		
 		//Assign Floor Outline Attributes
-		platform[i].body.stroke_assignment();
+		platform[i].body.boundary_assignment();
+		platform[i].stroke_assignment();
 	}
 
 	//Player Position
 	player[0] = new Ball;
 	player[0]->build(assets);
-	player[0]->body.color = assets.characterPalette.red_b;
-	player[0]->reflection.color = assets.characterPalette.red_r;
-	player[0]->body.center.x = -600;
-	player[0]->body.center.y = (GLfloat)height_resolution;
+	player[0]->body->color = assets.characterPalette.red_b;
+	player[0]->reflection->color = assets.characterPalette.red_r;
+	player[0]->body->center.x = -600;
+	player[0]->body->center.y = (GLfloat)height_resolution;
 	player[0]->controller.id = 0;
 
 	player[1] = new Boxy;
 	player[1]->build(assets);
-	player[1]->body.color = assets.characterPalette.black_b;
-	player[1]->reflection.color = assets.characterPalette.black_r;
-	player[1]->body.center.x = -500;
-	player[1]->body.center.y = (GLfloat)height_resolution / 2;
+	player[1]->body->color = assets.characterPalette.green_b;
+	player[1]->reflection->color = assets.characterPalette.green_r;
+	player[1]->body->center.x = 600;
+	player[1]->body->center.y = height_resolution / 2.0f;
 	player[1]->controller.id = 1;
 
 	player[2] = new Ball;
 	player[2]->build(assets);
-	player[2]->body.color = assets.characterPalette.white_b;
-	player[2]->reflection.color = assets.characterPalette.white_r;
-	player[2]->body.center.x = 600;
-	player[2]->body.center.y = (GLfloat)height_resolution;
+	player[2]->body->color = assets.characterPalette.yellow_b;
+	player[2]->reflection->color = assets.characterPalette.yellow_r;
+	player[2]->body->center.x = 600;
+	player[2]->body->center.y = (GLfloat)height_resolution;
 	player[2]->controller.id = 2;
 
 	player[3] = new Boxy;
 	player[3]->build(assets);
-	player[3]->body.color = assets.characterPalette.pink_b;
-	player[3]->reflection.color = assets.characterPalette.pink_r;
-	player[3]->body.center.x = 500;
-	player[3]->body.center.y = (GLfloat)height_resolution / 2;
+	player[3]->body->color = assets.characterPalette.pink_b;
+	player[3]->reflection->color = assets.characterPalette.pink_r;
+	player[3]->body->center.x = 600;
+	player[3]->body->center.y = height_resolution / 2.0f;
 	player[3]->controller.id = 3;
 }
 
@@ -303,14 +304,14 @@ void Night_Level::render()
 	for (int i = 0; i < MAX_STAR; i++)
 	{
 		stars[i].change_color();
-		stars[i].body.render_circle();
+		stars[i].body.render();
 	}
-	moon.render_circle();
+	moon.render();
 	for (int i = 0; i < MAX_PLATFORM; i++)
 	{
 		platform[i].body.render();
 		for (int j = 0; j < MAX_STROKE; j++)
-			platform[i].body.stroke[j].render();
+			platform[i].stroke[j].render();
 	}
 }
 
@@ -410,12 +411,13 @@ void Time_Level::build(Assets assets)
 	//Assign Floor Outline Attributes
 	for (int i = 0; i < MAX_STROKE; i++)
 	{
-		platform[0].body.stroke[i].width = 2.0;
-		platform[0].body.stroke[i].color = assets.palette.black;
+		platform[0].stroke[i].width = 2.0;
+		platform[0].stroke[i].color = assets.palette.black;
 	}
 
 	//Floor Stroke Assignment
-	platform[0].body.stroke_assignment();
+	platform[0].body.boundary_assignment();
+	platform[0].stroke_assignment();
 
 	//Cloud Initialization
 	int dir = rand() % 2;
@@ -433,34 +435,34 @@ void Time_Level::build(Assets assets)
 	//Player Position
 	player[0] = new Ball;
 	player[0]->build(assets);
-	player[0]->body.color = assets.characterPalette.red_b;
-	player[0]->reflection.color = assets.characterPalette.red_r;
-	player[0]->body.center.x = -600;
-	player[0]->body.center.y = (GLfloat)height_resolution;
+	player[0]->body->color = assets.characterPalette.red_b;
+	player[0]->reflection->color = assets.characterPalette.red_r;
+	player[0]->body->center.x = -600;
+	player[0]->body->center.y = (GLfloat)height_resolution;
 	player[0]->controller.id = 0;
 
 	player[1] = new Boxy;
 	player[1]->build(assets);
-	player[1]->body.color = assets.characterPalette.black_b;
-	player[1]->reflection.color = assets.characterPalette.black_r;
-	player[1]->body.center.x = -500;
-	player[1]->body.center.y = (GLfloat)height_resolution / 2;
+	player[1]->body->color = assets.characterPalette.green_b;
+	player[1]->reflection->color = assets.characterPalette.green_r;
+	player[1]->body->center.x = 600;
+	player[1]->body->center.y = height_resolution / 2.0f;
 	player[1]->controller.id = 1;
 
 	player[2] = new Ball;
 	player[2]->build(assets);
-	player[2]->body.color = assets.characterPalette.white_b;
-	player[2]->reflection.color = assets.characterPalette.white_r;
-	player[2]->body.center.x = 600;
-	player[2]->body.center.y = (GLfloat)height_resolution;
+	player[2]->body->color = assets.characterPalette.yellow_b;
+	player[2]->reflection->color = assets.characterPalette.yellow_r;
+	player[2]->body->center.x = 600;
+	player[2]->body->center.y = (GLfloat)height_resolution;
 	player[2]->controller.id = 2;
 
 	player[3] = new Boxy;
 	player[3]->build(assets);
-	player[3]->body.color = assets.characterPalette.pink_b;
-	player[3]->reflection.color = assets.characterPalette.pink_r;
-	player[3]->body.center.x = 500;
-	player[3]->body.center.y = (GLfloat)height_resolution / 2;
+	player[3]->body->color = assets.characterPalette.pink_b;
+	player[3]->reflection->color = assets.characterPalette.pink_r;
+	player[3]->body->center.x = 600;
+	player[3]->body->center.y = height_resolution / 2.0f;
 	player[3]->controller.id = 3;
 }
 
@@ -505,21 +507,21 @@ void Time_Level::render()
 {
 	background.render();
 	if (time_of_day == DAY || time_of_day == AFTERNOON)
-		sun.render_circle();
+		sun.render();
 	else if (time_of_day != DAY && time_of_day != AFTERNOON)
 	{
 		for (int i = 0; i < MAX_STAR; i++)
 		{
 			stars[i].change_color();
-			stars[i].body.render_circle();
+			stars[i].body.render();
 		}
-		moon.render_circle();
+		moon.render();
 	}
 	for (int i = 0; i < MAX_CLOUD; i++)
 		clouds[i].render();
 	platform[0].body.render();
 	for (int i = 0; i < MAX_STROKE; i++)
-		platform[0].body.stroke[i].render();
+		platform[0].stroke[i].render();
 }
 
 //changes color of background by factor of 1 each frame

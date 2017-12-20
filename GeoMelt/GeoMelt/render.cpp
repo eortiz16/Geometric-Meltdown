@@ -1,37 +1,6 @@
 #include "headers.h"
 #include "render.h"
 
-void Shape::render_circle()
-{
-	GLfloat arg1, arg2;
-
-	glColor3ub((GLubyte)color.r, (GLubyte)color.g, (GLubyte)color.b);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBegin(GL_TRIANGLE_FAN);
-	glVertex2f(center.x, center.y);
-	for (int i = 0; i < 240; i++)
-	{
-		arg1 = center.x + (radius * (GLfloat)cos(i * 2 * M_PI / TRI_NUM));
-		arg2 = center.y + (radius * (GLfloat)sin(i * 2 * M_PI / TRI_NUM));
-		glVertex2f(arg1, arg2);
-	}
-	glEnd();
-}
-
-
-void Shape::render_quad()
-{
-	glColor3ub((GLubyte)color.r, (GLubyte)color.g, (GLubyte)color.b);
-	glBegin(GL_QUADS);
-	glVertex2f(center.x - width / 2, center.y - height / 2);
-	glVertex2f(center.x - width / 2, center.y + height / 2);
-	glVertex2f(center.x + width / 2, center.y + height / 2);
-	glVertex2f(center.x + width / 2, center.y - height / 2);
-	glEnd();
-}
-
-
 Line::Line()
 {
 	width = 2.0;
@@ -115,27 +84,27 @@ void RoundCornerBox::build()
 	corner[3].center.y = hRectangle.boundary.bottom;
 }
 
-void Shape::stroke_assignment()
+void Platform::stroke_assignment()
 {
-	stroke[0].from.x = boundary.left;
-	stroke[0].from.y = boundary.bottom;
-	stroke[0].to.x = boundary.left;
-	stroke[0].to.y = boundary.top;
+	stroke[0].from.x = body.boundary.left;
+	stroke[0].from.y = body.boundary.bottom;
+	stroke[0].to.x = body.boundary.left;
+	stroke[0].to.y = body.boundary.top;
 
-	stroke[1].from.x = boundary.left;
-	stroke[1].from.y = boundary.top;
-	stroke[1].to.x = boundary.right;
-	stroke[1].to.y = boundary.top;
+	stroke[1].from.x = body.boundary.left;
+	stroke[1].from.y = body.boundary.top;
+	stroke[1].to.x = body.boundary.right;
+	stroke[1].to.y = body.boundary.top;
 
-	stroke[2].from.x = boundary.right;
-	stroke[2].from.y = boundary.top;
-	stroke[2].to.x = boundary.right;
-	stroke[2].to.y = boundary.bottom;
+	stroke[2].from.x = body.boundary.right;
+	stroke[2].from.y = body.boundary.top;
+	stroke[2].to.x = body.boundary.right;
+	stroke[2].to.y = body.boundary.bottom;
 
-	stroke[3].from.x = boundary.right;
-	stroke[3].from.y = boundary.bottom;
-	stroke[3].to.x = boundary.left;
-	stroke[3].to.y = boundary.bottom;
+	stroke[3].from.x = body.boundary.right;
+	stroke[3].from.y = body.boundary.bottom;
+	stroke[3].to.x = body.boundary.left;
+	stroke[3].to.y = body.boundary.bottom;
 }
 
 void Shape::boundary_assignment()
