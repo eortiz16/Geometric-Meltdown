@@ -23,6 +23,15 @@ void Player::update_reflection_x()
 	reflection->center.x = body->center.x + offset;
 }
 
+void Player::attack()
+{
+	attk = true;
+	(direction == RIGHT) ?
+		arm.center.x = body->center.x + body->width / 2 :
+		arm.center.x = body->center.x - body->width / 2;
+	armOutline.center.x = arm.center.x;
+}
+
 void Ball::build(Assets assets)
 {
 	//Default Character Values
@@ -31,7 +40,8 @@ void Ball::build(Assets assets)
 	velocity.x = 0.0;
 	velocity.y = 0.0;
 	on_ground = false;
-	
+	attk = false;
+
 	//Polymorphism
 	body = new Circle;
 	reflection = new Circle;
@@ -40,6 +50,14 @@ void Ball::build(Assets assets)
 	body->width = 100;
 	body->height = body->width;
 	body->radius = body->width/2;
+
+	//Arm
+	arm.width = 100;
+	arm.height = 25;
+	arm.boundary_assignment();
+	armOutline.width = 108;
+	arm.height = 29;
+	armOutline.color = assets.palette.black;
 
 	//Player Boundaries
 	body->boundary_assignment();
@@ -57,7 +75,6 @@ void Ball::build(Assets assets)
 	
 	//Color Assignment
 	outline.color = assets.palette.black;
-
 	eye.color = assets.palette.black;
 
 	//Default Center
@@ -81,6 +98,11 @@ void Ball::render()
 	if (stats.lifeState == ALIVE)
 	{
 		outline.render();
+		if (attk)
+		{
+			armOutline.render();
+			arm.render();
+		}
 		body->render();
 		reflection->render();
 		eye.render();
@@ -98,6 +120,11 @@ void Ball::update_position(Level lvl)
 	reflection->center.y = body->center.y + sqrt(body->radius);
 	outline.center.x = body->center.x;
 	outline.center.y = body->center.y;
+
+	arm.center.x = body->center.x;
+	arm.center.y = body->center.y;
+	armOutline.center.x = body->center.x;
+	armOutline.center.y = body->center.y;
 
 	(direction == LEFT) ?
 		eye.center.x = body->center.x - body->radius / 2 :
@@ -188,21 +215,37 @@ void Boxy::build(Assets assets)
 	velocity.x = 0.0;
 	velocity.y = 0.0;
 	on_ground = false;
+	attk = false; 
 
 	body = new Quad;
-	reflection = new Circle;
+	reflection = new Quad;
 
 	//Default Player Dimensions
 	body->width = 100;
 	body->height = body->width;
 	body->radius = body->width / 2;
 
+	//Arm
+	arm.width = 100;
+	arm.height = 25;
+	arm.boundary_assignment();
+	armOutline.width = 108;
+	arm.height = 29;
+	armOutline.color = assets.palette.black;
+
 	//Player Boundaries
 	body->boundary_assignment();
+	body->center.x = 0;
+	body->center.y = 0;
 
 	eye.width = body->width/20 + 1;
 	eye.height = eye.width;
 	eye.radius = eye.width;
+
+	outline.width = body->width + 8;
+	outline.height = outline.width;
+	outline.center.x = body->center.x;
+	outline.center.y = body->center.y;
 
 	reflection->width = body->width/1.5f;
 	reflection->height = reflection->width;
@@ -211,11 +254,8 @@ void Boxy::build(Assets assets)
 	reflection->center.y = body->center.y + sqrt(body->radius)*2;
 
 	//Color Assignment
+	outline.color = assets.palette.black;
 	eye.color = assets.palette.black;
-
-	//Default Center
-	body->center.x = 0;
-	body->center.y = 0;
 
 	//Default Direction
 	direction = LEFT;
@@ -233,6 +273,12 @@ void Boxy::render()
 {
 	if (stats.lifeState == ALIVE)
 	{
+		outline.render();
+		if (attk)
+		{
+			armOutline.render();
+			arm.render();
+		}
 		body->render();
 		reflection->render();
 		eye.render();
@@ -249,6 +295,13 @@ void Boxy::update_position(Level lvl)
 	(direction == LEFT) ?
 		eye.center.x = body->center.x - body->radius / 2 :
 		eye.center.x = body->center.x + body->radius / 2;
+
+	outline.center.x = body->center.x;
+	outline.center.y = body->center.y;
+	arm.center.x = body->center.x;
+	arm.center.y = body->center.y;
+	armOutline.center.x = body->center.x;
+	armOutline.center.y = body->center.y;
 	
 	update_reflection_x();
 	reflection->center.y = body->center.y + sqrt(body->radius) * 1.5f;
@@ -337,7 +390,7 @@ void Player::respawn()
 
 void Player::death_handler()
 {	
-	if (body->boundary.right < -width_resolution * 3)
+	if (body->boundary.right < -width_resolution * 2)
 	{
 		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED && stats.initDeath == false)
 		{
@@ -346,7 +399,7 @@ void Player::death_handler()
 			stats.deathTimer = glfwGetTime();
 		}
 	}
-	else if (body->boundary.left > width_resolution * 3)
+	else if (body->boundary.left > width_resolution * 2)
 	{
 		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED && stats.initDeath == false)
 		{
@@ -355,7 +408,7 @@ void Player::death_handler()
 			stats.deathTimer = glfwGetTime();
 		}
 	}
-	else if (body->boundary.top < -height_resolution * 3)
+	else if (body->boundary.top < -height_resolution * 2.5)
 	{
 		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED && stats.initDeath == false)
 		{
@@ -364,7 +417,7 @@ void Player::death_handler()
 			stats.deathTimer = glfwGetTime();
 		}
 	}
-	else if (body->boundary.bottom > height_resolution * 3)
+	else if (body->boundary.bottom > height_resolution * 2.5)
 	{
 		if (stats.lifeCount >= 0 && stats.lifeState != ELIMINATED && stats.initDeath == false)
 		{

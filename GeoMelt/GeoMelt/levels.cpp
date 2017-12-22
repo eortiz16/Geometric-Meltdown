@@ -8,10 +8,17 @@ void Field_Level::build(Assets assets)
 	//Background Color Assignment
 	background.body.center.x = 0;
 	background.body.center.y = 0;
-	background.body.width = 2.0f * width_resolution;
-	background.body.height = 2.0f * height_resolution;
-
+	background.body.width = 4.0f * width_resolution;
+	background.body.height = 5.0f * height_resolution;
 	background.set_color(assets.backgroundPalette.day);
+
+	//filter
+	filterBG.center.x = background.body.center.x;
+	filterBG.center.y = background.body.center.y;
+	filterBG.width = background.body.width;
+	filterBG.height = background.body.height;
+	filterBG.color = assets.palette.black;
+	filterBG.color.alpha = 150;
 
 	//Sun Attributes
 	sun.radius = (GLfloat)height_resolution;
@@ -61,6 +68,7 @@ void Field_Level::build(Assets assets)
 	player[0] = new Ball;
 	player[0]->build(assets);
 	player[0]->body->color = assets.characterPalette.red_b;
+	player[0]->arm.color = assets.characterPalette.red_b;
 	player[0]->reflection->color = assets.characterPalette.red_r;
 	player[0]->body->center.x = -600;
 	player[0]->body->center.y = (GLfloat)height_resolution;
@@ -69,6 +77,7 @@ void Field_Level::build(Assets assets)
 	player[1] = new Boxy;
 	player[1]->build(assets);
 	player[1]->body->color = assets.characterPalette.green_b;
+	player[1]->arm.color = assets.characterPalette.green_b;
 	player[1]->reflection->color = assets.characterPalette.green_r;
 	player[1]->body->center.x = 600;
 	player[1]->body->center.y = height_resolution / 2.0f;
@@ -77,6 +86,7 @@ void Field_Level::build(Assets assets)
 	player[2] = new Ball;
 	player[2]->build(assets);
 	player[2]->body->color = assets.characterPalette.yellow_b;
+	player[2]->arm.color = assets.characterPalette.yellow_b;
 	player[2]->reflection->color = assets.characterPalette.yellow_r;
 	player[2]->body->center.x = 600;
 	player[2]->body->center.y = (GLfloat)height_resolution;
@@ -85,6 +95,7 @@ void Field_Level::build(Assets assets)
 	player[3] = new Boxy;
 	player[3]->build(assets);
 	player[3]->body->color = assets.characterPalette.pink_b;
+	player[3]->arm.color = assets.characterPalette.pink_b;
 	player[3]->reflection->color = assets.characterPalette.pink_r;
 	player[3]->body->center.x = 600;
 	player[3]->body->center.y = height_resolution / 2.0f;
@@ -114,6 +125,7 @@ void Level::physics(Level lvl)
 void Field_Level::render()
 {
 	background.render();
+	//filterBG.render();
 	sun.render();
 	for (int i = 0; i < MAX_CLOUD; i++)
 		clouds[i].render();
@@ -155,7 +167,7 @@ void Cloud::set_cloud_group()
 {
 	float clr = (float)(rand() % 55 + 200);
 	GLfloat size = (GLfloat)(rand() % CLOUD_RANGE) + CLOUD_START;
-	int level = (rand() % (2 * height_resolution)) - height_resolution;
+	GLfloat level = (GLfloat)(rand() % (2 * height_resolution)) - height_resolution;
 
 	//For All Shapes Assign Color, Size, Y Coordinate
 	for (int i = 0; i < CLOUD_GROUP; i++)
@@ -164,13 +176,13 @@ void Cloud::set_cloud_group()
 		body[i].color.g = clr;
 		body[i].color.b = clr;
 		body[i].radius = size;
-		body[i].center.y = (GLfloat)level;
+		body[i].center.y = level;
 	}
 
 	if (direction == LEFT) //Starting on Right
-		body[1].center.x = (GLfloat) width_resolution + body[0].radius;
+		body[1].center.x = 2.0 * width_resolution + body[0].radius;
 	else //Starting on Left
-		body[1].center.x = - width_resolution - body[0].radius;
+		body[1].center.x = -2.0 * width_resolution - body[0].radius;
 
 	body[0].center.x = body[1].center.x - body[1].radius;
 	body[2].center.x = body[1].center.x + body[1].radius;
@@ -201,8 +213,8 @@ void Night_Level::build(Assets assets)
 	//Background Attributes
 	background.body.center.x = 0;
 	background.body.center.y = 0;
-	background.body.width = 2.0f * width_resolution;
-	background.body.height = 2.0f * height_resolution;
+	background.body.width = 4.0f * width_resolution;
+	background.body.height = 5.0f * height_resolution;
 
 	//Color assignment
 	background.set_color(assets.backgroundPalette.night);
@@ -257,6 +269,7 @@ void Night_Level::build(Assets assets)
 	player[0] = new Ball;
 	player[0]->build(assets);
 	player[0]->body->color = assets.characterPalette.red_b;
+	player[0]->arm.color = assets.characterPalette.red_b;
 	player[0]->reflection->color = assets.characterPalette.red_r;
 	player[0]->body->center.x = -600;
 	player[0]->body->center.y = (GLfloat)height_resolution;
@@ -265,6 +278,7 @@ void Night_Level::build(Assets assets)
 	player[1] = new Boxy;
 	player[1]->build(assets);
 	player[1]->body->color = assets.characterPalette.green_b;
+	player[1]->arm.color = assets.characterPalette.green_b;
 	player[1]->reflection->color = assets.characterPalette.green_r;
 	player[1]->body->center.x = 600;
 	player[1]->body->center.y = height_resolution / 2.0f;
@@ -273,6 +287,7 @@ void Night_Level::build(Assets assets)
 	player[2] = new Ball;
 	player[2]->build(assets);
 	player[2]->body->color = assets.characterPalette.yellow_b;
+	player[2]->arm.color = assets.characterPalette.yellow_b;
 	player[2]->reflection->color = assets.characterPalette.yellow_r;
 	player[2]->body->center.x = 600;
 	player[2]->body->center.y = (GLfloat)height_resolution;
@@ -281,6 +296,7 @@ void Night_Level::build(Assets assets)
 	player[3] = new Boxy;
 	player[3]->build(assets);
 	player[3]->body->color = assets.characterPalette.pink_b;
+	player[3]->arm.color = assets.characterPalette.pink_b;
 	player[3]->reflection->color = assets.characterPalette.pink_r;
 	player[3]->body->center.x = 600;
 	player[3]->body->center.y = height_resolution / 2.0f;
@@ -367,8 +383,8 @@ void Time_Level::build(Assets assets)
 	time_of_day = EVENING;
 	background.body.center.x = 0;
 	background.body.center.y = 0;
-	background.body.width = 2.0f * width_resolution;
-	background.body.height = 2.0f * height_resolution;
+	background.body.width = 4.0f * width_resolution;
+	background.body.height = 5.0f * height_resolution;
 
 	transition = false;
 
@@ -436,6 +452,7 @@ void Time_Level::build(Assets assets)
 	player[0] = new Ball;
 	player[0]->build(assets);
 	player[0]->body->color = assets.characterPalette.red_b;
+	player[0]->arm.color = assets.characterPalette.red_b;
 	player[0]->reflection->color = assets.characterPalette.red_r;
 	player[0]->body->center.x = -600;
 	player[0]->body->center.y = (GLfloat)height_resolution;
@@ -444,6 +461,7 @@ void Time_Level::build(Assets assets)
 	player[1] = new Boxy;
 	player[1]->build(assets);
 	player[1]->body->color = assets.characterPalette.green_b;
+	player[1]->arm.color = assets.characterPalette.green_b;
 	player[1]->reflection->color = assets.characterPalette.green_r;
 	player[1]->body->center.x = 600;
 	player[1]->body->center.y = height_resolution / 2.0f;
@@ -452,6 +470,7 @@ void Time_Level::build(Assets assets)
 	player[2] = new Ball;
 	player[2]->build(assets);
 	player[2]->body->color = assets.characterPalette.yellow_b;
+	player[2]->arm.color = assets.characterPalette.yellow_b;
 	player[2]->reflection->color = assets.characterPalette.yellow_r;
 	player[2]->body->center.x = 600;
 	player[2]->body->center.y = (GLfloat)height_resolution;
@@ -460,6 +479,7 @@ void Time_Level::build(Assets assets)
 	player[3] = new Boxy;
 	player[3]->build(assets);
 	player[3]->body->color = assets.characterPalette.pink_b;
+	player[3]->arm.color = assets.characterPalette.pink_b;
 	player[3]->reflection->color = assets.characterPalette.pink_r;
 	player[3]->body->center.x = 600;
 	player[3]->body->center.y = height_resolution / 2.0f;

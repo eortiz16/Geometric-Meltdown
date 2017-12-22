@@ -22,7 +22,9 @@
 #define TRI_NUM 50
 #define	HDX 1920
 #define HDY 1080
-#define ZOOM 1.25f
+#define RESX HDX * 4.0f
+#define RESY HDY * 5.0f
+#define ZOOM 1.1f
 
 enum State {MAIN, PAUSE, LEVELSEL, CHARSEL, FIELD, NIGHT, TIME, DISCO, POLLUTION};
 enum Direction {LEFT, RIGHT};
@@ -47,7 +49,7 @@ public:
 class Color {
 public:
 	float r, g, b, alpha;
-	Color() {}
+	Color();
 	Color(const Color &obj);
 };
 class Vec {
@@ -60,7 +62,6 @@ public:
 	Vec from, to;
 	Color color;
 	void render();
-	void set_color(Color clr);
 	Line();
 };
 class Boundary {
@@ -83,6 +84,7 @@ public:
 	void set_center(Level lvl);
 	void set_edges();
 	void transition();
+	void build();
 };
 class Shape { 
 public:
@@ -145,6 +147,8 @@ public:
 	Vec	velocity;
 	Shape *body;
 	Shape *reflection;
+	Quad arm;
+	Quad armOutline;
 	Circle eye;
 	int JUMP_MAX;
 	int jumpCount;
@@ -152,6 +156,10 @@ public:
 	void respawn();
 	void death_handler();
 	void update_reflection_x();
+
+	bool attk;
+	void attack();
+	
 	virtual void render(void) = 0;
 	virtual void update_position(Level lvl) = 0;
 	virtual void physics(Platform *plat) = 0;
@@ -304,8 +312,8 @@ class Assets;
 class Level {
 public:
 	Background background;
+	Quad filterBG;
 	void physics(Level lvl);
-	void camera(Level lvl);
 	Platform platform[MAX_PLATFORM];
 	Player *player[MAX_PLAYER] = {NULL}; //Polymorphism
 	virtual ~Level() {}

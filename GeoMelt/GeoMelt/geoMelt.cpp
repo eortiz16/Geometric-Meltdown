@@ -17,7 +17,7 @@ Game::Game()
 	//icons.set_attributes();
 	//sicons.set_attributes();
 	
-	render = FIELD;
+	render = NIGHT;
 	//mainMenu.build();
 	menus.chacterSelection.build(assets);
 	levels.field.build(assets);
@@ -82,6 +82,9 @@ int main(void)
 	//Start new thread
 	thread p(&phys,&game);
 	p.detach();
+
+	//thread c(&camTrans, &game);
+	//c.detach();
 
 	bool flag = false;
 	while (!glfwWindowShouldClose(window))
@@ -159,7 +162,6 @@ void phys(Game *game)
 			}
 			camera.set_center(game->levels.field);
 			camera.set_edges();
-			camera.transition();
 			break;
 		case NIGHT:
 			game->levels.night.physics(game->levels.night);
@@ -170,7 +172,6 @@ void phys(Game *game)
 			}
 			camera.set_center(game->levels.night);
 			camera.set_edges();
-			camera.transition();
 			break;
 		case TIME:
 			game->levels.time.transition_handler(game->assets.backgroundPalette);
@@ -184,7 +185,6 @@ void phys(Game *game)
 			}
 			camera.set_center(game->levels.time);
 			camera.set_edges();
-			camera.transition();
 			break;
 		default:
 			break;
@@ -193,13 +193,19 @@ void phys(Game *game)
 	}
 }
 
+void camTrans(Game *game)
+{
+	while (!glfwWindowShouldClose(window))
+		camera.transition();
+}
+
 void Camera::set_center(Level lvl)
 {
 	//find furthest player away from center (x and y)
-	xMin = INT_MAX;
-	xMax = INT_MIN;
-	yMin = INT_MAX;
-	yMax = INT_MIN;
+	xMin = (float) INT_MAX;
+	xMax = (float) INT_MIN;
+	yMin = (float) INT_MAX;
+	yMax = (float) INT_MIN;
 
 	// obtain center (x,y) between ALL players
 	for (int i = 0; i < MAX_PLAYER; i++)
@@ -246,18 +252,34 @@ void Camera::set_edges()
 		edges.right = center.x + (edges.top - edges.bottom) * aspect_ratio / 2.0f;
 	}
 }
+
+void Camera::build()
+{
+	ortho.left = -HDX;
+	ortho.right = HDX;
+	ortho.top = HDY;
+	ortho.bottom = -HDY;
+}
+
 void Camera::transition()
 {
-	/*
 	if (edges.right - edges.left > ortho.right - ortho.left)
 	{
-		cout << "!";
-		ortho.left = edges.left * 0.999f;
-		ortho.right = edges.right * 0.999f;
-		ortho.top = edges.top * 0.999f;
-		ortho.bottom = edges.bottom * 0.999f;
+		cout << edges.right - edges.left << " > " << ortho.right - ortho.left << endl;
+		ortho.left = edges.left * 1.0000001f;
+		ortho.right = edges.right * 1.0000001f;
+		ortho.top = edges.top * 1.0000001f;
+		ortho.bottom = edges.bottom * 1.0000001f;
 	}
-	*/
+	else if (edges.right - edges.left < ortho.right - ortho.left)
+	{
+		cout << "@";
+		ortho.left = edges.left * 0.9999999f;
+		ortho.right = edges.right * 0.9999999f;
+		ortho.top = edges.top * 0.9999999f;
+		ortho.bottom = edges.bottom * 0.9999999f;
+	}
+	Sleep(20);
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height)
@@ -265,7 +287,7 @@ void window_size_callback(GLFWwindow* window, int width, int height)
 	cout << "\nWindow Resized: " << width << " x " << height << "\n";
 	width_resolution = width;
 	height_resolution = height;
-	aspect_ratio = width_resolution / height_resolution;
+	aspect_ratio = (float) width_resolution / (float) height_resolution;
 	resize = true;
 }
 

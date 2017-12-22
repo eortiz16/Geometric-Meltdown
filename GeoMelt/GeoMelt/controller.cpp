@@ -27,6 +27,29 @@ void Player::read_input(Controller *c)
 			c->singlePress[3] = false;
 		}
 
+		// Attack - X and A buttons
+		if (c->buttons[0] == GLFW_PRESS && c->singlePress[0] == false)
+		{
+			attack();
+			c->singlePress[0] = true;
+		}
+		if (c->buttons[0] == GLFW_RELEASE && c->singlePress[0] == true)
+		{
+			attk = false;
+			c->singlePress[0] = false;
+		}
+
+		if (c->buttons[2] == GLFW_PRESS && c->singlePress[2] == false)
+		{
+			attack();
+			c->singlePress[2] = true;
+		}
+		if (c->buttons[2] == GLFW_RELEASE && c->singlePress[2] == true)
+		{
+			attk = false;
+			c->singlePress[2] = false;
+		}
+
 		// Move Right - Right Dpad
 		if (c->buttons[11] == GLFW_PRESS)
 		{

@@ -6,6 +6,8 @@ void joystick_callback(int joy, int event);
 void window_size_callback(GLFWwindow* window, int width, int height);
 
 void phys(Game *game);
+void camTrans(Game *game);
+
 static int width_resolution = HDX;
 static int height_resolution = HDY;
 static float aspect_ratio = (float)width_resolution / (float)height_resolution;

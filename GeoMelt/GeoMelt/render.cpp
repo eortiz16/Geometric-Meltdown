@@ -119,9 +119,7 @@ void Circle::render()
 {
 	GLfloat arg1, arg2;
 
-	glColor3ub((GLubyte)color.r, (GLubyte)color.g, (GLubyte)color.b);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4ub((GLubyte)color.r, (GLubyte)color.g, (GLubyte)color.b, (GLubyte)color.alpha);
 	glBegin(GL_TRIANGLE_FAN);
 	glVertex2f(center.x, center.y);
 	for (int i = 0; i < 240; i++)
@@ -135,7 +133,7 @@ void Circle::render()
 
 void Quad::render()
 {
-	glColor3ub((GLubyte)color.r, (GLubyte)color.g, (GLubyte)color.b);
+	glColor4ub((GLubyte)color.r, (GLubyte)color.g, (GLubyte)color.b, (GLubyte)color.alpha);
 	glBegin(GL_QUADS);
 	glVertex2f(center.x - width / 2, center.y - height / 2);
 	glVertex2f(center.x - width / 2, center.y + height / 2);
